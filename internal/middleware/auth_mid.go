@@ -9,9 +9,10 @@ import (
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
 	"github.com/issueye/grape/internal/common/controller"
+	"github.com/issueye/grape/internal/common/model"
 	"github.com/issueye/grape/internal/config"
 	"github.com/issueye/grape/internal/global"
-	"github.com/issueye/grape/internal/model"
+	"github.com/issueye/grape/internal/repository"
 	"github.com/issueye/grape/internal/service"
 	"github.com/issueye/grape/pkg/middleware"
 	"github.com/issueye/grape/pkg/utils"
@@ -69,7 +70,7 @@ func (auth *Auth) IdentityHandler(c *gin.Context) interface{} {
 //	@Failure		500		{object}	controller.Base	"错误返回内容"
 //	@Router			/login [post]
 func (auth *Auth) Login(c *gin.Context) (interface{}, error) {
-	req := new(model.Login)
+	req := new(repository.Login)
 	// 请求json绑定
 	err := c.ShouldBind(req)
 	if err != nil {
@@ -181,7 +182,7 @@ func (auth *Auth) RefreshResponse(ctx *gin.Context, _ int, token string, expires
 
 // UserAuth
 // 用户鉴权
-func (auth *Auth) UserAuth(info *model.Login) (*model.User, error) {
+func (auth *Auth) UserAuth(info *repository.Login) (*model.User, error) {
 	user, err := service.NewUser(global.DB).FindUser(info)
 	if err != nil {
 		return nil, err

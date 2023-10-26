@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/issueye/grape/internal/common/controller"
 	"github.com/issueye/grape/internal/global"
-	"github.com/issueye/grape/internal/model"
+	"github.com/issueye/grape/internal/repository"
 	"github.com/issueye/grape/internal/service"
 )
 
@@ -38,7 +38,7 @@ func NewUserController() *UserController {
 func (UserController) List(ctx *gin.Context) {
 	control := controller.New(ctx)
 
-	req := new(model.QueryUser)
+	req := new(repository.QueryUser)
 	err := control.Bind(req)
 	if err != nil {
 		global.Log.Errorf("绑定请求内容失败 %s", err.Error())
@@ -98,7 +98,7 @@ func (UserController) GetById(ctx *gin.Context) {
 //	@Summary		添加用户信息
 //	@Description	添加用户信息
 //	@Produce		json
-//	@Param			data	body		model.CreateTBZDDSRR	true	"添加用户信息"
+//	@Param			data	body		repository.CreateUser	true	"添加用户信息"
 //	@Success		200		{object}	controller.Base			true	"code: 200 成功"
 //	@Failure		500		{object}	controller.Base			true	"错误返回内容"
 //	@Router			/api/v1/user [post]
@@ -106,7 +106,7 @@ func (UserController) GetById(ctx *gin.Context) {
 func (UserController) Create(ctx *gin.Context) {
 	control := controller.New(ctx)
 
-	req := new(model.CreateUser)
+	req := new(repository.CreateUser)
 	err := control.Bind(req)
 	if err != nil {
 		global.Log.Errorf("绑定参数失败 %s", err.Error())
@@ -137,7 +137,7 @@ func (UserController) Create(ctx *gin.Context) {
 func (UserController) Modify(ctx *gin.Context) {
 	control := controller.New(ctx)
 
-	req := new(model.ModifyUser)
+	req := new(repository.ModifyUser)
 	err := ctx.Bind(req)
 	if err != nil {
 		global.Log.Errorf("绑定参数失败 %s", err.Error())
@@ -215,7 +215,7 @@ func (UserController) ModifyStatus(ctx *gin.Context) {
 		return
 	}
 
-	err = service.NewUser(global.DB).Status(&model.StatusUser{
+	err = service.NewUser(global.DB).Status(&repository.StatusUser{
 		ID:    idCondition,
 		State: info.State,
 	})

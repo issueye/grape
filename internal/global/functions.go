@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/golang-jwt/jwt/v4"
-	"github.com/issueye/grape/internal/model"
+	"github.com/issueye/grape/internal/common/model"
 	"github.com/issueye/grape/pkg/utils"
 )
 

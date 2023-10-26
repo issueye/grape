@@ -7,7 +7,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/issueye/grape/internal/model"
 	"github.com/issueye/grape/pkg/db"
 	"github.com/issueye/grape/pkg/logger"
 	"github.com/issueye/grape/pkg/utils"
@@ -174,6 +173,5 @@ func initConfig() {
 	// 创建表
 	d.AutoMigrate(
 		&Param{},
-		&model.User{},
 	)
 }

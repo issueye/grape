@@ -1,8 +1,10 @@
 package initialize
 
 import (
+	"fmt"
 	"path/filepath"
 
+	"github.com/issueye/grape/internal/common/model"
 	"github.com/issueye/grape/internal/global"
 	"github.com/issueye/grape/internal/service"
 	"github.com/issueye/grape/pkg/db"
@@ -13,7 +15,20 @@ func InitData() {
 	path := filepath.Join("runtime", "data", "data.db")
 	global.DB = db.InitSqlite(path, global.Log)
 
-	err := service.NewUser(global.DB).CreateAdminNonExistent()
+	// 初始化表
+	err := global.DB.AutoMigrate(
+		&model.User{},
+		&model.PortInfo{},
+		&model.NodeInfo{},
+		&model.RouteInfo{},
+	)
+
+	if err != nil {
+		panic(fmt.Errorf("初始化表失败 %s", err.Error()))
+	}
+
+	// 创建 admin 用户
+	err = service.NewUser(global.DB).CreateAdminNonExistent()
 	if err != nil {
 		panic("初始化数据失败，失败原因：" + err.Error())
 	}

@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/issueye/grape/internal/common/model"
 	"github.com/issueye/grape/internal/config"
-	"github.com/issueye/grape/internal/model"
+	"github.com/issueye/grape/internal/repository"
 	"github.com/issueye/grape/pkg/utils"
 	"gorm.io/gorm"
 )
@@ -22,7 +23,7 @@ func NewUser(db *gorm.DB) *User {
 
 // FindUser
 // 查找用户
-func (user *User) FindUser(info *model.Login) (*model.User, error) {
+func (user *User) FindUser(info *repository.Login) (*model.User, error) {
 	query := user.Db.Model(&model.User{}).Order("id")
 	query = query.Where("account = ?", info.Account)
 
@@ -63,7 +64,7 @@ func (user *User) CreateAdminNonExistent() error {
 
 // Create
 // 创建用户信息
-func (user *User) Create(data *model.CreateUser) error {
+func (user *User) Create(data *repository.CreateUser) error {
 	info := new(model.User)
 	info.ID = utils.GenID()
 	info.Account = data.Account
@@ -92,7 +93,7 @@ func (user *User) GetById(id int64) (*model.User, error) {
 
 // Modify
 // 修改用户信息
-func (user *User) Modify(info *model.ModifyUser) error {
+func (user *User) Modify(info *repository.ModifyUser) error {
 	m := make(map[string]any)
 	m["account"] = info.Account
 	m["name"] = info.Name
@@ -104,7 +105,7 @@ func (user *User) Modify(info *model.ModifyUser) error {
 
 // Status
 // 修改用户信息
-func (user *User) Status(info *model.StatusUser) error {
+func (user *User) Status(info *repository.StatusUser) error {
 	return user.Db.
 		Model(&model.User{}).
 		Where("id = ?", info.ID).
@@ -120,7 +121,7 @@ func (user *User) Delete(id int64) error {
 
 // List
 // 获取用户列表
-func (user *User) List(info *model.QueryUser) ([]*model.User, error) {
+func (user *User) List(info *repository.QueryUser) ([]*model.User, error) {
 	userInfo := new(model.User)
 	list := make([]*model.User, 0)
 	err := user.DataFilter(userInfo.TableName(), info, &list, func(db *gorm.DB) (*gorm.DB, error) {

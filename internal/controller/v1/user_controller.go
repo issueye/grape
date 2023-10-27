@@ -1,4 +1,4 @@
-package controller
+package v1
 
 import (
 	"errors"
@@ -26,13 +26,9 @@ func NewUserController() *UserController {
 //	@Summary		获取定时任务列表
 //	@Description	获取定时任务列表
 //	@Produce		json
-//	@Param			isNotPaging	query		string								false	"是否需要分页， 默认需要， 如果不分页 传 true"
-//	@Param			pageNum		query		string								true	"页码， 如果不分页 传 0"
-//	@Param			pageSize	query		string								true	"一页大小， 如果不分页 传 0"
-//	@Param			crwmc		query		string								false	"任务名称"
-//	@Param			desc		query		string								false	"任务描述"
-//	@Success		200			{object}	controller.Full{[]models.TBZDDSRR}	true	"code: 200 成功"
-//	@Failure		500			{object}	controller.Base						true	"错误返回内容"
+//	@Param			params	query		repository.QueryUser			true	"查询条件"
+//	@Success		200		{object}	controller.Full{[]model.User}	"code: 200 成功"
+//	@Failure		500		{object}	controller.Base					"错误返回内容"
 //	@Router			/api/v1/users [get]
 //	@Security		ApiKeyAuth
 func (UserController) List(ctx *gin.Context) {
@@ -62,9 +58,9 @@ func (UserController) List(ctx *gin.Context) {
 //	@Summary		获取定时任务列表
 //	@Description	获取定时任务列表
 //	@Produce		json
-//	@Param			id	path		string									true	"id"
-//	@Success		200	{object}	controller.Full{data=[]models.TBZDDSRR}	true	"code: 200 成功"
-//	@Failure		500	{object}	controller.Base							true	"错误返回内容"
+//	@Param			id	path		string								true	"id"
+//	@Success		200	{object}	controller.Full{data=model.User}	"code: 200 成功"
+//	@Failure		500	{object}	controller.Base						"错误返回内容"
 //	@Router			/api/v1/user/{id} [get]
 //	@Security		ApiKeyAuth
 func (UserController) GetById(ctx *gin.Context) {
@@ -99,8 +95,8 @@ func (UserController) GetById(ctx *gin.Context) {
 //	@Description	添加用户信息
 //	@Produce		json
 //	@Param			data	body		repository.CreateUser	true	"添加用户信息"
-//	@Success		200		{object}	controller.Base			true	"code: 200 成功"
-//	@Failure		500		{object}	controller.Base			true	"错误返回内容"
+//	@Success		200		{object}	controller.Base			"code: 200 成功"
+//	@Failure		500		{object}	controller.Base			"错误返回内容"
 //	@Router			/api/v1/user [post]
 //	@Security		ApiKeyAuth
 func (UserController) Create(ctx *gin.Context) {
@@ -129,9 +125,9 @@ func (UserController) Create(ctx *gin.Context) {
 //	@Description	修改用户信息
 //	@Produce		json
 //	@Param			id		path		string					true	"id"
-//	@Param			data	body		model.ModifyTBZDDSRR	true	"修改用户信息"
-//	@Success		200		{object}	controller.Base			true	"code: 200 成功"
-//	@Failure		500		{object}	controller.Base			true	"错误返回内容"
+//	@Param			data	body		repository.ModifyUser	true	"修改用户信息"
+//	@Success		200		{object}	controller.Base			"code: 200 成功"
+//	@Failure		500		{object}	controller.Base			"错误返回内容"
 //	@Router			/api/v1/user/{id} [put]
 //	@Security		ApiKeyAuth
 func (UserController) Modify(ctx *gin.Context) {
@@ -189,8 +185,8 @@ func (UserController) Modify(ctx *gin.Context) {
 //	@Description	修改用户状态
 //	@Produce		json
 //	@Param			id	path		string			true	"id"
-//	@Success		200	{object}	controller.Base	true	"code: 200 成功"
-//	@Failure		500	{object}	controller.Base	true	"错误返回内容"
+//	@Success		200	{object}	controller.Base	"code: 200 成功"
+//	@Failure		500	{object}	controller.Base	"错误返回内容"
 //	@Router			/api/v1/user/state/{id} [put]
 //	@Security		ApiKeyAuth
 func (UserController) ModifyStatus(ctx *gin.Context) {
@@ -234,8 +230,8 @@ func (UserController) ModifyStatus(ctx *gin.Context) {
 //	@Description	删除用户信息
 //	@Produce		json
 //	@Param			id	path		string			true	"id"
-//	@Success		200	{object}	controller.Base	true	"code: 200 成功"
-//	@Failure		500	{object}	controller.Base	true	"错误返回内容"
+//	@Success		200	{object}	controller.Base	"code: 200 成功"
+//	@Failure		500	{object}	controller.Base	"错误返回内容"
 //	@Router			/api/v1/user/{id} [delete]
 //	@Security		ApiKeyAuth
 func (UserController) Delete(ctx *gin.Context) {

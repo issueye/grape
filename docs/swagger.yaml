@@ -1,0 +1,943 @@
+definitions:
+  controller.Base:
+    properties:
+      code:
+        description: 状态码
+        type: integer
+      message:
+        description: 状态消息
+        type: string
+      requestDatetime:
+        description: 请求时间
+        type: string
+      requestId:
+        description: 请求ID
+        type: string
+      responseDatetime:
+        description: 返回时间
+        type: string
+    type: object
+  controller.Full:
+    properties:
+      code:
+        description: 状态码
+        type: integer
+      data:
+        description: 返回数据
+      message:
+        description: 状态消息
+        type: string
+      requestDatetime:
+        description: 请求时间
+        type: string
+      requestId:
+        description: 请求ID
+        type: string
+      responseDatetime:
+        description: 返回时间
+        type: string
+    type: object
+  middleware.JwtToken:
+    properties:
+      expires:
+        description: 时间
+        type: string
+      id:
+        description: id
+        type: integer
+      name:
+        description: 用户名
+        type: string
+      token:
+        description: token
+        type: string
+      uid:
+        description: 用户ID
+        type: string
+    type: object
+  model.User:
+    properties:
+      account:
+        description: uid 登录名
+        type: string
+      id:
+        description: 编码
+        type: integer
+      mark:
+        description: 备注
+        type: string
+      name:
+        description: 用户姓名
+        type: string
+      password:
+        description: 密码
+        type: string
+      state:
+        description: 状态 0 停用 1 启用
+        type: integer
+    type: object
+  repository.CreateNode:
+    properties:
+      mark:
+        description: 备注
+        type: string
+      name:
+        description: 匹配路由名称
+        type: string
+      nodeType:
+        description: 节点类型 0 api 1 页面
+        type: integer
+      pagePath:
+        description: 静态页面存放路径 注：相对路径，由服务对页面进行管理
+        type: string
+      portId:
+        description: 端口信息编码
+        type: string
+    required:
+    - name
+    - nodeType
+    - portId
+    type: object
+  repository.CreatePort:
+    properties:
+      certCode:
+        description: 证书编码
+        type: string
+      isTLS:
+        description: 是否证书加密
+        type: boolean
+      mark:
+        description: 备注
+        type: string
+      port:
+        description: 端口号
+        type: integer
+    required:
+    - port
+    type: object
+  repository.CreateRoute:
+    properties:
+      mark:
+        description: 备注
+        type: string
+      matchType:
+        description: 匹配模式 0 所有内容匹配 1 正则匹配 2 包含匹配 3 header 匹配
+        type: integer
+      name:
+        description: 匹配路由名称
+        type: string
+      nodeId:
+        description: 节点信息编码
+        type: string
+      target:
+        description: 目标服务地址
+        type: string
+    required:
+    - matchType
+    - name
+    - nodeId
+    - target
+    type: object
+  repository.CreateUser:
+    properties:
+      account:
+        description: uid 登录名
+        type: string
+      mark:
+        description: 备注
+        type: string
+      name:
+        description: 用户姓名
+        type: string
+      password:
+        description: 密码
+        type: string
+    type: object
+  repository.Login:
+    properties:
+      account:
+        description: 登录名
+        type: string
+      password:
+        description: 密码
+        type: string
+    type: object
+  repository.ModifyNode:
+    properties:
+      id:
+        description: 编码
+        type: string
+      mark:
+        description: 备注
+        type: string
+      name:
+        description: 匹配路由名称
+        type: string
+      nodeType:
+        description: 节点类型 0 api 1 页面
+        type: integer
+      pagePath:
+        description: 静态页面存放路径 注：相对路径，由服务对页面进行管理
+        type: string
+      portId:
+        description: 端口信息编码
+        type: string
+    required:
+    - id
+    - name
+    - nodeType
+    - portId
+    type: object
+  repository.ModifyPort:
+    properties:
+      certCode:
+        description: 证书编码
+        type: string
+      id:
+        description: 编码
+        type: string
+      isTLS:
+        description: 是否证书加密
+        type: boolean
+      mark:
+        description: 备注
+        type: string
+      port:
+        description: 端口号
+        type: integer
+    required:
+    - id
+    - port
+    type: object
+  repository.ModifyRoute:
+    properties:
+      id:
+        description: 编码
+        type: string
+      mark:
+        description: 备注
+        type: string
+      matchType:
+        description: 匹配模式 0 所有内容匹配 1 正则匹配 2 包含匹配 3 header 匹配
+        type: integer
+      name:
+        description: 匹配路由名称
+        type: string
+      nodeId:
+        description: 节点信息编码
+        type: string
+      target:
+        description: 目标服务地址
+        type: string
+    required:
+    - id
+    - matchType
+    - name
+    - nodeId
+    - target
+    type: object
+  repository.ModifyUser:
+    properties:
+      account:
+        description: uid 登录名
+        type: string
+      id:
+        description: 编码
+        type: integer
+      mark:
+        description: 备注
+        type: string
+      name:
+        description: 用户姓名
+        type: string
+      password:
+        description: 密码
+        type: string
+    type: object
+info:
+  contact: {}
+  description: 代理管理服务
+  title: 代理管理服务
+  version: V0.1
+paths:
+  /api/v1/node:
+    delete:
+      description: 删除节点信息
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'code: 200 成功'
+          schema:
+            $ref: '#/definitions/controller.Base'
+        "500":
+          description: 错误返回内容
+          schema:
+            $ref: '#/definitions/controller.Base'
+      security:
+      - ApiKeyAuth: []
+      summary: 删除节点信息
+      tags:
+      - 节点信息
+    get:
+      description: 查询节点信息
+      parameters:
+      - description: 条件
+        in: query
+        name: condition
+        type: string
+      - description: 页数
+        in: query
+        name: pageNum
+        type: integer
+      - description: 页码
+        in: query
+        name: pageSize
+        type: integer
+      - description: 端口信息编码
+        in: query
+        name: portId
+        type: string
+      - description: 总数  由服务器返回回去
+        in: query
+        name: total
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'code: 200 成功'
+          schema:
+            $ref: '#/definitions/controller.Base'
+        "500":
+          description: 错误返回内容
+          schema:
+            $ref: '#/definitions/controller.Base'
+      security:
+      - ApiKeyAuth: []
+      summary: 查询节点信息
+      tags:
+      - 节点信息
+    post:
+      description: 创建节点信息
+      parameters:
+      - description: 创建节点信息
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/repository.CreateNode'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'code: 200 成功'
+          schema:
+            $ref: '#/definitions/controller.Base'
+        "500":
+          description: 错误返回内容
+          schema:
+            $ref: '#/definitions/controller.Base'
+      security:
+      - ApiKeyAuth: []
+      summary: 创建节点信息
+      tags:
+      - 节点信息
+    put:
+      description: 修改节点信息
+      parameters:
+      - description: 修改节点信息
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/repository.ModifyNode'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'code: 200 成功'
+          schema:
+            $ref: '#/definitions/controller.Base'
+        "500":
+          description: 错误返回内容
+          schema:
+            $ref: '#/definitions/controller.Base'
+      security:
+      - ApiKeyAuth: []
+      summary: 修改节点信息
+      tags:
+      - 节点信息
+  /api/v1/node/{id}:
+    get:
+      description: 通过编码查询节点信息
+      parameters:
+      - description: 节点信息编码
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'code: 200 成功'
+          schema:
+            $ref: '#/definitions/controller.Base'
+        "500":
+          description: 错误返回内容
+          schema:
+            $ref: '#/definitions/controller.Base'
+      security:
+      - ApiKeyAuth: []
+      summary: 通过编码查询节点信息
+      tags:
+      - 节点信息
+  /api/v1/port:
+    delete:
+      description: 删除端口信息
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'code: 200 成功'
+          schema:
+            $ref: '#/definitions/controller.Base'
+        "500":
+          description: 错误返回内容
+          schema:
+            $ref: '#/definitions/controller.Base'
+      security:
+      - ApiKeyAuth: []
+      summary: 删除端口信息
+      tags:
+      - 端口信息
+    get:
+      description: 查询端口信息
+      parameters:
+      - description: 条件
+        in: query
+        name: condition
+        type: string
+      - description: 页数
+        in: query
+        name: pageNum
+        type: integer
+      - description: 页码
+        in: query
+        name: pageSize
+        type: integer
+      - description: 总数  由服务器返回回去
+        in: query
+        name: total
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'code: 200 成功'
+          schema:
+            $ref: '#/definitions/controller.Base'
+        "500":
+          description: 错误返回内容
+          schema:
+            $ref: '#/definitions/controller.Base'
+      security:
+      - ApiKeyAuth: []
+      summary: 查询端口信息
+      tags:
+      - 端口信息
+    post:
+      description: 创建端口信息
+      parameters:
+      - description: 创建端口信息
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/repository.CreatePort'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'code: 200 成功'
+          schema:
+            $ref: '#/definitions/controller.Base'
+        "500":
+          description: 错误返回内容
+          schema:
+            $ref: '#/definitions/controller.Base'
+      security:
+      - ApiKeyAuth: []
+      summary: 创建端口信息
+      tags:
+      - 端口信息
+    put:
+      description: 修改端口信息
+      parameters:
+      - description: 修改端口信息
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/repository.ModifyPort'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'code: 200 成功'
+          schema:
+            $ref: '#/definitions/controller.Base'
+        "500":
+          description: 错误返回内容
+          schema:
+            $ref: '#/definitions/controller.Base'
+      security:
+      - ApiKeyAuth: []
+      summary: 修改端口信息
+      tags:
+      - 端口信息
+  /api/v1/port/{id}:
+    get:
+      description: 通过编码查询端口信息
+      parameters:
+      - description: 端口信息编码
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'code: 200 成功'
+          schema:
+            $ref: '#/definitions/controller.Base'
+        "500":
+          description: 错误返回内容
+          schema:
+            $ref: '#/definitions/controller.Base'
+      security:
+      - ApiKeyAuth: []
+      summary: 通过编码查询端口信息
+      tags:
+      - 端口信息
+  /api/v1/port/state/{id}:
+    put:
+      description: 修改端口使用状态
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'code: 200 成功'
+          schema:
+            $ref: '#/definitions/controller.Base'
+        "500":
+          description: 错误返回内容
+          schema:
+            $ref: '#/definitions/controller.Base'
+      security:
+      - ApiKeyAuth: []
+      summary: 修改端口使用状态
+      tags:
+      - 端口信息
+  /api/v1/route:
+    delete:
+      description: 删除路由匹配信息
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'code: 200 成功'
+          schema:
+            $ref: '#/definitions/controller.Base'
+        "500":
+          description: 错误返回内容
+          schema:
+            $ref: '#/definitions/controller.Base'
+      security:
+      - ApiKeyAuth: []
+      summary: 删除路由匹配信息
+      tags:
+      - 路由匹配信息
+    get:
+      description: 查询路由匹配信息
+      parameters:
+      - description: 条件
+        in: query
+        name: condition
+        type: string
+      - description: 节点编码
+        in: query
+        name: nodeId
+        type: string
+      - description: 页数
+        in: query
+        name: pageNum
+        type: integer
+      - description: 页码
+        in: query
+        name: pageSize
+        type: integer
+      - description: 总数  由服务器返回回去
+        in: query
+        name: total
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'code: 200 成功'
+          schema:
+            $ref: '#/definitions/controller.Base'
+        "500":
+          description: 错误返回内容
+          schema:
+            $ref: '#/definitions/controller.Base'
+      security:
+      - ApiKeyAuth: []
+      summary: 查询路由匹配信息
+      tags:
+      - 路由匹配信息
+    post:
+      description: 创建路由匹配信息
+      parameters:
+      - description: 创建路由匹配信息
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/repository.CreateRoute'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'code: 200 成功'
+          schema:
+            $ref: '#/definitions/controller.Base'
+        "500":
+          description: 错误返回内容
+          schema:
+            $ref: '#/definitions/controller.Base'
+      security:
+      - ApiKeyAuth: []
+      summary: 创建路由匹配信息
+      tags:
+      - 路由匹配信息
+    put:
+      description: 修改路由匹配信息
+      parameters:
+      - description: 修改路由匹配信息
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/repository.ModifyRoute'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'code: 200 成功'
+          schema:
+            $ref: '#/definitions/controller.Base'
+        "500":
+          description: 错误返回内容
+          schema:
+            $ref: '#/definitions/controller.Base'
+      security:
+      - ApiKeyAuth: []
+      summary: 修改路由匹配信息
+      tags:
+      - 路由匹配信息
+  /api/v1/route/{id}:
+    get:
+      description: 通过编码查询路由匹配信息
+      parameters:
+      - description: 路由匹配信息编码
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'code: 200 成功'
+          schema:
+            $ref: '#/definitions/controller.Base'
+        "500":
+          description: 错误返回内容
+          schema:
+            $ref: '#/definitions/controller.Base'
+      security:
+      - ApiKeyAuth: []
+      summary: 通过编码查询路由匹配信息
+      tags:
+      - 路由匹配信息
+  /api/v1/user:
+    post:
+      description: 添加用户信息
+      parameters:
+      - description: 添加用户信息
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/repository.CreateUser'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'code: 200 成功'
+          schema:
+            $ref: '#/definitions/controller.Base'
+        "500":
+          description: 错误返回内容
+          schema:
+            $ref: '#/definitions/controller.Base'
+      security:
+      - ApiKeyAuth: []
+      summary: 添加用户信息
+      tags:
+      - 用户信息管理
+  /api/v1/user/{id}:
+    delete:
+      description: 删除用户信息
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'code: 200 成功'
+          schema:
+            $ref: '#/definitions/controller.Base'
+        "500":
+          description: 错误返回内容
+          schema:
+            $ref: '#/definitions/controller.Base'
+      security:
+      - ApiKeyAuth: []
+      summary: 删除用户信息
+      tags:
+      - 用户信息管理
+    get:
+      description: 获取定时任务列表
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'code: 200 成功'
+          schema:
+            allOf:
+            - $ref: '#/definitions/controller.Full'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.User'
+              type: object
+        "500":
+          description: 错误返回内容
+          schema:
+            $ref: '#/definitions/controller.Base'
+      security:
+      - ApiKeyAuth: []
+      summary: 获取定时任务列表
+      tags:
+      - 用户信息管理
+    put:
+      description: 修改用户信息
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: 修改用户信息
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/repository.ModifyUser'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'code: 200 成功'
+          schema:
+            $ref: '#/definitions/controller.Base'
+        "500":
+          description: 错误返回内容
+          schema:
+            $ref: '#/definitions/controller.Base'
+      security:
+      - ApiKeyAuth: []
+      summary: 修改用户信息
+      tags:
+      - 用户信息管理
+  /api/v1/user/state/{id}:
+    put:
+      description: 修改用户状态
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'code: 200 成功'
+          schema:
+            $ref: '#/definitions/controller.Base'
+        "500":
+          description: 错误返回内容
+          schema:
+            $ref: '#/definitions/controller.Base'
+      security:
+      - ApiKeyAuth: []
+      summary: 修改用户状态
+      tags:
+      - 用户信息管理
+  /api/v1/users:
+    get:
+      description: 获取定时任务列表
+      parameters:
+      - description: uid 登录名
+        in: query
+        name: account
+        type: string
+      - description: 备注
+        in: query
+        name: mark
+        type: string
+      - description: 用户姓名
+        in: query
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'code: 200 成功'
+          schema:
+            $ref: '#/definitions/controller.Full'
+        "500":
+          description: 错误返回内容
+          schema:
+            $ref: '#/definitions/controller.Base'
+      security:
+      - ApiKeyAuth: []
+      summary: 获取定时任务列表
+      tags:
+      - 用户信息管理
+  /login:
+    post:
+      description: |-
+        ```
+        用户登录
+        ```
+      parameters:
+      - description: 登录信息
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/repository.Login'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.Full'
+        "500":
+          description: 错误返回内容
+          schema:
+            $ref: '#/definitions/controller.Base'
+      summary: 用户登录
+      tags:
+      - 基本接口
+  /logout:
+    get:
+      description: 用户登出时，调用此接口
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.Base'
+        "500":
+          description: 错误返回内容
+          schema:
+            $ref: '#/definitions/controller.Base'
+      security:
+      - ApiKeyAuth: []
+      summary: 用户登出
+      tags:
+      - 基本接口
+  /refreshToken:
+    get:
+      description: 当token即将获取或者过期时刷新token
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: code:200 成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/controller.Full'
+            - properties:
+                data:
+                  $ref: '#/definitions/middleware.JwtToken'
+              type: object
+        "500":
+          description: 错误返回内容
+          schema:
+            $ref: '#/definitions/controller.Base'
+      security:
+      - ApiKeyAuth: []
+      summary: 刷新token
+      tags:
+      - 基本接口
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

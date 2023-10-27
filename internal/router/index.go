@@ -12,8 +12,8 @@ type IRouters interface {
 }
 
 func InitRouter(r *gin.Engine) {
-	name := config.GetParam("api-name", "api").String()
-	v := config.GetParam("api-version", "v1").String()
+	name := config.GetParam(config.CfgServerApiName, "api").String()
+	v := config.GetParam(config.CfgServerApiVersion, "v1").String()
 
 	apiName := r.Group(name)
 
@@ -27,7 +27,11 @@ func InitRouter(r *gin.Engine) {
 
 	// 鉴权
 	// version.Use(global.Auth.MiddlewareFunc())
-	registerVersionRouter(version) // NewParamsRouter(), // 参数配置
+	registerVersionRouter(version,
+		NewPortRouter(),
+		NewNodeRouter(),
+		NewRouteRouter(),
+	)
 
 }
 

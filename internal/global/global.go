@@ -2,7 +2,6 @@ package global
 
 import (
 	"net/http"
-	"sync"
 
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
@@ -17,7 +16,22 @@ var (
 	Router     *gin.Engine
 	HttpServer *http.Server
 	Auth       *jwt.GinJWTMiddleware
+)
 
-	// 存放 gin 对象
-	GinEngines = new(sync.Map)
+type ActionType int
+
+const (
+	AT_START  ActionType = iota // 启动
+	AT_STOP                     // 停用
+	AT_RELOAD                   // 重载
+)
+
+type Port struct {
+	Id     string
+	Port   int
+	Action ActionType
+}
+
+var (
+	PortChan = make(chan *Port, 10) // 创建一个管道
 )

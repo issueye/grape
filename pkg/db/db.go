@@ -1,6 +1,7 @@
 package db
 
 import (
+	"fmt"
 	"strings"
 
 	"go.uber.org/zap"
@@ -51,10 +52,24 @@ func (w Writer) Printf(format string, args ...interface{}) {
 		{
 			funcPath := args[0].(string)
 			data := strings.Split(funcPath, "/")
-
 			// 判断如果是 SLOW SQL 则使用 warn 级别
-			t := args[2].(int64)
-			if t > 200 {
+			fmt.Println("args[2]", args[2])
+
+			isSlow := false
+			switch t := args[2].(type) {
+			case int64:
+				isSlow = t > 200
+			case int:
+				isSlow = t > 200
+			case float32:
+				isSlow = t > 200
+			case float64:
+				isSlow = t > 200
+			default:
+				isSlow = false
+			}
+
+			if isSlow {
 				w.log.Warnf("\nSQL语句  %s\n"+
 					"执行情况 SLOW SQL\n"+
 					"执行用时 %0.2fms\n"+

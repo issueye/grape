@@ -2,18 +2,18 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/issueye/grape/internal/controller"
+	v1 "github.com/issueye/grape/internal/controller/v1"
 )
 
 type UserRouter struct {
 	Name    string
-	control *controller.UserController
+	control *v1.UserController
 }
 
 func NewUserRouter() *UserRouter {
 	return &UserRouter{
 		Name:    "user",
-		control: controller.NewUserController(),
+		control: v1.NewUserController(),
 	}
 }
 

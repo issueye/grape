@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/issueye/grape/internal/config"
+	"github.com/issueye/grape/internal/engine"
 	"github.com/issueye/grape/internal/global"
 )
 
@@ -16,6 +17,8 @@ func Initialize() {
 	InitLog()
 	// 数据
 	InitData()
+	// 启动引擎
+	engine.Start()
 	// http服务
 	InitServer()
 	// 启动服务

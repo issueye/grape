@@ -30,6 +30,6 @@ func InitData() {
 	// 创建 admin 用户
 	err = service.NewUser(global.DB).CreateAdminNonExistent()
 	if err != nil {
-		panic("初始化数据失败，失败原因：" + err.Error())
+		panic("初始化数据失败 " + err.Error())
 	}
 }

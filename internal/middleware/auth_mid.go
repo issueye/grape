@@ -65,7 +65,7 @@ func (auth *Auth) IdentityHandler(c *gin.Context) interface{} {
 //	@Description	```
 //	@Description	用户登录
 //	@Description	```
-//	@Param			data	body		models.TBCZYXXLogin	true	"登录信息"
+//	@Param			data	body		repository.Login	true	"登录信息"
 //	@Success		200		{object}	controller.Full
 //	@Failure		500		{object}	controller.Base	"错误返回内容"
 //	@Router			/login [post]

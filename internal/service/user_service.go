@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/issueye/grape/internal/common/model"
+	"github.com/issueye/grape/internal/common/service"
 	"github.com/issueye/grape/internal/config"
 	"github.com/issueye/grape/internal/repository"
 	"github.com/issueye/grape/pkg/utils"
@@ -12,12 +13,12 @@ import (
 )
 
 type User struct {
-	*BaseService
+	*service.BaseService
 }
 
 func NewUser(db *gorm.DB) *User {
 	return &User{
-		BaseService: NewBaseService(db),
+		BaseService: service.NewBaseService(db),
 	}
 }
 

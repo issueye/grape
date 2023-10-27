@@ -1,7 +1,15 @@
 package model
 
+import "time"
+
 type Page struct {
 	PageNum  int64 `json:"pageNum" form:"pageNum"`   // 页数
 	PageSize int64 `json:"pageSize" form:"pageSize"` // 页码
 	Total    int64 `json:"total"`                    // 总数  由服务器返回回去
+}
+
+type Base struct {
+	ID        string    `gorm:"column:id;type:nvarchar(100);comment:编码;primaryKey;autoIncrement:false;" json:"id"` // 编码
+	CreatedAt time.Time `gorm:"column:created_at;type:datetime;comment:创建时间;" json:"createdAt"`                    // 创建时间
+	UpdatedAt time.Time `gorm:"column:updated_at;type:datetime;comment:修改时间;" json:"updatedAt"`                    // 修改时间
 }

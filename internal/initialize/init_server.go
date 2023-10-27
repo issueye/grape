@@ -14,7 +14,7 @@ import (
 )
 
 func InitServer() {
-	mode := config.GetParam("SERVER-MODE", "release").String()
+	mode := config.GetParam(config.CfgServerMode, "release").String()
 	gin.SetMode(mode)
 	// gin引擎对象
 	global.Router = gin.New()
@@ -40,7 +40,7 @@ func InitServer() {
 	// 注册路由
 	router.InitRouter(global.Router)
 	// 端口号为命令行提供
-	port := config.GetParam("SERVER-PORT", "10061").Int()
+	port := config.GetParam(config.CfgServerPort, "10061").Int()
 	global.HttpServer = &http.Server{
 		Addr:    fmt.Sprintf(":%d", port),
 		Handler: global.Router,

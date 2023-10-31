@@ -30,7 +30,7 @@ func (Node) Modify(req *repository.ModifyNode) error {
 func (Node) Create(req *repository.CreateNode) error {
 	// 判断端口号在当前系统是否已经被使用
 	NodeServie := service.NewNode()
-	info, err := NodeServie.FindByName(req.Name)
+	info, err := NodeServie.FindByName(req.Name, req.PortId)
 	if err != nil {
 		return fmt.Errorf("检查节点失败 %s", err.Error())
 	}

@@ -67,6 +67,8 @@ func (s *Node) Modify(data *repository.ModifyNode) error {
 	updateData["node_type"] = data.NodeType
 	updateData["page_path"] = data.PagePath
 	updateData["port_id"] = data.PortId
+	updateData["target"] = data.Target
+	updateData["mark"] = data.Mark
 	return s.Db.Model(&model.NodeInfo{}).Where("id = ?", data.ID).Updates(updateData).Error
 }
 
@@ -86,8 +88,8 @@ func (s *Node) FindById(id string) (*model.NodeInfo, error) {
 
 // FindById
 // 通过ID查找信息
-func (s *Node) FindByName(name string) (*model.NodeInfo, error) {
+func (s *Node) FindByName(name string, portId string) (*model.NodeInfo, error) {
 	info := new(model.NodeInfo)
-	err := s.Db.Model(info).Where("name = ?", name).Find(info).Error
+	err := s.Db.Model(info).Where("name = ?", name).Where("port_id = ?", portId).Find(info).Error
 	return info, err
 }

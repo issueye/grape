@@ -21,16 +21,16 @@ func (Node) GetById(id string) (*model.NodeInfo, error) {
 // Modify
 // 修改信息 不包含状态
 func (Node) Modify(req *repository.ModifyNode) error {
-	NodeServie := service.NewNode()
-	return NodeServie.Modify(req)
+	NodeService := service.NewNode()
+	return NodeService.Modify(req)
 }
 
 // Create
 // 创建数据
 func (Node) Create(req *repository.CreateNode) error {
 	// 判断端口号在当前系统是否已经被使用
-	NodeServie := service.NewNode()
-	info, err := NodeServie.FindByName(req.Name, req.PortId)
+	NodeService := service.NewNode()
+	info, err := NodeService.FindByName(req.Name, req.PortId)
 	if err != nil {
 		return fmt.Errorf("检查节点失败 %s", err.Error())
 	}
@@ -40,7 +40,7 @@ func (Node) Create(req *repository.CreateNode) error {
 	}
 
 	// 创建数据
-	err = NodeServie.Create(req)
+	err = NodeService.Create(req)
 	if err != nil {
 		return fmt.Errorf("创建信息失败 %s", err.Error())
 	}
@@ -51,13 +51,13 @@ func (Node) Create(req *repository.CreateNode) error {
 // Del
 // 根据ID删除信息
 func (Node) Del(id string) error {
-	NodeServie := service.NewNode()
+	NodeService := service.NewNode()
 
 	// 检查使用状态，如果是正在使用则不允许删除
-	_, err := NodeServie.FindById(id)
+	_, err := NodeService.FindById(id)
 	if err != nil {
 		return err
 	}
 
-	return NodeServie.Del(id)
+	return NodeService.Del(id)
 }

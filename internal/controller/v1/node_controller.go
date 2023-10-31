@@ -2,7 +2,6 @@ package v1
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/gin-gonic/gin"
 	"github.com/issueye/grape/internal/common/controller"
@@ -96,8 +95,6 @@ func (NodeController) Query(ctx *gin.Context) {
 		c.FailBind(err)
 		return
 	}
-
-	fmt.Println(req)
 
 	list, err := logic.Node{}.Get(req)
 	if err != nil {

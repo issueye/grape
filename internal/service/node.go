@@ -42,11 +42,11 @@ func (s *Node) Query(req *repository.QueryNode) ([]*model.NodeInfo, error) {
 	err := s.DataFilter(model.NodeInfo{}.TableName(), req, &list, func(db *gorm.DB) (*gorm.DB, error) {
 		q := db.Order("created_at")
 
-		if req.Conditon != "" {
-			q = q.Where("name like ?", fmt.Sprintf("%%%s%%", req.Conditon))
-			q = q.Where("page_path like ?", fmt.Sprintf("%%%s%%", req.Conditon))
-			q = q.Where("target like ?", fmt.Sprintf("%%%s%%", req.Conditon))
-			q = q.Where("mark like ?", fmt.Sprintf("%%%s%%", req.Conditon))
+		if req.Condition != "" {
+			q = q.Where("name like ?", fmt.Sprintf("%%%s%%", req.Condition)).
+				Or("page_path like ?", fmt.Sprintf("%%%s%%", req.Condition)).
+				Or("target like ?", fmt.Sprintf("%%%s%%", req.Condition)).
+				Or("mark like ?", fmt.Sprintf("%%%s%%", req.Condition))
 		}
 
 		if req.PortId != "" {

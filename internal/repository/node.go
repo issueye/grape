@@ -23,7 +23,7 @@ type ModifyNode struct {
 
 // 查询信息
 type QueryNode struct {
-	Conditon string `json:"condition" form:"condition"` // 条件
-	PortId   string `json:"portId" form:"portId"`       // 端口信息编码
+	Condition string `json:"condition" form:"condition"` // 条件
+	PortId    string `json:"portId" form:"portId"`       // 端口信息编码
 	model.Page
 }

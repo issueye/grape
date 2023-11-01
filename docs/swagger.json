@@ -7,6 +7,221 @@
         "version": "V0.1"
     },
     "paths": {
+        "/api/v1/cert": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "查询证书信息",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "证书信息"
+                ],
+                "summary": "查询证书信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "条件",
+                        "name": "condition",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页数",
+                        "name": "pageNum",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页码",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "总数  由服务器返回回去",
+                        "name": "total",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code: 200 成功",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    },
+                    "500": {
+                        "description": "错误返回内容",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "修改证书信息",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "证书信息"
+                ],
+                "summary": "修改证书信息",
+                "parameters": [
+                    {
+                        "description": "修改证书信息",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/repository.ModifyCert"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code: 200 成功",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    },
+                    "500": {
+                        "description": "错误返回内容",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "创建证书信息",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "证书信息"
+                ],
+                "summary": "创建证书信息",
+                "parameters": [
+                    {
+                        "description": "创建证书信息",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/repository.CreateCert"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code: 200 成功",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    },
+                    "500": {
+                        "description": "错误返回内容",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "删除证书信息",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "证书信息"
+                ],
+                "summary": "删除证书信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code: 200 成功",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    },
+                    "500": {
+                        "description": "错误返回内容",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/cert/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "通过编码查询证书信息",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "证书信息"
+                ],
+                "summary": "通过编码查询证书信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "证书信息编码",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code: 200 成功",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    },
+                    "500": {
+                        "description": "错误返回内容",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/node": {
             "get": {
                 "security": [
@@ -564,6 +779,12 @@
                         "in": "query"
                     },
                     {
+                        "type": "string",
+                        "description": "端口编码",
+                        "name": "portId",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "总数  由服务器返回回去",
                         "name": "total",
@@ -723,6 +944,221 @@
                     {
                         "type": "string",
                         "description": "匹配规则信息编码",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code: 200 成功",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    },
+                    "500": {
+                        "description": "错误返回内容",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/target": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "查询目标地址信息",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "目标地址信息"
+                ],
+                "summary": "查询目标地址信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "条件",
+                        "name": "condition",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页数",
+                        "name": "pageNum",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页码",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "总数  由服务器返回回去",
+                        "name": "total",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code: 200 成功",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    },
+                    "500": {
+                        "description": "错误返回内容",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "修改目标地址信息",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "目标地址信息"
+                ],
+                "summary": "修改目标地址信息",
+                "parameters": [
+                    {
+                        "description": "修改目标地址信息",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/repository.ModifyTarget"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code: 200 成功",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    },
+                    "500": {
+                        "description": "错误返回内容",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "创建目标地址信息",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "目标地址信息"
+                ],
+                "summary": "创建目标地址信息",
+                "parameters": [
+                    {
+                        "description": "创建目标地址信息",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/repository.CreateTarget"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code: 200 成功",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    },
+                    "500": {
+                        "description": "错误返回内容",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "删除目标地址信息",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "目标地址信息"
+                ],
+                "summary": "删除目标地址信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code: 200 成功",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    },
+                    "500": {
+                        "description": "错误返回内容",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/target/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "通过编码查询目标地址信息",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "目标地址信息"
+                ],
+                "summary": "通过编码查询目标地址信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "目标地址信息编码",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -1234,6 +1670,32 @@
                 }
             }
         },
+        "repository.CreateCert": {
+            "type": "object",
+            "required": [
+                "name",
+                "private",
+                "public"
+            ],
+            "properties": {
+                "mark": {
+                    "description": "备注",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "名称",
+                    "type": "string"
+                },
+                "private": {
+                    "description": "私有证书路径",
+                    "type": "string"
+                },
+                "public": {
+                    "description": "公有证书路径",
+                    "type": "string"
+                }
+            }
+        },
         "repository.CreateNode": {
             "type": "object",
             "required": [
@@ -1295,9 +1757,8 @@
         "repository.CreateRule": {
             "type": "object",
             "required": [
-                "matchType",
                 "name",
-                "nodeId",
+                "portId",
                 "target"
             ],
             "properties": {
@@ -1317,8 +1778,28 @@
                     "description": "节点信息编码",
                     "type": "string"
                 },
+                "portId": {
+                    "description": "端口信息编码",
+                    "type": "string"
+                },
                 "target": {
                     "description": "目标服务地址",
+                    "type": "string"
+                }
+            }
+        },
+        "repository.CreateTarget": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "mark": {
+                    "description": "备注",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "目标地址",
                     "type": "string"
                 }
             }
@@ -1353,6 +1834,37 @@
                 },
                 "password": {
                     "description": "密码",
+                    "type": "string"
+                }
+            }
+        },
+        "repository.ModifyCert": {
+            "type": "object",
+            "required": [
+                "id",
+                "name",
+                "private",
+                "public"
+            ],
+            "properties": {
+                "id": {
+                    "description": "编码",
+                    "type": "string"
+                },
+                "mark": {
+                    "description": "备注",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "名称",
+                    "type": "string"
+                },
+                "private": {
+                    "description": "私有证书路径",
+                    "type": "string"
+                },
+                "public": {
+                    "description": "公有证书路径",
                     "type": "string"
                 }
             }
@@ -1431,7 +1943,7 @@
                 "id",
                 "matchType",
                 "name",
-                "nodeId",
+                "portId",
                 "target"
             ],
             "properties": {
@@ -1455,8 +1967,33 @@
                     "description": "节点信息编码",
                     "type": "string"
                 },
+                "portId": {
+                    "description": "端口信息编码",
+                    "type": "string"
+                },
                 "target": {
                     "description": "目标服务地址",
+                    "type": "string"
+                }
+            }
+        },
+        "repository.ModifyTarget": {
+            "type": "object",
+            "required": [
+                "id",
+                "name"
+            ],
+            "properties": {
+                "id": {
+                    "description": "编码",
+                    "type": "string"
+                },
+                "mark": {
+                    "description": "备注",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "目标地址",
                     "type": "string"
                 }
             }

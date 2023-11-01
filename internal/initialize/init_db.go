@@ -21,6 +21,8 @@ func InitData() {
 		&model.PortInfo{},
 		&model.NodeInfo{},
 		&model.RuleInfo{},
+		&model.CertInfo{},
+		&model.TargetInfo{},
 	)
 
 	if err != nil {

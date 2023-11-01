@@ -76,6 +76,25 @@ definitions:
         description: 状态 0 停用 1 启用
         type: integer
     type: object
+  repository.CreateCert:
+    properties:
+      mark:
+        description: 备注
+        type: string
+      name:
+        description: 名称
+        type: string
+      private:
+        description: 私有证书路径
+        type: string
+      public:
+        description: 公有证书路径
+        type: string
+    required:
+    - name
+    - private
+    - public
+    type: object
   repository.CreateNode:
     properties:
       mark:
@@ -132,14 +151,27 @@ definitions:
       nodeId:
         description: 节点信息编码
         type: string
+      portId:
+        description: 端口信息编码
+        type: string
       target:
         description: 目标服务地址
         type: string
     required:
-    - matchType
     - name
-    - nodeId
+    - portId
     - target
+    type: object
+  repository.CreateTarget:
+    properties:
+      mark:
+        description: 备注
+        type: string
+      name:
+        description: 目标地址
+        type: string
+    required:
+    - name
     type: object
   repository.CreateUser:
     properties:
@@ -164,6 +196,29 @@ definitions:
       password:
         description: 密码
         type: string
+    type: object
+  repository.ModifyCert:
+    properties:
+      id:
+        description: 编码
+        type: string
+      mark:
+        description: 备注
+        type: string
+      name:
+        description: 名称
+        type: string
+      private:
+        description: 私有证书路径
+        type: string
+      public:
+        description: 公有证书路径
+        type: string
+    required:
+    - id
+    - name
+    - private
+    - public
     type: object
   repository.ModifyNode:
     properties:
@@ -232,6 +287,9 @@ definitions:
       nodeId:
         description: 节点信息编码
         type: string
+      portId:
+        description: 端口信息编码
+        type: string
       target:
         description: 目标服务地址
         type: string
@@ -239,8 +297,23 @@ definitions:
     - id
     - matchType
     - name
-    - nodeId
+    - portId
     - target
+    type: object
+  repository.ModifyTarget:
+    properties:
+      id:
+        description: 编码
+        type: string
+      mark:
+        description: 备注
+        type: string
+      name:
+        description: 目标地址
+        type: string
+    required:
+    - id
+    - name
     type: object
   repository.ModifyUser:
     properties:
@@ -266,6 +339,141 @@ info:
   title: 代理管理服务
   version: V0.1
 paths:
+  /api/v1/cert:
+    delete:
+      description: 删除证书信息
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'code: 200 成功'
+          schema:
+            $ref: '#/definitions/controller.Base'
+        "500":
+          description: 错误返回内容
+          schema:
+            $ref: '#/definitions/controller.Base'
+      security:
+      - ApiKeyAuth: []
+      summary: 删除证书信息
+      tags:
+      - 证书信息
+    get:
+      description: 查询证书信息
+      parameters:
+      - description: 条件
+        in: query
+        name: condition
+        type: string
+      - description: 页数
+        in: query
+        name: pageNum
+        type: integer
+      - description: 页码
+        in: query
+        name: pageSize
+        type: integer
+      - description: 总数  由服务器返回回去
+        in: query
+        name: total
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'code: 200 成功'
+          schema:
+            $ref: '#/definitions/controller.Base'
+        "500":
+          description: 错误返回内容
+          schema:
+            $ref: '#/definitions/controller.Base'
+      security:
+      - ApiKeyAuth: []
+      summary: 查询证书信息
+      tags:
+      - 证书信息
+    post:
+      description: 创建证书信息
+      parameters:
+      - description: 创建证书信息
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/repository.CreateCert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'code: 200 成功'
+          schema:
+            $ref: '#/definitions/controller.Base'
+        "500":
+          description: 错误返回内容
+          schema:
+            $ref: '#/definitions/controller.Base'
+      security:
+      - ApiKeyAuth: []
+      summary: 创建证书信息
+      tags:
+      - 证书信息
+    put:
+      description: 修改证书信息
+      parameters:
+      - description: 修改证书信息
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/repository.ModifyCert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'code: 200 成功'
+          schema:
+            $ref: '#/definitions/controller.Base'
+        "500":
+          description: 错误返回内容
+          schema:
+            $ref: '#/definitions/controller.Base'
+      security:
+      - ApiKeyAuth: []
+      summary: 修改证书信息
+      tags:
+      - 证书信息
+  /api/v1/cert/{id}:
+    get:
+      description: 通过编码查询证书信息
+      parameters:
+      - description: 证书信息编码
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'code: 200 成功'
+          schema:
+            $ref: '#/definitions/controller.Base'
+        "500":
+          description: 错误返回内容
+          schema:
+            $ref: '#/definitions/controller.Base'
+      security:
+      - ApiKeyAuth: []
+      summary: 通过编码查询证书信息
+      tags:
+      - 证书信息
   /api/v1/node:
     delete:
       description: 删除节点信息
@@ -634,6 +842,10 @@ paths:
         in: query
         name: pageSize
         type: integer
+      - description: 端口编码
+        in: query
+        name: portId
+        type: string
       - description: 总数  由服务器返回回去
         in: query
         name: total
@@ -729,6 +941,141 @@ paths:
       summary: 通过编码查询匹配规则信息
       tags:
       - 匹配规则信息
+  /api/v1/target:
+    delete:
+      description: 删除目标地址信息
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'code: 200 成功'
+          schema:
+            $ref: '#/definitions/controller.Base'
+        "500":
+          description: 错误返回内容
+          schema:
+            $ref: '#/definitions/controller.Base'
+      security:
+      - ApiKeyAuth: []
+      summary: 删除目标地址信息
+      tags:
+      - 目标地址信息
+    get:
+      description: 查询目标地址信息
+      parameters:
+      - description: 条件
+        in: query
+        name: condition
+        type: string
+      - description: 页数
+        in: query
+        name: pageNum
+        type: integer
+      - description: 页码
+        in: query
+        name: pageSize
+        type: integer
+      - description: 总数  由服务器返回回去
+        in: query
+        name: total
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'code: 200 成功'
+          schema:
+            $ref: '#/definitions/controller.Base'
+        "500":
+          description: 错误返回内容
+          schema:
+            $ref: '#/definitions/controller.Base'
+      security:
+      - ApiKeyAuth: []
+      summary: 查询目标地址信息
+      tags:
+      - 目标地址信息
+    post:
+      description: 创建目标地址信息
+      parameters:
+      - description: 创建目标地址信息
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/repository.CreateTarget'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'code: 200 成功'
+          schema:
+            $ref: '#/definitions/controller.Base'
+        "500":
+          description: 错误返回内容
+          schema:
+            $ref: '#/definitions/controller.Base'
+      security:
+      - ApiKeyAuth: []
+      summary: 创建目标地址信息
+      tags:
+      - 目标地址信息
+    put:
+      description: 修改目标地址信息
+      parameters:
+      - description: 修改目标地址信息
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/repository.ModifyTarget'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'code: 200 成功'
+          schema:
+            $ref: '#/definitions/controller.Base'
+        "500":
+          description: 错误返回内容
+          schema:
+            $ref: '#/definitions/controller.Base'
+      security:
+      - ApiKeyAuth: []
+      summary: 修改目标地址信息
+      tags:
+      - 目标地址信息
+  /api/v1/target/{id}:
+    get:
+      description: 通过编码查询目标地址信息
+      parameters:
+      - description: 目标地址信息编码
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'code: 200 成功'
+          schema:
+            $ref: '#/definitions/controller.Base'
+        "500":
+          description: 错误返回内容
+          schema:
+            $ref: '#/definitions/controller.Base'
+      security:
+      - ApiKeyAuth: []
+      summary: 通过编码查询目标地址信息
+      tags:
+      - 目标地址信息
   /api/v1/user:
     post:
       description: 添加用户信息

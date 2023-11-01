@@ -31,6 +31,8 @@ func InitRouter(r *gin.Engine) {
 		NewPortRouter(),
 		NewNodeRouter(),
 		NewRouteRouter(),
+		NewTargetRouter(),
+		NewCertRouter(),
 	)
 
 }

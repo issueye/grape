@@ -93,14 +93,17 @@ definitions:
       portId:
         description: 端口信息编码
         type: string
+      target:
+        description: 目标服务地址
+        type: string
     required:
     - name
-    - nodeType
     - portId
+    - target
     type: object
   repository.CreatePort:
     properties:
-      certCode:
+      certId:
         description: 证书编码
         type: string
       isTLS:
@@ -115,7 +118,7 @@ definitions:
     required:
     - port
     type: object
-  repository.CreateRoute:
+  repository.CreateRule:
     properties:
       mark:
         description: 备注
@@ -182,15 +185,18 @@ definitions:
       portId:
         description: 端口信息编码
         type: string
+      target:
+        description: 目标服务地址
+        type: string
     required:
     - id
     - name
-    - nodeType
     - portId
+    - target
     type: object
   repository.ModifyPort:
     properties:
-      certCode:
+      certId:
         description: 证书编码
         type: string
       id:
@@ -209,7 +215,7 @@ definitions:
     - id
     - port
     type: object
-  repository.ModifyRoute:
+  repository.ModifyRule:
     properties:
       id:
         description: 编码
@@ -534,6 +540,31 @@ paths:
       summary: 通过编码查询端口信息
       tags:
       - 端口信息
+  /api/v1/port/reload/{id}:
+    put:
+      description: 重启端口对应的服务
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'code: 200 成功'
+          schema:
+            $ref: '#/definitions/controller.Base'
+        "500":
+          description: 错误返回内容
+          schema:
+            $ref: '#/definitions/controller.Base'
+      security:
+      - ApiKeyAuth: []
+      summary: 重启端口对应的服务
+      tags:
+      - 端口信息
   /api/v1/port/state/{id}:
     put:
       description: 修改端口使用状态
@@ -559,9 +590,9 @@ paths:
       summary: 修改端口使用状态
       tags:
       - 端口信息
-  /api/v1/route:
+  /api/v1/rule:
     delete:
-      description: 删除路由匹配信息
+      description: 删除匹配规则信息
       parameters:
       - description: id
         in: path
@@ -581,11 +612,11 @@ paths:
             $ref: '#/definitions/controller.Base'
       security:
       - ApiKeyAuth: []
-      summary: 删除路由匹配信息
+      summary: 删除匹配规则信息
       tags:
-      - 路由匹配信息
+      - 匹配规则信息
     get:
-      description: 查询路由匹配信息
+      description: 查询匹配规则信息
       parameters:
       - description: 条件
         in: query
@@ -620,18 +651,18 @@ paths:
             $ref: '#/definitions/controller.Base'
       security:
       - ApiKeyAuth: []
-      summary: 查询路由匹配信息
+      summary: 查询匹配规则信息
       tags:
-      - 路由匹配信息
+      - 匹配规则信息
     post:
-      description: 创建路由匹配信息
+      description: 创建匹配规则信息
       parameters:
-      - description: 创建路由匹配信息
+      - description: 创建匹配规则信息
         in: body
         name: data
         required: true
         schema:
-          $ref: '#/definitions/repository.CreateRoute'
+          $ref: '#/definitions/repository.CreateRule'
       produces:
       - application/json
       responses:
@@ -645,18 +676,18 @@ paths:
             $ref: '#/definitions/controller.Base'
       security:
       - ApiKeyAuth: []
-      summary: 创建路由匹配信息
+      summary: 创建匹配规则信息
       tags:
-      - 路由匹配信息
+      - 匹配规则信息
     put:
-      description: 修改路由匹配信息
+      description: 修改匹配规则信息
       parameters:
-      - description: 修改路由匹配信息
+      - description: 修改匹配规则信息
         in: body
         name: data
         required: true
         schema:
-          $ref: '#/definitions/repository.ModifyRoute'
+          $ref: '#/definitions/repository.ModifyRule'
       produces:
       - application/json
       responses:
@@ -670,14 +701,14 @@ paths:
             $ref: '#/definitions/controller.Base'
       security:
       - ApiKeyAuth: []
-      summary: 修改路由匹配信息
+      summary: 修改匹配规则信息
       tags:
-      - 路由匹配信息
-  /api/v1/route/{id}:
+      - 匹配规则信息
+  /api/v1/rule/{id}:
     get:
-      description: 通过编码查询路由匹配信息
+      description: 通过编码查询匹配规则信息
       parameters:
-      - description: 路由匹配信息编码
+      - description: 匹配规则信息编码
         in: path
         name: id
         required: true
@@ -695,9 +726,9 @@ paths:
             $ref: '#/definitions/controller.Base'
       security:
       - ApiKeyAuth: []
-      summary: 通过编码查询路由匹配信息
+      summary: 通过编码查询匹配规则信息
       tags:
-      - 路由匹配信息
+      - 匹配规则信息
   /api/v1/user:
     post:
       description: 添加用户信息

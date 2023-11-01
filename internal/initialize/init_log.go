@@ -16,5 +16,6 @@ func InitLog() {
 	logConf.MaxAge = config.GetParam(config.CfgLogMaxAge, "10").Int()
 	logConf.Compress = config.GetParam(config.CfgLogCompress, "true").Bool()
 	logConf.Level = config.GetParam(config.CfgLogLevel, "-1").Int()
+	logConf.Mode = logger.LOM_DEBUG
 	global.Log, global.Logger = logger.InitLogger(logConf)
 }

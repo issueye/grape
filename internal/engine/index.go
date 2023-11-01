@@ -54,13 +54,25 @@ func StopServer(portId string, port int) {
 	}
 }
 
-func RunServer(portId string, port int) {
-	global.Log.Infof("[%d]端口号启用服务...", port)
-
+func runServer(portId string, port int) {
 	engine := gin.Default()
 	engine.GET("/", func(ctx *gin.Context) {
 		c := controller.New(ctx)
 		c.SuccessByMsgf("端口号[%d]返回消息", port)
+	})
+
+	proxy := ReverseProxyHttpHandler("http://127.0.0.1:10070")
+
+	engine.POST("/login", func(ctx *gin.Context) {
+		proxy.ServeHTTP(ctx.Writer, ctx.Request)
+	})
+
+	engine.GET("/page/vueRouter", func(ctx *gin.Context) {
+		proxy.ServeHTTP(ctx.Writer, ctx.Request)
+	})
+
+	engine.Any("/granada/api/v1/*path", func(ctx *gin.Context) {
+		proxy.ServeHTTP(ctx.Writer, ctx.Request)
 	})
 
 	LoadNode(portId, engine)
@@ -73,7 +85,14 @@ func RunServer(portId string, port int) {
 	// 存放到 map 中
 	Servers.Store(portId, server)
 
-	go func() {
-		server.ListenAndServe()
-	}()
+	err := server.ListenAndServe()
+	if err != nil {
+		global.Log.Errorf("启动服务失败 %s", err.Error())
+	}
+}
+
+func RunServer(portId string, port int) {
+	global.Log.Infof("[%d]端口号启用服务...", port)
+
+	go runServer(portId, port)
 }

@@ -8,22 +8,23 @@ import (
 
 // RouteInfo
 // 路由匹配信息
-type RouteInfo struct {
+type RuleInfo struct {
 	Base
 	Name      string `gorm:"column:name;type:nvarchar(300);comment:匹配路由名称;" json:"name"`                                   // 匹配路由名称
-	NodeId    string `gorm:"column:node_id;type:nvarchar(100);comment:端口信息编码;" json:"nodeId"`                              // 节点信息
+	PortId    string `gorm:"column:port_id;type:nvarchar(100);comment:端口信息编码;" json:"portId"`                              // 端口信息编码
+	NodeId    string `gorm:"column:node_id;type:nvarchar(100);comment:节点信息编码;" json:"nodeId"`                              // 节点编码
 	MatchType uint   `gorm:"column:match_type;type:int;comment:匹配模式 0 所有内容匹配 1 正则匹配 2 包含匹配 3 header 匹配;" json:"matchType"` // 匹配模式 0 所有内容匹配 1 正则匹配 2 包含匹配 3 header 匹配
 	Mark      string `gorm:"column:mark;type:nvarchar(2000);comment:备注;" json:"mark"`                                      // 备注
 }
 
 // TableName
 // 表名称
-func (RouteInfo) TableName() string {
-	return "route_info"
+func (RuleInfo) TableName() string {
+	return "rule_info"
 }
 
-func (RouteInfo) New() *RouteInfo {
-	return &RouteInfo{
+func (RuleInfo) New() *RuleInfo {
+	return &RuleInfo{
 		Base: Base{
 			ID: strconv.FormatInt(utils.GenID(), 10),
 		},

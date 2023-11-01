@@ -9,24 +9,24 @@ import (
 	"github.com/issueye/grape/internal/repository"
 )
 
-type RouteController struct{}
+type RuleController struct{}
 
 // Create doc
 //
-//	@tags			路由匹配信息
-//	@Summary		创建路由匹配信息
-//	@Description	创建路由匹配信息
+//	@tags			匹配规则信息
+//	@Summary		创建匹配规则信息
+//	@Description	创建匹配规则信息
 //	@Produce		json
-//	@Param			data	body		repository.CreateRoute	true	"创建路由匹配信息"
+//	@Param			data	body		repository.CreateRule	true	"创建匹配规则信息"
 //	@Success		200		{object}	controller.Base			"code: 200 成功"
 //	@Failure		500		{object}	controller.Base			"错误返回内容"
-//	@Router			/api/v1/route [post]
+//	@Router			/api/v1/rule [post]
 //	@Security		ApiKeyAuth
-func (RouteController) Create(ctx *gin.Context) {
+func (RuleController) Create(ctx *gin.Context) {
 	c := controller.New(ctx)
 
 	// 绑定请求数据
-	req := new(repository.CreateRoute)
+	req := new(repository.CreateRule)
 	err := c.Bind(req)
 	if err != nil {
 		c.FailBind(err)
@@ -45,20 +45,20 @@ func (RouteController) Create(ctx *gin.Context) {
 
 // Modify doc
 //
-//	@tags			路由匹配信息
-//	@Summary		修改路由匹配信息
-//	@Description	修改路由匹配信息
+//	@tags			匹配规则信息
+//	@Summary		修改匹配规则信息
+//	@Description	修改匹配规则信息
 //	@Produce		json
-//	@Param			data	body		repository.ModifyRoute	true	"修改路由匹配信息"
+//	@Param			data	body		repository.ModifyRule	true	"修改匹配规则信息"
 //	@Success		200		{object}	controller.Base			"code: 200 成功"
 //	@Failure		500		{object}	controller.Base			"错误返回内容"
-//	@Router			/api/v1/route [put]
+//	@Router			/api/v1/rule [put]
 //	@Security		ApiKeyAuth
-func (RouteController) Modify(ctx *gin.Context) {
+func (RuleController) Modify(ctx *gin.Context) {
 	c := controller.New(ctx)
 
 	// 绑定请求数据
-	req := new(repository.ModifyRoute)
+	req := new(repository.ModifyRule)
 	err := c.Bind(req)
 	if err != nil {
 		c.FailBind(err)
@@ -76,20 +76,20 @@ func (RouteController) Modify(ctx *gin.Context) {
 
 // Query doc
 //
-//	@tags			路由匹配信息
-//	@Summary		查询路由匹配信息
-//	@Description	查询路由匹配信息
+//	@tags			匹配规则信息
+//	@Summary		查询匹配规则信息
+//	@Description	查询匹配规则信息
 //	@Produce		json
-//	@Param			params	query		repository.QueryRoute	true	"查询条件"
+//	@Param			params	query		repository.QueryRule	true	"查询条件"
 //	@Success		200		{object}	controller.Base			"code: 200 成功"
 //	@Failure		500		{object}	controller.Base			"错误返回内容"
-//	@Router			/api/v1/route [get]
+//	@Router			/api/v1/rule [get]
 //	@Security		ApiKeyAuth
-func (RouteController) Query(ctx *gin.Context) {
+func (RuleController) Query(ctx *gin.Context) {
 	c := controller.New(ctx)
 
 	// 绑定请求数据
-	req := new(repository.QueryRoute)
+	req := new(repository.QueryRule)
 	err := c.Bind(req)
 	if err != nil {
 		c.FailBind(err)
@@ -107,16 +107,16 @@ func (RouteController) Query(ctx *gin.Context) {
 
 // GetById doc
 //
-//	@tags			路由匹配信息
-//	@Summary		通过编码查询路由匹配信息
-//	@Description	通过编码查询路由匹配信息
+//	@tags			匹配规则信息
+//	@Summary		通过编码查询匹配规则信息
+//	@Description	通过编码查询匹配规则信息
 //	@Produce		json
-//	@Param			id	path		string			true	"路由匹配信息编码"
+//	@Param			id	path		string			true	"匹配规则信息编码"
 //	@Success		200	{object}	controller.Base	"code: 200 成功"
 //	@Failure		500	{object}	controller.Base	"错误返回内容"
-//	@Router			/api/v1/route/{id} [get]
+//	@Router			/api/v1/rule/{id} [get]
 //	@Security		ApiKeyAuth
-func (RouteController) GetById(ctx *gin.Context) {
+func (RuleController) GetById(ctx *gin.Context) {
 	c := controller.New(ctx)
 
 	id := c.Param("id")
@@ -136,16 +136,16 @@ func (RouteController) GetById(ctx *gin.Context) {
 
 // Del doc
 //
-//	@tags			路由匹配信息
-//	@Summary		删除路由匹配信息
-//	@Description	删除路由匹配信息
+//	@tags			匹配规则信息
+//	@Summary		删除匹配规则信息
+//	@Description	删除匹配规则信息
 //	@Produce		json
 //	@Param			id	path		string			true	"id"
 //	@Success		200	{object}	controller.Base	"code: 200 成功"
 //	@Failure		500	{object}	controller.Base	"错误返回内容"
-//	@Router			/api/v1/route [delete]
+//	@Router			/api/v1/rule [delete]
 //	@Security		ApiKeyAuth
-func (RouteController) Del(ctx *gin.Context) {
+func (RuleController) Del(ctx *gin.Context) {
 	c := controller.New(ctx)
 
 	id := c.Param("id")

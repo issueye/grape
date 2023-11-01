@@ -7,13 +7,13 @@ import (
 
 type RouteRouter struct {
 	Name    string
-	control *v1.RouteController
+	control *v1.RuleController
 }
 
 func NewRouteRouter() *RouteRouter {
 	return &RouteRouter{
-		Name:    "route",
-		control: &v1.RouteController{},
+		Name:    "rule",
+		control: &v1.RuleController{},
 	}
 }
 

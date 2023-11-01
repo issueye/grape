@@ -411,6 +411,46 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/port/reload/{id}": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "重启端口对应的服务",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "端口信息"
+                ],
+                "summary": "重启端口对应的服务",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code: 200 成功",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    },
+                    "500": {
+                        "description": "错误返回内容",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/port/state/{id}": {
             "put": {
                 "security": [
@@ -491,21 +531,21 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/route": {
+        "/api/v1/rule": {
             "get": {
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "查询路由匹配信息",
+                "description": "查询匹配规则信息",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "路由匹配信息"
+                    "匹配规则信息"
                 ],
-                "summary": "查询路由匹配信息",
+                "summary": "查询匹配规则信息",
                 "parameters": [
                     {
                         "type": "string",
@@ -559,22 +599,22 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "修改路由匹配信息",
+                "description": "修改匹配规则信息",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "路由匹配信息"
+                    "匹配规则信息"
                 ],
-                "summary": "修改路由匹配信息",
+                "summary": "修改匹配规则信息",
                 "parameters": [
                     {
-                        "description": "修改路由匹配信息",
+                        "description": "修改匹配规则信息",
                         "name": "data",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/repository.ModifyRoute"
+                            "$ref": "#/definitions/repository.ModifyRule"
                         }
                     }
                 ],
@@ -599,22 +639,22 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "创建路由匹配信息",
+                "description": "创建匹配规则信息",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "路由匹配信息"
+                    "匹配规则信息"
                 ],
-                "summary": "创建路由匹配信息",
+                "summary": "创建匹配规则信息",
                 "parameters": [
                     {
-                        "description": "创建路由匹配信息",
+                        "description": "创建匹配规则信息",
                         "name": "data",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/repository.CreateRoute"
+                            "$ref": "#/definitions/repository.CreateRule"
                         }
                     }
                 ],
@@ -639,14 +679,14 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "删除路由匹配信息",
+                "description": "删除匹配规则信息",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "路由匹配信息"
+                    "匹配规则信息"
                 ],
-                "summary": "删除路由匹配信息",
+                "summary": "删除匹配规则信息",
                 "parameters": [
                     {
                         "type": "string",
@@ -672,25 +712,25 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/route/{id}": {
+        "/api/v1/rule/{id}": {
             "get": {
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "通过编码查询路由匹配信息",
+                "description": "通过编码查询匹配规则信息",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "路由匹配信息"
+                    "匹配规则信息"
                 ],
-                "summary": "通过编码查询路由匹配信息",
+                "summary": "通过编码查询匹配规则信息",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "路由匹配信息编码",
+                        "description": "匹配规则信息编码",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -1206,8 +1246,8 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "name",
-                "nodeType",
-                "portId"
+                "portId",
+                "target"
             ],
             "properties": {
                 "mark": {
@@ -1229,6 +1269,10 @@ const docTemplate = `{
                 "portId": {
                     "description": "端口信息编码",
                     "type": "string"
+                },
+                "target": {
+                    "description": "目标服务地址",
+                    "type": "string"
                 }
             }
         },
@@ -1238,7 +1282,7 @@ const docTemplate = `{
                 "port"
             ],
             "properties": {
-                "certCode": {
+                "certId": {
                     "description": "证书编码",
                     "type": "string"
                 },
@@ -1256,7 +1300,7 @@ const docTemplate = `{
                 }
             }
         },
-        "repository.CreateRoute": {
+        "repository.CreateRule": {
             "type": "object",
             "required": [
                 "matchType",
@@ -1326,8 +1370,8 @@ const docTemplate = `{
             "required": [
                 "id",
                 "name",
-                "nodeType",
-                "portId"
+                "portId",
+                "target"
             ],
             "properties": {
                 "id": {
@@ -1353,6 +1397,10 @@ const docTemplate = `{
                 "portId": {
                     "description": "端口信息编码",
                     "type": "string"
+                },
+                "target": {
+                    "description": "目标服务地址",
+                    "type": "string"
                 }
             }
         },
@@ -1363,7 +1411,7 @@ const docTemplate = `{
                 "port"
             ],
             "properties": {
-                "certCode": {
+                "certId": {
                     "description": "证书编码",
                     "type": "string"
                 },
@@ -1385,7 +1433,7 @@ const docTemplate = `{
                 }
             }
         },
-        "repository.ModifyRoute": {
+        "repository.ModifyRule": {
             "type": "object",
             "required": [
                 "id",

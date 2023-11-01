@@ -20,7 +20,7 @@ func InitData() {
 		&model.User{},
 		&model.PortInfo{},
 		&model.NodeInfo{},
-		&model.RouteInfo{},
+		&model.RuleInfo{},
 	)
 
 	if err != nil {

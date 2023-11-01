@@ -27,16 +27,15 @@ func LoadNode(portId string, engine *gin.Engine) {
 
 			node := nodeElem.Name
 			target := nodeElem.Target
+			proxy := ReverseProxyHttpHandler(target)
 			rg := engine.Group(node)
 			rg.Any("*path", func(ctx *gin.Context) {
 				path := ctx.Param("path")
 				fmt.Println("path", path, node)
-
-				fmt.Println("path[:5]", path[:5])
 				if path[:5] == "/web/" {
 					if strings.Contains(path, "/web/isInitServer") {
 						ctx.Request.URL.Path = "/isInitServer"
-						ReverseProxyHttpHandler(target).ServeHTTP(ctx.Writer, ctx.Request)
+						proxy.ServeHTTP(ctx.Writer, ctx.Request)
 						return
 					}
 
@@ -48,9 +47,9 @@ func LoadNode(portId string, engine *gin.Engine) {
 					return
 				}
 
-				ctx.JSON(200, map[string]any{
-					"message": "你好",
-				})
+				// 处理节点名称
+				ctx.Request.URL.Path = path
+				proxy.ServeHTTP(ctx.Writer, ctx.Request)
 			})
 
 			// rg.Any("*path", ReverseProxyHandler(nodeElem.Target))

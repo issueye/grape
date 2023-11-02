@@ -68,7 +68,7 @@ func (s *Rule) Modify(data *repository.ModifyRule) error {
 	updateData := make(map[string]any)
 	updateData["name"] = data.Name
 	updateData["match_type"] = data.MatchType
-	updateData["target"] = data.Target
+	updateData["target_id"] = data.TargetId
 	updateData["node_id"] = data.NodeId
 	updateData["port_id"] = data.PortId
 	updateData["mark"] = data.Mark

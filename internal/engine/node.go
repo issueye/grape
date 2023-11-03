@@ -23,8 +23,6 @@ func LoadNode(portId string, engine *gin.Engine) {
 
 	for _, nodeElem := range nodeList {
 		if nodeElem.NodeType == 1 {
-			// engine.Any(fmt.Sprintf("%s/*path", nodeElem.Name), ReverseProxyHandler(nodeElem.Target))
-
 			node := nodeElem.Name
 			target := nodeElem.Target
 			proxy := ReverseProxyHttpHandler(target)

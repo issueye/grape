@@ -9,6 +9,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/issueye/grape/internal/common/controller"
 	"github.com/issueye/grape/internal/global"
+	"github.com/issueye/grape/internal/repository"
+	"github.com/issueye/grape/internal/service"
 )
 
 // 存放 http server 对象
@@ -61,19 +63,38 @@ func runServer(portId string, port int) {
 		c.SuccessByMsgf("端口号[%d]返回消息", port)
 	})
 
-	proxy := ReverseProxyHttpHandler("http://127.0.0.1:10070")
-
-	engine.POST("/login", func(ctx *gin.Context) {
-		proxy.ServeHTTP(ctx.Writer, ctx.Request)
+	ruleList, err := service.NewRule().Query(&repository.QueryRule{
+		PortId: portId,
 	})
 
-	engine.GET("/page/vueRouter", func(ctx *gin.Context) {
-		proxy.ServeHTTP(ctx.Writer, ctx.Request)
-	})
+	if err != nil {
+		return
+	}
 
-	engine.Any("/granada/api/v1/*path", func(ctx *gin.Context) {
-		proxy.ServeHTTP(ctx.Writer, ctx.Request)
-	})
+	for _, rule := range ruleList {
+		target, err := service.NewTarget().FindById(rule.TargetId)
+		if err != nil {
+			continue
+		}
+
+		proxy := ReverseProxyHttpHandler(target.Name)
+
+		engine.Any(rule.Name, func(ctx *gin.Context) {
+			if rule.TargetRoute != "" {
+				ctx.Request.URL.Path = rule.TargetRoute
+			}
+
+			proxy.ServeHTTP(ctx.Writer, ctx.Request)
+		})
+	}
+
+	// engine.GET("/page/vueRouter", func(ctx *gin.Context) {
+	// 	proxy.ServeHTTP(ctx.Writer, ctx.Request)
+	// })
+
+	// engine.Any("/granada/api/v1/*path", func(ctx *gin.Context) {
+	// 	proxy.ServeHTTP(ctx.Writer, ctx.Request)
+	// })
 
 	LoadNode(portId, engine)
 
@@ -85,7 +106,7 @@ func runServer(portId string, port int) {
 	// 存放到 map 中
 	Servers.Store(portId, server)
 
-	err := server.ListenAndServe()
+	err = server.ListenAndServe()
 	if err != nil {
 		global.Log.Errorf("启动服务失败 %s", err.Error())
 	}

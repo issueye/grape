@@ -26,9 +26,12 @@ func (s *Rule) Create(data *repository.CreateRule) error {
 	info := model.RuleInfo{}.New()
 	info.Name = data.Name
 	info.MatchType = data.MatchType
+	info.Method = data.Method
 	info.Mark = data.Mark
 	info.NodeId = data.NodeId
 	info.PortId = data.PortId
+	info.TargetId = data.TargetId
+	info.TargetRoute = data.TargetRoute
 
 	return s.Db.Model(info).Create(info).Error
 }
@@ -38,7 +41,27 @@ func (s *Rule) Create(data *repository.CreateRule) error {
 func (s *Rule) Query(req *repository.QueryRule) ([]*repository.QueryRuleRes, error) {
 	list := make([]*repository.QueryRuleRes, 0)
 
-	sqlStr := "select rule.*, port from rule_info rule, port_info port where rule.port_id = port.id"
+	sqlStr := `
+	SELECT a.*,
+       t.name target
+  FROM (
+           SELECT a.*,
+                  n.name node
+             FROM (
+                      SELECT r.*,
+                             p.port
+                        FROM rule_info r
+                             LEFT JOIN
+                             port_info p ON r.port_id = p.id
+                  )
+                  a
+                  LEFT JOIN
+                  node_info n ON a.node_id = n.id
+       )
+       a
+       LEFT JOIN
+       target_info t ON a.target_id = t.id
+	`
 
 	err := s.DataFilter(fmt.Sprintf("(%s)tb", sqlStr), req, &list, func(db *gorm.DB) (*gorm.DB, error) {
 		q := db.Order("created_at")
@@ -68,7 +91,9 @@ func (s *Rule) Modify(data *repository.ModifyRule) error {
 	updateData := make(map[string]any)
 	updateData["name"] = data.Name
 	updateData["match_type"] = data.MatchType
+	updateData["method"] = data.Method
 	updateData["target_id"] = data.TargetId
+	updateData["target_route"] = data.TargetRoute
 	updateData["node_id"] = data.NodeId
 	updateData["port_id"] = data.PortId
 	updateData["mark"] = data.Mark

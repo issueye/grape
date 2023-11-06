@@ -78,7 +78,6 @@ func runServer(portId string, port int) {
 		}
 
 		proxy := ReverseProxyHttpHandler(target.Name)
-
 		engine.Any(rule.Name, func(ctx *gin.Context) {
 			if rule.TargetRoute != "" {
 				ctx.Request.URL.Path = rule.TargetRoute
@@ -87,14 +86,6 @@ func runServer(portId string, port int) {
 			proxy.ServeHTTP(ctx.Writer, ctx.Request)
 		})
 	}
-
-	// engine.GET("/page/vueRouter", func(ctx *gin.Context) {
-	// 	proxy.ServeHTTP(ctx.Writer, ctx.Request)
-	// })
-
-	// engine.Any("/granada/api/v1/*path", func(ctx *gin.Context) {
-	// 	proxy.ServeHTTP(ctx.Writer, ctx.Request)
-	// })
 
 	LoadNode(portId, engine)
 

@@ -24,4 +24,5 @@ func (router NodeRouter) Register(group *gin.RouterGroup) {
 	f.POST("", router.control.Create)
 	f.PUT("", router.control.Modify)
 	f.DELETE(":id", router.control.Del)
+	f.POST("upload", router.control.UploadFile)
 }

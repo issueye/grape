@@ -72,6 +72,12 @@ func (s *Node) Modify(data *repository.ModifyNode) error {
 	return s.Db.Model(&model.NodeInfo{}).Where("id = ?", data.ID).Updates(updateData).Error
 }
 
+// Modify
+// 修改信息
+func (s *Node) ModifyByMap(id string, datas map[string]any) error {
+	return s.Db.Model(&model.NodeInfo{}).Where("id = ?", id).Updates(datas).Error
+}
+
 // Del
 // 删除
 func (s *Node) Del(id string) error {

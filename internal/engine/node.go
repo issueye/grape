@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"path/filepath"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -22,38 +23,45 @@ func LoadNode(portId string, engine *gin.Engine) {
 	}
 
 	for _, nodeElem := range nodeList {
+		dir := filepath.Join("runtime", "static", "pages", nodeElem.PortId, nodeElem.Name, nodeElem.FileName)
+		fmt.Println("静态文件路径：", dir)
+		handler := http.FileServer(http.Dir(dir))
+		node := nodeElem.Name
+		target := nodeElem.Target
+		pagePath := nodeElem.PagePath
+		fileName := nodeElem.FileName
+		proxy := ReverseProxyHttpHandler(target)
+		rg := engine.Group(node)
 		if nodeElem.NodeType == 1 {
-			node := nodeElem.Name
-			target := nodeElem.Target
-			proxy := ReverseProxyHttpHandler(target)
-			rg := engine.Group(node)
 			rg.Any("*path", func(ctx *gin.Context) {
 				path := ctx.Param("path")
 				fmt.Println("path", path, node)
-				if path[:5] == "/web/" {
-					if strings.Contains(path, "/web/isInitServer") {
-						ctx.Request.URL.Path = "/isInitServer"
-						proxy.ServeHTTP(ctx.Writer, ctx.Request)
+				p := fmt.Sprintf("/%s/%s/", fileName, "web")
+				fmt.Println("p", p)
+				if len(path) >= len(p) {
+					if path[:len(p)] == p {
+						if strings.Contains(path, "/web/isInitServer") {
+							ctx.Request.URL.Path = "/isInitServer"
+							proxy.ServeHTTP(ctx.Writer, ctx.Request)
+							return
+						}
+
+						r, err := url.JoinPath(pagePath, "web")
+						if err != nil {
+							global.Log.Errorf("路由拼接失败 %s", err.Error())
+							return
+						}
+
+						fmt.Println("staticRouterPath", r)
+						http.StripPrefix(r, handler).ServeHTTP(ctx.Writer, ctx.Request)
 						return
 					}
-
-					dir := fmt.Sprintf("./runtime/static/%s", node)
-					fmt.Println("dir", dir)
-					staticRouterPath := fmt.Sprintf("/%s/web/", node)
-					fmt.Println("staticRouterPath", staticRouterPath)
-					http.StripPrefix(staticRouterPath, http.FileServer(http.Dir(dir))).ServeHTTP(ctx.Writer, ctx.Request)
-					return
 				}
 
 				// 处理节点名称
 				ctx.Request.URL.Path = path
 				proxy.ServeHTTP(ctx.Writer, ctx.Request)
 			})
-
-			// rg.Any("*path", ReverseProxyHandler(nodeElem.Target))
-			// rg.Static("/web/", fmt.Sprintf("./runtime/static/%s", nodeElem.Name))
-		} else {
-			// engine.Any(fmt.Sprintf("%s/*path", nodeElem.Name), ReverseProxyHandler(nodeElem.Target))
 		}
 	}
 }

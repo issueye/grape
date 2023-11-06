@@ -25,6 +25,13 @@ func (Node) Modify(req *repository.ModifyNode) error {
 	return NodeService.Modify(req)
 }
 
+// Modify
+// 修改信息 不包含状态
+func (Node) ModifyByMap(id string, datas map[string]any) error {
+	NodeService := service.NewNode()
+	return NodeService.ModifyByMap(id, datas)
+}
+
 // Create
 // 创建数据
 func (Node) Create(req *repository.CreateNode) error {

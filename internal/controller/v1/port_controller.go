@@ -149,6 +149,13 @@ func (PortController) Reload(ctx *gin.Context) {
 		return
 	}
 
+	// 将状态修改为启动
+	err = logic.Port{}.Start(id)
+	if err != nil {
+		c.FailByMsgf("启用端口[%d]失败 %s", info.Port, err.Error())
+		return
+	}
+
 	ch := &global.Port{Id: info.ID, Port: info.Port, Action: global.AT_RELOAD}
 	global.PortChan <- ch
 

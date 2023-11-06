@@ -21,7 +21,7 @@ func (router PortRouter) Register(group *gin.RouterGroup) {
 	f := group.Group(router.Name)
 	f.GET("", router.control.Query)
 	f.GET(":id", router.control.GetById)
-	f.GET("reload/:id", router.control.Reload)
+	f.PUT("reload/:id", router.control.Reload)
 	f.POST("", router.control.Create)
 	f.PUT("", router.control.Modify)
 	f.PUT("state/:id", router.control.ModifyState)

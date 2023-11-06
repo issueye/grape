@@ -21,21 +21,21 @@ func (Port) GetById(id string) (*model.PortInfo, error) {
 // Modify
 // 修改信息 不包含状态
 func (Port) Modify(req *repository.ModifyPort) error {
-	portServie := service.NewPort()
-	return portServie.Modify(req)
+	portService := service.NewPort()
+	return portService.Modify(req)
 }
 
 // ModifyState
 // 修改使用状态 返回修改之后的状态
 func (Port) ModifyState(id string) (bool, error) {
-	portServie := service.NewPort()
+	portService := service.NewPort()
 
-	info, err := portServie.FindById(id)
+	info, err := portService.FindById(id)
 	if err != nil {
 		return false, err
 	}
 
-	err = portServie.ModifyState(id, !info.State)
+	err = portService.ModifyState(id, !info.State)
 	if err != nil {
 		return false, err
 	}
@@ -43,12 +43,19 @@ func (Port) ModifyState(id string) (bool, error) {
 	return !info.State, nil
 }
 
+// ModifyState
+// 修改使用状态 返回修改之后的状态
+func (Port) Start(id string) error {
+	portService := service.NewPort()
+	return portService.ModifyState(id, true)
+}
+
 // Create
 // 创建数据
 func (Port) Create(req *repository.CreatePort) error {
 	// 判断端口号在当前系统是否已经被使用
-	portServie := service.NewPort()
-	info, err := portServie.FindByPort(req.Port)
+	portService := service.NewPort()
+	info, err := portService.FindByPort(req.Port)
 	if err != nil {
 		return fmt.Errorf("检查端口失败 %s", err.Error())
 	}
@@ -58,7 +65,7 @@ func (Port) Create(req *repository.CreatePort) error {
 	}
 
 	// 创建数据
-	err = portServie.Create(req)
+	err = portService.Create(req)
 	if err != nil {
 		return fmt.Errorf("创建信息失败 %s", err.Error())
 	}
@@ -69,10 +76,10 @@ func (Port) Create(req *repository.CreatePort) error {
 // Del
 // 根据ID删除信息
 func (Port) Del(id string) error {
-	portServie := service.NewPort()
+	portService := service.NewPort()
 
 	// 检查使用状态，如果是正在使用则不允许删除
-	pi, err := portServie.FindById(id)
+	pi, err := portService.FindById(id)
 	if err != nil {
 		return err
 	}
@@ -81,5 +88,5 @@ func (Port) Del(id string) error {
 		return fmt.Errorf("[%d]端口号正在被使用，不能删除", pi.Port)
 	}
 
-	return portServie.Del(id)
+	return portService.Del(id)
 }

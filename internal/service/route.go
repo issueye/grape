@@ -76,7 +76,11 @@ func (s *Rule) Query(req *repository.QueryRule) ([]*repository.QueryRuleRes, err
 		}
 
 		if req.NodeId != "" {
-			q = q.Where("node_id = ?", req.NodeId)
+			if req.NodeId == "-" {
+				q = q.Where("node_id = ''")
+			} else {
+				q = q.Where("node_id = ?", req.NodeId)
+			}
 		}
 
 		return q, nil
@@ -104,6 +108,12 @@ func (s *Rule) Modify(data *repository.ModifyRule) error {
 // 删除
 func (s *Rule) Del(id string) error {
 	return s.Db.Model(&model.RuleInfo{}).Delete("id = ?", id).Error
+}
+
+// Del
+// 删除
+func (s *Rule) DelByPortId(id string) error {
+	return s.Db.Model(&model.RuleInfo{}).Delete("port_id = ?", id).Error
 }
 
 // FindById

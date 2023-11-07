@@ -7,7 +7,7 @@ import (
 	"sync"
 
 	"github.com/gin-gonic/gin"
-	"github.com/issueye/grape/internal/common/controller"
+	"github.com/gorilla/mux"
 	"github.com/issueye/grape/internal/global"
 	"github.com/issueye/grape/internal/repository"
 	"github.com/issueye/grape/internal/service"
@@ -57,14 +57,16 @@ func StopServer(portId string, port int) {
 }
 
 func runServer(portId string, port int) {
+	mr := mux.NewRouter()
 	engine := gin.Default()
-	engine.GET("/", func(ctx *gin.Context) {
-		c := controller.New(ctx)
-		c.SuccessByMsgf("端口号[%d]返回消息", port)
-	})
+	// engine.GET("/", func(ctx *gin.Context) {
+	// 	c := controller.New(ctx)
+	// 	c.SuccessByMsgf("端口号[%d]返回消息", port)
+	// })
 
 	ruleList, err := service.NewRule().Query(&repository.QueryRule{
 		PortId: portId,
+		NodeId: "-",
 	})
 
 	if err != nil {
@@ -76,22 +78,41 @@ func runServer(portId string, port int) {
 		if err != nil {
 			continue
 		}
+		route := rule.TargetRoute
 
 		proxy := ReverseProxyHttpHandler(target.Name)
-		engine.Any(rule.Name, func(ctx *gin.Context) {
-			if rule.TargetRoute != "" {
-				ctx.Request.URL.Path = rule.TargetRoute
+		mr.HandleFunc(rule.Name, func(w http.ResponseWriter, r *http.Request) {
+			if route != "" {
+				r.URL.Path = route
 			}
-
-			proxy.ServeHTTP(ctx.Writer, ctx.Request)
+			proxy.ServeHTTP(w, r)
 		})
+		continue
+
+		// engine.Any(rule.Name, func(ctx *gin.Context) {
+		// 	if route != "" {
+		// 		flag := "/*path"
+		// 		fmt.Println("route[len(route)-len(flag):]", route[len(route)-len(flag):])
+		// 		if route[len(route)-len(flag):] == flag {
+		// 			path := ctx.Param("path")
+		// 			ctx.Request.URL.Path = strings.ReplaceAll(route, flag, path)
+		// 		} else {
+		// 			ctx.Request.URL.Path = route
+		// 		}
+		// 	}
+
+		// 	fmt.Println("ctx.Request.URL.Path", ctx.Request.URL.Path)
+		// 	proxy.ServeHTTP(ctx.Writer, ctx.Request)
+		// })
 	}
 
 	LoadNode(portId, engine)
 
+	// mr.Handle("/", engine)
+
 	server := &http.Server{
 		Addr:    fmt.Sprintf(":%d", port),
-		Handler: engine,
+		Handler: mr,
 	}
 
 	// 存放到 map 中

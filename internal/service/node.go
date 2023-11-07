@@ -84,6 +84,12 @@ func (s *Node) Del(id string) error {
 	return s.Db.Model(&model.NodeInfo{}).Delete("id = ?", id).Error
 }
 
+// Del
+// 删除
+func (s *Node) DelByPortId(id string) error {
+	return s.Db.Model(&model.NodeInfo{}).Delete("port_id = ?", id).Error
+}
+
 // FindById
 // 通过ID查找信息
 func (s *Node) FindById(id string) (*model.NodeInfo, error) {

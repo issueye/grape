@@ -6,12 +6,13 @@ import (
 	"net/http/httputil"
 	"net/url"
 	"path/filepath"
-	"strings"
+	"regexp"
 
 	"github.com/gin-gonic/gin"
 	"github.com/issueye/grape/internal/global"
 	"github.com/issueye/grape/internal/logic"
 	"github.com/issueye/grape/internal/repository"
+	"github.com/issueye/grape/internal/service"
 )
 
 func LoadNode(portId string, engine *gin.Engine) {
@@ -28,39 +29,44 @@ func LoadNode(portId string, engine *gin.Engine) {
 		handler := http.FileServer(http.Dir(dir))
 		node := nodeElem.Name
 		target := nodeElem.Target
-		pagePath := nodeElem.PagePath
-		fileName := nodeElem.FileName
+		// pagePath := nodeElem.PagePath
 		proxy := ReverseProxyHttpHandler(target)
 		rg := engine.Group(node)
+
+		ruleList, err := service.NewRule().Query(&repository.QueryRule{
+			PortId: portId,
+			NodeId: nodeElem.ID,
+		})
+		if err != nil {
+			continue
+		}
+
+		r, err := url.JoinPath(fmt.Sprintf("/%s", node), "web")
+		if err != nil {
+			global.Log.Errorf("路由拼接失败 %s", err.Error())
+			continue
+		}
+
 		if nodeElem.NodeType == 1 {
 			rg.Any("*path", func(ctx *gin.Context) {
 				path := ctx.Param("path")
-				fmt.Println("path", path, node)
-				p := fmt.Sprintf("/%s/%s/", fileName, "web")
-				fmt.Println("p", p)
-				if len(path) >= len(p) {
-					if path[:len(p)] == p {
-						if strings.Contains(path, "/web/isInitServer") {
-							ctx.Request.URL.Path = "/isInitServer"
-							proxy.ServeHTTP(ctx.Writer, ctx.Request)
-							return
-						}
-
-						r, err := url.JoinPath(pagePath, "web")
-						if err != nil {
-							global.Log.Errorf("路由拼接失败 %s", err.Error())
-							return
-						}
-
-						fmt.Println("staticRouterPath", r)
-						http.StripPrefix(r, handler).ServeHTTP(ctx.Writer, ctx.Request)
+				fmt.Println("path", path)
+				for _, nodeRule := range ruleList {
+					fmt.Println("nodeRule   ", path, nodeRule.Name)
+					re := regexp.MustCompile(nodeRule.Name)
+					match := re.FindStringSubmatch(path)
+					if len(match) > 0 {
+						id := match[1]
+						fmt.Println("ID:", id)
+						ctx.Request.URL.Path = re.ReplaceAllString(path, nodeRule.TargetRoute)
+						proxy.ServeHTTP(ctx.Writer, ctx.Request)
 						return
+					} else {
+						fmt.Println("No match")
 					}
 				}
 
-				// 处理节点名称
-				ctx.Request.URL.Path = path
-				proxy.ServeHTTP(ctx.Writer, ctx.Request)
+				http.StripPrefix(r, handler).ServeHTTP(ctx.Writer, ctx.Request)
 			})
 		}
 	}

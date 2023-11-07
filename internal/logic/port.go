@@ -88,5 +88,22 @@ func (Port) Del(id string) error {
 		return fmt.Errorf("[%d]端口号正在被使用，不能删除", pi.Port)
 	}
 
-	return portService.Del(id)
+	err = portService.Del(id)
+	if err != nil {
+		return fmt.Errorf("删除端口号[%d]失败 %s", pi.Port, err.Error())
+	}
+
+	// 删除匹配规则
+	err = service.NewRule().DelByPortId(id)
+	if err != nil {
+		return fmt.Errorf("删除端口号[%d]下的匹配规则失败 %s", pi.Port, err.Error())
+	}
+
+	// 删除节点
+	service.NewNode().DelByPortId(id)
+	if err != nil {
+		return fmt.Errorf("删除端口号[%d]下的节点失败 %s", pi.Port, err.Error())
+	}
+
+	return nil
 }

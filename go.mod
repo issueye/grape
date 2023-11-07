@@ -11,6 +11,7 @@ require (
 	github.com/go-playground/validator/v10 v10.13.0
 	github.com/golang-jwt/jwt/v4 v4.5.0
 	github.com/google/uuid v1.3.0
+	github.com/gorilla/mux v1.8.1
 	github.com/swaggo/swag v1.16.2
 	go.uber.org/zap v1.24.0
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1

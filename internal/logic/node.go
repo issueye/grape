@@ -2,6 +2,7 @@ package logic
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/issueye/grape/internal/common/model"
 	"github.com/issueye/grape/internal/repository"
@@ -23,6 +24,44 @@ func (Node) GetById(id string) (*model.NodeInfo, error) {
 func (Node) Modify(req *repository.ModifyNode) error {
 	NodeService := service.NewNode()
 	return NodeService.Modify(req)
+}
+
+// Modify
+// 修改信息 不包含状态
+func (Node) CheckData(portId string, args ...any) error {
+	NodeService := service.NewNode()
+	list, err := NodeService.Query(&repository.QueryNode{
+		PortId: portId,
+	})
+
+	if err != nil {
+		return err
+	}
+
+	// 对比名字
+	if len(args) > 0 {
+		name := args[0].(string)
+		for _, node := range list {
+			if strings.HasPrefix(name, fmt.Sprintf("/%s", node.Name)) {
+				return fmt.Errorf("[GIN匹配]类型的匹配规则与页面[%s]冲突，请修改为[MUX匹配]", node.Name)
+			}
+		}
+	}
+
+	for _, node := range list {
+		// 节点里面去查询所有的节点
+		ok, err := service.NewRule().FindLikeName(node.Name)
+		if err != nil {
+			return err
+		}
+
+		// 查询到有相似的直接返回错误
+		if ok {
+			return fmt.Errorf("[GIN匹配]类型的匹配规则中发现了与页面[%s]冲突的路由，请修改为[MUX匹配]", node.Name)
+		}
+	}
+
+	return nil
 }
 
 // Modify

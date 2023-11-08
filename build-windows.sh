@@ -9,9 +9,9 @@ BRANCH=$(git symbolic-ref --short -q HEAD)
 COMMIT=$(git rev-parse --verify HEAD)
 NOW=$(date '+%FT%T%z')
 
-VERSION="v0.1.1-${TAG}"
+VERSION="v0.1.2-${TAG}"
 APPNAME="grape-${VERSION}.exe"
-DESCRIPTION="版本管理服务"
+DESCRIPTION="go转发管理服务"
 
 go build -o bin/${APPNAME} -ldflags "-X demo/build.AppName=Demo \
 -X github.com/issueye/grape/internal/initialize.Branch=${BRANCH} \

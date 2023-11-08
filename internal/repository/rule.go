@@ -27,9 +27,10 @@ type ModifyRule struct {
 
 // 查询信息
 type QueryRule struct {
-	Conditon string `json:"condition" form:"condition"` // 条件
-	NodeId   string `json:"nodeId" form:"nodeId"`       // 节点编码
-	PortId   string `json:"portId" form:"portId"`       // 端口编码
+	Conditon  string `json:"condition" form:"condition"` // 条件
+	NodeId    string `json:"nodeId" form:"nodeId"`       // 节点编码
+	PortId    string `json:"portId" form:"portId"`       // 端口编码
+	MatchType uint   `json:"matchType" form:"matchType"` // 匹配类型 0 所有 1 gin 2 mux
 	model.Page
 }
 

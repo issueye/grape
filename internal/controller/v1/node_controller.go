@@ -70,6 +70,12 @@ func (NodeController) Modify(ctx *gin.Context) {
 		return
 	}
 
+	err = logic.Node{}.CheckData(req.PortId)
+	if err != nil {
+		c.FailByMsg(err.Error())
+		return
+	}
+
 	err = logic.Node{}.Modify(req)
 	if err != nil {
 		c.FailByMsgf("更新信息失败 %s", err.Error())

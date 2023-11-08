@@ -83,6 +83,10 @@ func (s *Rule) Query(req *repository.QueryRule) ([]*repository.QueryRuleRes, err
 			}
 		}
 
+		if req.MatchType > 0 {
+			q = q.Where("match_type = ?", req.MatchType)
+		}
+
 		return q, nil
 	})
 
@@ -122,6 +126,19 @@ func (s *Rule) FindById(id string) (*model.RuleInfo, error) {
 	info := new(model.RuleInfo)
 	err := s.Db.Model(info).Where("id = ?", id).Find(info).Error
 	return info, err
+}
+
+// FindById
+// 通过ID查找信息
+func (s *Rule) FindLikeName(name string) (bool, error) {
+	list := make([]*model.RuleInfo, 0)
+	err := s.Db.Model(&model.RuleInfo{}).Where("match_type = ?", 1).Where("name like ?", fmt.Sprintf("/%s%%", name)).Find(&list).Error
+
+	if len(list) > 0 {
+		return true, err
+	} else {
+		return false, err
+	}
 }
 
 // FindById

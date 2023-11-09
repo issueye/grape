@@ -1,5 +1,6 @@
 export CGO_ENABLED=0
 export GOARCH=amd64
+# export GOARCH=arm64
 export GOOS=linux
 
 go mod tidy
@@ -11,8 +12,8 @@ BRANCH=$(git symbolic-ref --short -q HEAD)
 COMMIT=$(git rev-parse --verify HEAD)
 NOW=$(date '+%FT%T%z')
 
-VERSION="v0.1.1-${TAG}"
-APPNAME="VersionMana-${VERSION}"
+VERSION="v0.1.2-${TAG}"
+APPNAME="grape-${VERSION}"
 DESCRIPTION="版本管理服务"
 
 go build -o bin/${APPNAME} -tags=ui -ldflags "-X demo/build.AppName=Demo \

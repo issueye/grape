@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/issueye/grape/internal/common/model"
+	"github.com/issueye/grape/internal/global"
 	"github.com/issueye/grape/internal/repository"
 	"github.com/issueye/grape/internal/service"
 )
@@ -43,11 +44,37 @@ func (Port) ModifyState(id string) (bool, error) {
 	return !info.State, nil
 }
 
+func (Port) Notice(id string) error {
+	info, err := Port{}.GetById(id)
+	if err != nil {
+		return err
+	}
+
+	// 处理状态
+	fmt.Println("当前端口状态", info.State)
+	ch := &global.Port{Id: info.ID, Port: info.Port}
+
+	if info.State {
+		ch.Action = global.AT_START
+	} else {
+		ch.Action = global.AT_STOP
+	}
+
+	global.PortChan <- ch
+
+	return nil
+}
+
+// ModifyState
+// 修改使用状态 返回修改之后的状态
+func (Port) Stop(id string) error {
+	return service.NewPort().ModifyState(id, false)
+}
+
 // ModifyState
 // 修改使用状态 返回修改之后的状态
 func (Port) Start(id string) error {
-	portService := service.NewPort()
-	return portService.ModifyState(id, true)
+	return service.NewPort().ModifyState(id, true)
 }
 
 // Create

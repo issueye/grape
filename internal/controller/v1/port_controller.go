@@ -76,6 +76,100 @@ func (PortController) Modify(ctx *gin.Context) {
 	c.Success()
 }
 
+// Stop doc
+//
+//	@tags			端口信息
+//	@Summary		停止监听端口号
+//	@Description	停止监听端口号
+//	@Produce		json
+//	@Param			id	path		string			true	"id"
+//	@Success		200	{object}	controller.Base	"code: 200 成功"
+//	@Failure		500	{object}	controller.Base	"错误返回内容"
+//	@Router			/api/v1/port/stop/{id} [put]
+//	@Security		ApiKeyAuth
+func (PortController) Stop(ctx *gin.Context) {
+	c := controller.New(ctx)
+
+	id := c.Param("id")
+	if id == "" {
+		c.FailBind(errors.New("[id]不能为空"))
+		return
+	}
+
+	info, err := logic.Port{}.GetById(id)
+	if err != nil {
+		c.FailByMsgf("查询端口信息失败 %s", err.Error())
+		return
+	}
+
+	// 判断端口号是否已经开启
+	if !info.State {
+		c.FailByMsg("当前端口已经停用，请勿重复停用")
+		return
+	}
+
+	err = logic.Port{}.Stop(id)
+	if err != nil {
+		c.FailByMsgf("更新信息失败 %s", err.Error())
+		return
+	}
+
+	err = logic.Port{}.Notice(id)
+	if err != nil {
+		c.FailByMsgf("停止监听端口号失败 %s", err.Error())
+		return
+	}
+
+	c.Success()
+}
+
+// Start doc
+//
+//	@tags			端口信息
+//	@Summary		开启监听端口号
+//	@Description	开启监听端口号
+//	@Produce		json
+//	@Param			id	path		string			true	"id"
+//	@Success		200	{object}	controller.Base	"code: 200 成功"
+//	@Failure		500	{object}	controller.Base	"错误返回内容"
+//	@Router			/api/v1/port/start/{id} [put]
+//	@Security		ApiKeyAuth
+func (PortController) Start(ctx *gin.Context) {
+	c := controller.New(ctx)
+
+	id := c.Param("id")
+	if id == "" {
+		c.FailBind(errors.New("[id]不能为空"))
+		return
+	}
+
+	info, err := logic.Port{}.GetById(id)
+	if err != nil {
+		c.FailByMsgf("查询端口信息失败 %s", err.Error())
+		return
+	}
+
+	// 判断端口号是否已经开启
+	if info.State {
+		c.FailByMsg("当前端口已经启用，请勿重复启用")
+		return
+	}
+
+	err = logic.Port{}.Start(id)
+	if err != nil {
+		c.FailByMsgf("更新信息失败 %s", err.Error())
+		return
+	}
+
+	err = logic.Port{}.Notice(id)
+	if err != nil {
+		c.FailByMsgf("停止监听端口号失败 %s", err.Error())
+		return
+	}
+
+	c.Success()
+}
+
 // ModifyState doc
 //
 //	@tags			端口信息

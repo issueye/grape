@@ -40,7 +40,7 @@ func InitServer() {
 	// 注册路由
 	router.InitRouter(global.Router)
 	// 端口号为命令行提供
-	port := config.GetParam(config.CfgServerPort, "10061").Int()
+	port := config.GetParam(config.CfgServerPort, "10065").Int()
 	global.HttpServer = &http.Server{
 		Addr:    fmt.Sprintf(":%d", port),
 		Handler: global.Router,

@@ -6,11 +6,22 @@ import (
 	"github.com/issueye/grape/internal/config"
 	"github.com/issueye/grape/internal/engine"
 	"github.com/issueye/grape/internal/global"
+	"github.com/panjf2000/ants/v2"
 )
 
 func Initialize() {
 	// 初始化运行文件
 	InitRuntime()
+
+	// 初始化
+	// 创建一个协程池
+	pool, err := ants.NewPool(2048) // 这里的 10 表示协程池中的初始协程数量
+	if err != nil {
+		panic(err)
+	}
+
+	global.GoAnts = pool
+
 	// 配置参数
 	config.InitConfig()
 	// 日志

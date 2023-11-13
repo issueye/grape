@@ -5,6 +5,7 @@ import (
 
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
+	"github.com/panjf2000/ants/v2"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
@@ -16,6 +17,7 @@ var (
 	Router     *gin.Engine
 	HttpServer *http.Server
 	Auth       *jwt.GinJWTMiddleware
+	GoAnts     *ants.Pool
 )
 
 type ActionType int

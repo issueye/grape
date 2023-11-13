@@ -14,6 +14,7 @@ import (
 	"github.com/issueye/grape/internal/common/controller"
 	"github.com/issueye/grape/internal/global"
 	"github.com/issueye/grape/internal/logic"
+	"github.com/issueye/grape/internal/middleware"
 	"github.com/issueye/grape/internal/repository"
 	"github.com/issueye/grape/internal/service"
 )
@@ -81,6 +82,8 @@ func NewGrapeEngine(portId string, port int) *GrapeEngine {
 		Customs: make([]*CustomRouteRule, 0),
 	}
 
+	en.Engine.Use(middleware.TrafficMiddleware(global.Log))
+	en.Engine.Use(gin.Recovery())
 	en.Engine.GET("/", func(ctx *gin.Context) {
 		c := controller.New(ctx)
 		c.SuccessByMsgf("端口号[%d]返回消息", port)

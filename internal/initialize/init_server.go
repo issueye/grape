@@ -16,6 +16,9 @@ import (
 func InitServer() {
 	mode := config.GetParam(config.CfgServerMode, "release").String()
 	gin.SetMode(mode)
+
+	gin.SetMode(gin.ReleaseMode)
+
 	// gin引擎对象
 	global.Router = gin.New()
 	// 注册一个form表单验证器

@@ -35,8 +35,14 @@ func TrafficMiddleware(log *zap.SugaredLogger) gin.HandlerFunc {
 		size := w.Size()
 		headerSize := w.HeaderSize()
 
+		reqIP := c.ClientIP()
+		if reqIP == "::1" {
+			reqIP = "127.0.0.1"
+		}
+
 		// 打印流量信息
-		log.Infof("\n请求: %s %s, code: %d, 请求Header: %d bytes, 请求Body: %d bytes, 总流量: %d bytes, 响应Header: %d, 响应Body: %d, 响应总流量：%d, 响应时间: %s",
+		log.Infof("\nIP:%s, 请求: %s %s, code: %d, 请求Header: %d bytes, 请求Body: %d bytes, 总流量: %d bytes, 响应Header: %d, 响应Body: %d, 响应总流量：%d, 响应时间: %s",
+			reqIP,
 			c.Request.Method,
 			c.Request.URL.Path,
 			c.Writer.Status(),

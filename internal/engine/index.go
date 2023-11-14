@@ -158,6 +158,14 @@ func (grape *GrapeEngine) GinRoutes() error {
 
 		r.Proxy = ReverseProxyHttpHandler(target.Name)
 		r.Handler = func(ctx *gin.Context) {
+
+			referer := ctx.Request.Header.Get("Referer")
+			if referer != "" {
+				if strings.HasSuffix(referer, "/lineAdmin/web/") {
+					fmt.Println("referer", referer)
+				}
+			}
+
 			if route != "" {
 				route := ""
 				for _, p := range ctx.Params {
@@ -166,6 +174,7 @@ func (grape *GrapeEngine) GinRoutes() error {
 
 				ctx.Request.URL.Path = route
 			}
+
 			r.Proxy.ServeHTTP(ctx.Writer, ctx.Request)
 		}
 

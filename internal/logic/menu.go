@@ -3,6 +3,7 @@ package logic
 import (
 	"fmt"
 
+	"github.com/issueye/grape/internal/common/model"
 	"github.com/issueye/grape/internal/repository"
 	"github.com/issueye/grape/internal/service"
 )
@@ -49,4 +50,19 @@ func (Menu) ModifyState(id string) error {
 
 func (Menu) Modify(id string, data *repository.ModifyMenu) error {
 	return service.NewMenu().Modify(id, data)
+}
+
+// 如果菜单信息不存在则创建
+func (Menu) CreateMenuNonExistent() {
+	// 系统管理
+	systemId := service.NewMenu().CreateNoExistent(&model.MenuBase{Title: "系统管理", Name: "system_manage", Route: "/system/index", Icon: "", Auth: 0, Level: 0, ParentId: "0", State: 1})
+	service.NewMenu().CreateNoExistent(&model.MenuBase{Title: "用户管理", Name: "user_manage", Route: "/system/user_manage", Icon: "", Auth: 0, Level: 1, ParentId: systemId, State: 1})
+	service.NewMenu().CreateNoExistent(&model.MenuBase{Title: "用户组管理", Name: "user_group_manage", Route: "/system/user_group_manage", Icon: "", Auth: 0, Level: 1, ParentId: systemId, State: 1})
+	service.NewMenu().CreateNoExistent(&model.MenuBase{Title: "菜单管理", Name: "menu_manage", Route: "/system/menu_manage", Icon: "", Auth: 0, Level: 1, ParentId: systemId, State: 1})
+	service.NewMenu().CreateNoExistent(&model.MenuBase{Title: "权限组菜单管理", Name: "group_menu_manage", Route: "/system/group_menu_manage", Icon: "", Auth: 0, Level: 1, ParentId: systemId, State: 1})
+	service.NewMenu().CreateNoExistent(&model.MenuBase{Title: "参数管理", Name: "param_manage", Route: "/system/param_manage", Icon: "", Auth: 0, Level: 1, ParentId: systemId, State: 1})
+	// 服务地址管理
+	serverId := service.NewMenu().CreateNoExistent(&model.MenuBase{Title: "服务管理", Name: "target_manage", Route: "/server/index", Icon: "", Auth: 0, Level: 0, ParentId: "0", State: 1})
+	service.NewMenu().CreateNoExistent(&model.MenuBase{Title: "服务地址管理", Name: "target_manage", Route: "/server/target_manage", Icon: "", Auth: 0, Level: 1, ParentId: serverId, State: 1})
+	service.NewMenu().CreateNoExistent(&model.MenuBase{Title: "页面管理", Name: "page_manage", Route: "/server/page_manage", Icon: "", Auth: 0, Level: 1, ParentId: serverId, State: 1})
 }

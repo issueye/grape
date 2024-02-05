@@ -6,6 +6,7 @@ import (
 
 	"github.com/issueye/grape/internal/common/model"
 	"github.com/issueye/grape/internal/global"
+	"github.com/issueye/grape/internal/logic"
 	"github.com/issueye/grape/internal/service"
 	"github.com/issueye/grape/pkg/db"
 )
@@ -42,4 +43,10 @@ func InitData() {
 	if err != nil {
 		panic("初始化数据失败 " + err.Error())
 	}
+
+	// 菜单元数据
+	logic.Menu{}.CreateMenuNonExistent()
+
+	// 权限组菜单数据
+	logic.UserGroup{}.CreateAdminNonExistent()
 }

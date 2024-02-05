@@ -51,6 +51,30 @@ func (Menu *Menu) Create(data *repository.CreateMenu) error {
 	return Menu.Db.Create(info).Error
 }
 
+// Create
+// 创建用户信息
+func (Menu *Menu) CreateNoExistent(data *model.MenuBase) string {
+	info := new(model.Menu)
+	err := Menu.Db.Model(info).Where("route = ?", data.Route).Where("level = ?", data.Level).Find(info).Error
+	if err != nil {
+		panic("查询菜单失败 " + err.Error())
+	}
+
+	if info.ID != "" {
+		return info.ID
+	}
+
+	menuInfo := model.Menu{}.New()
+	menuInfo.Copy(data)
+
+	err = Menu.Db.Create(menuInfo).Error
+	if err != nil {
+		panic("创建菜单失败 " + err.Error())
+	}
+
+	return menuInfo.ID
+}
+
 // GetById
 // 根据用户ID查找用户信息
 func (Menu *Menu) GetById(id string) (*model.Menu, error) {

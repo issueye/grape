@@ -222,6 +222,622 @@
                 }
             }
         },
+        "/api/v1/groupMenu": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "获取菜单组列表",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "菜单组管理"
+                ],
+                "summary": "获取菜单组列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "条件",
+                        "name": "condition",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页数",
+                        "name": "pageNum",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页码",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "总数  由服务器返回回去",
+                        "name": "total",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code: 200 成功",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Full"
+                        }
+                    },
+                    "500": {
+                        "description": "错误返回内容",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "添加菜单组信息",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "菜单组管理"
+                ],
+                "summary": "添加菜单组信息",
+                "parameters": [
+                    {
+                        "description": "添加信息",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/repository.CreateGroupMenu"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code: 200 成功",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    },
+                    "500": {
+                        "description": "错误返回内容",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/groupMenu/state/{id}": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "修改菜单组状态",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "菜单组管理"
+                ],
+                "summary": "修改菜单组状态",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code: 200 成功",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    },
+                    "500": {
+                        "description": "错误返回内容",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/groupMenu/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "通过编码获取菜单组",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "菜单组管理"
+                ],
+                "summary": "通过编码获取菜单组",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code: 200 成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/controller.Full"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.GroupMenu"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "错误返回内容",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "修改菜单组信息",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "菜单组管理"
+                ],
+                "summary": "修改菜单组信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "修改信息",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/repository.ModifyGroupMenu"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code: 200 成功",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    },
+                    "500": {
+                        "description": "错误返回内容",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "删除菜单组信息",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "菜单组管理"
+                ],
+                "summary": "删除菜单组信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code: 200 成功",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    },
+                    "500": {
+                        "description": "错误返回内容",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/login": {
+            "post": {
+                "description": "```\n用户登录\n```",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "基本接口"
+                ],
+                "summary": "用户登录",
+                "parameters": [
+                    {
+                        "description": "登录信息",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/repository.Login"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Full"
+                        }
+                    },
+                    "500": {
+                        "description": "错误返回内容",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/logout": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "用户登出时，调用此接口",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "基本接口"
+                ],
+                "summary": "用户登出",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    },
+                    "500": {
+                        "description": "错误返回内容",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/menu": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "获取菜单列表",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "菜单管理"
+                ],
+                "summary": "获取菜单列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "条件",
+                        "name": "condition",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页数",
+                        "name": "pageNum",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页码",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "总数  由服务器返回回去",
+                        "name": "total",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code: 200 成功",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Full"
+                        }
+                    },
+                    "500": {
+                        "description": "错误返回内容",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "添加菜单信息",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "菜单管理"
+                ],
+                "summary": "添加菜单信息",
+                "parameters": [
+                    {
+                        "description": "添加信息",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/repository.CreateMenu"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code: 200 成功",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    },
+                    "500": {
+                        "description": "错误返回内容",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/menu/state/{id}": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "修改菜单状态",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "菜单管理"
+                ],
+                "summary": "修改菜单状态",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code: 200 成功",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    },
+                    "500": {
+                        "description": "错误返回内容",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/menu/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "通过编码获取菜单",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "菜单管理"
+                ],
+                "summary": "通过编码获取菜单",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code: 200 成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/controller.Full"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.Menu"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "错误返回内容",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "修改菜单信息",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "菜单管理"
+                ],
+                "summary": "修改菜单信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "修改信息",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/repository.ModifyMenu"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code: 200 成功",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    },
+                    "500": {
+                        "description": "错误返回内容",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "删除菜单信息",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "菜单管理"
+                ],
+                "summary": "删除菜单信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code: 200 成功",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    },
+                    "500": {
+                        "description": "错误返回内容",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/node": {
             "get": {
                 "security": [
@@ -330,23 +946,21 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "创建节点信息",
+                "description": "上传静态页面",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "节点信息"
                 ],
-                "summary": "创建节点信息",
+                "summary": "上传静态页面",
                 "parameters": [
                     {
-                        "description": "创建节点信息",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/repository.CreateNode"
-                        }
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -658,6 +1272,46 @@
                 }
             }
         },
+        "/api/v1/port/start/{id}": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "开启监听端口号",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "端口信息"
+                ],
+                "summary": "开启监听端口号",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code: 200 成功",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    },
+                    "500": {
+                        "description": "错误返回内容",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/port/state/{id}": {
             "put": {
                 "security": [
@@ -673,6 +1327,46 @@
                     "端口信息"
                 ],
                 "summary": "修改端口使用状态",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code: 200 成功",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    },
+                    "500": {
+                        "description": "错误返回内容",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/port/stop/{id}": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "停止监听端口号",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "端口信息"
+                ],
+                "summary": "停止监听端口号",
                 "parameters": [
                     {
                         "type": "string",
@@ -738,6 +1432,49 @@
                 }
             }
         },
+        "/api/v1/refreshToken": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "当token即将获取或者过期时刷新token",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "基本接口"
+                ],
+                "summary": "刷新token",
+                "responses": {
+                    "200": {
+                        "description": "code:200 成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/controller.Full"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/middleware.JwtToken"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "错误返回内容",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/rule": {
             "get": {
                 "security": [
@@ -758,6 +1495,12 @@
                         "type": "string",
                         "description": "条件",
                         "name": "condition",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "匹配类型 0 所有 1 gin 2 mux",
+                        "name": "matchType",
                         "in": "query"
                     },
                     {
@@ -1181,6 +1924,73 @@
             }
         },
         "/api/v1/user": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "获取定时任务列表",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户信息管理"
+                ],
+                "summary": "获取定时任务列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "uid 登录名",
+                        "name": "account",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "备注",
+                        "name": "mark",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "用户姓名",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页数",
+                        "name": "pageNum",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页码",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "总数  由服务器返回回去",
+                        "name": "total",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code: 200 成功",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Full"
+                        }
+                    },
+                    "500": {
+                        "description": "错误返回内容",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    }
+                }
+            },
             "post": {
                 "security": [
                     {
@@ -1298,7 +2108,7 @@
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/model.User"
+                                            "$ref": "#/definitions/model.UserInfo"
                                         }
                                     }
                                 }
@@ -1399,28 +2209,22 @@
                 }
             }
         },
-        "/api/v1/users": {
+        "/api/v1/userGroup": {
             "get": {
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "获取定时任务列表",
+                "description": "获取用户组列表",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "用户信息管理"
+                    "用户组信息管理"
                 ],
-                "summary": "获取定时任务列表",
+                "summary": "获取用户组列表",
                 "parameters": [
-                    {
-                        "type": "string",
-                        "description": "uid 登录名",
-                        "name": "account",
-                        "in": "query"
-                    },
                     {
                         "type": "string",
                         "description": "备注",
@@ -1429,8 +2233,26 @@
                     },
                     {
                         "type": "string",
-                        "description": "用户姓名",
+                        "description": "组名称",
                         "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页数",
+                        "name": "pageNum",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页码",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "总数  由服务器返回回去",
+                        "name": "total",
                         "in": "query"
                     }
                 ],
@@ -1448,63 +2270,35 @@
                         }
                     }
                 }
-            }
-        },
-        "/login": {
+            },
             "post": {
-                "description": "```\n用户登录\n```",
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "添加用户组信息",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "基本接口"
+                    "用户组信息管理"
                 ],
-                "summary": "用户登录",
+                "summary": "添加用户组信息",
                 "parameters": [
                     {
-                        "description": "登录信息",
+                        "description": "添加用户信息",
                         "name": "data",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/repository.Login"
+                            "$ref": "#/definitions/repository.CreateUserGroup"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/controller.Full"
-                        }
-                    },
-                    "500": {
-                        "description": "错误返回内容",
-                        "schema": {
-                            "$ref": "#/definitions/controller.Base"
-                        }
-                    }
-                }
-            }
-        },
-        "/logout": {
-            "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "用户登出时，调用此接口",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "基本接口"
-                ],
-                "summary": "用户登出",
-                "responses": {
-                    "200": {
-                        "description": "OK",
+                        "description": "code: 200 成功",
                         "schema": {
                             "$ref": "#/definitions/controller.Base"
                         }
@@ -1518,24 +2312,73 @@
                 }
             }
         },
-        "/refreshToken": {
+        "/api/v1/userGroup/state/{id}": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "修改用户组状态",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户组信息管理"
+                ],
+                "summary": "修改用户组状态",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code: 200 成功",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    },
+                    "500": {
+                        "description": "错误返回内容",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/userGroup/{id}": {
             "get": {
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "当token即将获取或者过期时刷新token",
+                "description": "通过编码获取用户组信息",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "基本接口"
+                    "用户组信息管理"
                 ],
-                "summary": "刷新token",
+                "summary": "通过编码获取用户组信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "code:200 成功",
+                        "description": "code: 200 成功",
                         "schema": {
                             "allOf": [
                                 {
@@ -1545,11 +2388,96 @@
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/middleware.JwtToken"
+                                            "$ref": "#/definitions/model.UserGroupInfo"
                                         }
                                     }
                                 }
                             ]
+                        }
+                    },
+                    "500": {
+                        "description": "错误返回内容",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "修改用户组信息",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户组信息管理"
+                ],
+                "summary": "修改用户组信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "修改用户信息",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/repository.ModifyUserGroup"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code: 200 成功",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    },
+                    "500": {
+                        "description": "错误返回内容",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "删除用户组",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户组信息管理"
+                ],
+                "summary": "删除用户组",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code: 200 成功",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
                         }
                     },
                     "500": {
@@ -1625,7 +2553,7 @@
                 },
                 "id": {
                     "description": "id",
-                    "type": "integer"
+                    "type": "string"
                 },
                 "name": {
                     "description": "用户名",
@@ -1641,16 +2569,172 @@
                 }
             }
         },
-        "model.User": {
+        "model.GroupMenu": {
+            "type": "object",
+            "required": [
+                "group_id",
+                "name",
+                "parentId",
+                "route",
+                "title"
+            ],
+            "properties": {
+                "auth": {
+                    "description": "菜单权限级别",
+                    "type": "integer"
+                },
+                "createdAt": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
+                "group_id": {
+                    "description": "用户组编码",
+                    "type": "string"
+                },
+                "icon": {
+                    "description": "菜单图标",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "编码",
+                    "type": "string"
+                },
+                "level": {
+                    "description": "菜单层级级别 0 代表第一层",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "菜单名称",
+                    "type": "string"
+                },
+                "parentId": {
+                    "description": "父级菜单编码 如果没有则传\"0\"",
+                    "type": "string"
+                },
+                "route": {
+                    "description": "路由",
+                    "type": "string"
+                },
+                "state": {
+                    "description": "状态 0 停用 1 启用",
+                    "type": "integer"
+                },
+                "title": {
+                    "description": "菜单标题",
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "description": "修改时间",
+                    "type": "string"
+                }
+            }
+        },
+        "model.Menu": {
+            "type": "object",
+            "required": [
+                "name",
+                "parentId",
+                "route",
+                "title"
+            ],
+            "properties": {
+                "auth": {
+                    "description": "菜单权限级别",
+                    "type": "integer"
+                },
+                "createdAt": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
+                "icon": {
+                    "description": "菜单图标",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "编码",
+                    "type": "string"
+                },
+                "level": {
+                    "description": "菜单层级级别 0 代表第一层",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "菜单名称",
+                    "type": "string"
+                },
+                "parentId": {
+                    "description": "父级菜单编码 如果没有则传\"0\"",
+                    "type": "string"
+                },
+                "route": {
+                    "description": "路由",
+                    "type": "string"
+                },
+                "state": {
+                    "description": "状态 0 停用 1 启用",
+                    "type": "integer"
+                },
+                "title": {
+                    "description": "菜单标题",
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "description": "修改时间",
+                    "type": "string"
+                }
+            }
+        },
+        "model.UserGroupInfo": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "编码",
+                    "type": "string"
+                },
+                "mark": {
+                    "description": "备注",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "组名称",
+                    "type": "string"
+                },
+                "state": {
+                    "description": "状态 0 停用 1 启用",
+                    "type": "integer"
+                },
+                "sys": {
+                    "description": "系统生成 0 否 1 是",
+                    "type": "integer"
+                },
+                "updatedAt": {
+                    "description": "修改时间",
+                    "type": "string"
+                }
+            }
+        },
+        "model.UserInfo": {
             "type": "object",
             "properties": {
                 "account": {
                     "description": "uid 登录名",
                     "type": "string"
                 },
+                "createdAt": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
+                "groupId": {
+                    "description": "组编码",
+                    "type": "string"
+                },
                 "id": {
                     "description": "编码",
-                    "type": "integer"
+                    "type": "string"
                 },
                 "mark": {
                     "description": "备注",
@@ -1667,15 +2751,21 @@
                 "state": {
                     "description": "状态 0 停用 1 启用",
                     "type": "integer"
+                },
+                "sys": {
+                    "description": "系统生成 0 否 1 是",
+                    "type": "integer"
+                },
+                "updatedAt": {
+                    "description": "修改时间",
+                    "type": "string"
                 }
             }
         },
         "repository.CreateCert": {
             "type": "object",
             "required": [
-                "name",
-                "private",
-                "public"
+                "name"
             ],
             "properties": {
                 "mark": {
@@ -1696,12 +2786,102 @@
                 }
             }
         },
+        "repository.CreateGroupMenu": {
+            "type": "object",
+            "required": [
+                "group_id",
+                "name",
+                "parentId",
+                "route",
+                "title"
+            ],
+            "properties": {
+                "auth": {
+                    "description": "菜单权限级别",
+                    "type": "integer"
+                },
+                "group_id": {
+                    "description": "用户组编码",
+                    "type": "string"
+                },
+                "icon": {
+                    "description": "菜单图标",
+                    "type": "string"
+                },
+                "level": {
+                    "description": "菜单层级级别 0 代表第一层",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "菜单名称",
+                    "type": "string"
+                },
+                "parentId": {
+                    "description": "父级菜单编码 如果没有则传\"0\"",
+                    "type": "string"
+                },
+                "route": {
+                    "description": "路由",
+                    "type": "string"
+                },
+                "state": {
+                    "description": "状态 0 停用 1 启用",
+                    "type": "integer"
+                },
+                "title": {
+                    "description": "菜单标题",
+                    "type": "string"
+                }
+            }
+        },
+        "repository.CreateMenu": {
+            "type": "object",
+            "required": [
+                "name",
+                "parentId",
+                "route",
+                "title"
+            ],
+            "properties": {
+                "auth": {
+                    "description": "菜单权限级别",
+                    "type": "integer"
+                },
+                "icon": {
+                    "description": "菜单图标",
+                    "type": "string"
+                },
+                "level": {
+                    "description": "菜单层级级别 0 代表第一层",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "菜单名称",
+                    "type": "string"
+                },
+                "parentId": {
+                    "description": "父级菜单编码 如果没有则传\"0\"",
+                    "type": "string"
+                },
+                "route": {
+                    "description": "路由",
+                    "type": "string"
+                },
+                "state": {
+                    "description": "状态 0 停用 1 启用",
+                    "type": "integer"
+                },
+                "title": {
+                    "description": "菜单标题",
+                    "type": "string"
+                }
+            }
+        },
         "repository.CreateNode": {
             "type": "object",
             "required": [
                 "name",
-                "portId",
-                "target"
+                "portId"
             ],
             "properties": {
                 "mark": {
@@ -1757,9 +2937,10 @@
         "repository.CreateRule": {
             "type": "object",
             "required": [
+                "method",
                 "name",
                 "portId",
-                "target"
+                "targetId"
             ],
             "properties": {
                 "mark": {
@@ -1769,6 +2950,10 @@
                 "matchType": {
                     "description": "匹配模式 0 所有内容匹配 1 正则匹配 2 包含匹配 3 header 匹配",
                     "type": "integer"
+                },
+                "method": {
+                    "description": "请求方法",
+                    "type": "string"
                 },
                 "name": {
                     "description": "匹配路由名称",
@@ -1782,8 +2967,12 @@
                     "description": "端口信息编码",
                     "type": "string"
                 },
-                "target": {
+                "targetId": {
                     "description": "目标服务地址",
+                    "type": "string"
+                },
+                "targetRoute": {
+                    "description": "目标路由",
                     "type": "string"
                 }
             }
@@ -1825,6 +3014,19 @@
                 }
             }
         },
+        "repository.CreateUserGroup": {
+            "type": "object",
+            "properties": {
+                "mark": {
+                    "description": "备注",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "组名称",
+                    "type": "string"
+                }
+            }
+        },
         "repository.Login": {
             "type": "object",
             "properties": {
@@ -1842,9 +3044,7 @@
             "type": "object",
             "required": [
                 "id",
-                "name",
-                "private",
-                "public"
+                "name"
             ],
             "properties": {
                 "id": {
@@ -1869,13 +3069,111 @@
                 }
             }
         },
+        "repository.ModifyGroupMenu": {
+            "type": "object",
+            "required": [
+                "group_id",
+                "name",
+                "parentId",
+                "route",
+                "title"
+            ],
+            "properties": {
+                "auth": {
+                    "description": "菜单权限级别",
+                    "type": "integer"
+                },
+                "group_id": {
+                    "description": "用户组编码",
+                    "type": "string"
+                },
+                "icon": {
+                    "description": "菜单图标",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "编码",
+                    "type": "string"
+                },
+                "level": {
+                    "description": "菜单层级级别 0 代表第一层",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "菜单名称",
+                    "type": "string"
+                },
+                "parentId": {
+                    "description": "父级菜单编码 如果没有则传\"0\"",
+                    "type": "string"
+                },
+                "route": {
+                    "description": "路由",
+                    "type": "string"
+                },
+                "state": {
+                    "description": "状态 0 停用 1 启用",
+                    "type": "integer"
+                },
+                "title": {
+                    "description": "菜单标题",
+                    "type": "string"
+                }
+            }
+        },
+        "repository.ModifyMenu": {
+            "type": "object",
+            "required": [
+                "name",
+                "parentId",
+                "route",
+                "title"
+            ],
+            "properties": {
+                "auth": {
+                    "description": "菜单权限级别",
+                    "type": "integer"
+                },
+                "icon": {
+                    "description": "菜单图标",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "编码",
+                    "type": "string"
+                },
+                "level": {
+                    "description": "菜单层级级别 0 代表第一层",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "菜单名称",
+                    "type": "string"
+                },
+                "parentId": {
+                    "description": "父级菜单编码 如果没有则传\"0\"",
+                    "type": "string"
+                },
+                "route": {
+                    "description": "路由",
+                    "type": "string"
+                },
+                "state": {
+                    "description": "状态 0 停用 1 启用",
+                    "type": "integer"
+                },
+                "title": {
+                    "description": "菜单标题",
+                    "type": "string"
+                }
+            }
+        },
         "repository.ModifyNode": {
             "type": "object",
             "required": [
                 "id",
                 "name",
-                "portId",
-                "target"
+                "portId"
             ],
             "properties": {
                 "id": {
@@ -1941,10 +3239,10 @@
             "type": "object",
             "required": [
                 "id",
-                "matchType",
+                "method",
                 "name",
                 "portId",
-                "target"
+                "targetId"
             ],
             "properties": {
                 "id": {
@@ -1959,6 +3257,10 @@
                     "description": "匹配模式 0 所有内容匹配 1 正则匹配 2 包含匹配 3 header 匹配",
                     "type": "integer"
                 },
+                "method": {
+                    "description": "请求方法",
+                    "type": "string"
+                },
                 "name": {
                     "description": "匹配路由名称",
                     "type": "string"
@@ -1971,8 +3273,12 @@
                     "description": "端口信息编码",
                     "type": "string"
                 },
-                "target": {
+                "targetId": {
                     "description": "目标服务地址",
+                    "type": "string"
+                },
+                "targetRoute": {
+                    "description": "目标路由",
                     "type": "string"
                 }
             }
@@ -2007,7 +3313,7 @@
                 },
                 "id": {
                     "description": "编码",
-                    "type": "integer"
+                    "type": "string"
                 },
                 "mark": {
                     "description": "备注",
@@ -2019,6 +3325,23 @@
                 },
                 "password": {
                     "description": "密码",
+                    "type": "string"
+                }
+            }
+        },
+        "repository.ModifyUserGroup": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "编码",
+                    "type": "string"
+                },
+                "mark": {
+                    "description": "备注",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "组名称",
                     "type": "string"
                 }
             }

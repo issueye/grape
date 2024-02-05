@@ -10,7 +10,7 @@ import (
 
 // CreateToken
 // 创建 Token
-func CreateToken(user *model.User) (signedToken string, success bool) {
+func CreateToken(user *model.UserInfo) (signedToken string, success bool) {
 	token := jwt.New(jwt.GetSigningMethod("HS256"))
 	claims := token.Claims.(jwt.MapClaims)
 	claims["user"] = utils.Struct2Json(user)
@@ -27,14 +27,14 @@ func CreateToken(user *model.User) (signedToken string, success bool) {
 
 // ParseToken
 // 解析token
-func ParseToken(token string) (*model.User, error) {
+func ParseToken(token string) (*model.UserInfo, error) {
 	t, err := Auth.ParseTokenString(token)
 	if err != nil {
 		return nil, err
 	}
 
 	claims := t.Claims.(jwt.MapClaims)
-	user := new(model.User)
+	user := new(model.UserInfo)
 	utils.Json2Struct(claims["user"].(string), user)
 	return user, nil
 }

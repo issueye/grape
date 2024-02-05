@@ -35,7 +35,7 @@ func (auth *Auth) PayloadFunc(data interface{}) jwt.MapClaims {
 	mapClaims := make(jwt.MapClaims)
 	v, ok := data.(map[string]interface{})
 	if ok {
-		user := new(model.User)
+		user := new(model.UserInfo)
 		// 将用户json转为结构体
 		utils.JsonI2Struct(v["user"], user)
 
@@ -68,7 +68,7 @@ func (auth *Auth) IdentityHandler(c *gin.Context) interface{} {
 //	@Param			data	body		repository.Login	true	"登录信息"
 //	@Success		200		{object}	controller.Full
 //	@Failure		500		{object}	controller.Base	"错误返回内容"
-//	@Router			/login [post]
+//	@Router			/api/v1/login [post]
 func (auth *Auth) Login(c *gin.Context) (interface{}, error) {
 	req := new(repository.Login)
 	// 请求json绑定
@@ -100,7 +100,7 @@ func (auth *Auth) Authorizator(data interface{}, c *gin.Context) bool {
 	v, ok := data.(map[string]interface{})
 	if ok {
 		userStr := v["user"].(string)
-		user := new(model.User)
+		user := new(model.UserInfo)
 		// 将用户json转为结构体
 		utils.Json2Struct(userStr, &user)
 		// 将用户保存到context, api调用时取数据方便
@@ -111,7 +111,7 @@ func (auth *Auth) Authorizator(data interface{}, c *gin.Context) bool {
 }
 
 type JwtToken struct {
-	ID      int64  `json:"id"`      // id
+	ID      string `json:"id"`      // id
 	UID     string `json:"uid"`     // 用户ID
 	Name    string `json:"name"`    // 用户名
 	Token   string `json:"token"`   // token
@@ -154,7 +154,7 @@ func (auth *Auth) LoginResponse(ctx *gin.Context, _ int, token string, expires t
 //	@Produce		json
 //	@Success		200	{object}	controller.Base
 //	@Failure		500	{object}	controller.Base	"错误返回内容"
-//	@Router			/logout [get]
+//	@Router			/api/v1/logout [get]
 //	@Security		ApiKeyAuth
 func (auth *Auth) LogoutResponse(ctx *gin.Context, _ int) {
 	control := controller.New(ctx)
@@ -170,7 +170,7 @@ func (auth *Auth) LogoutResponse(ctx *gin.Context, _ int) {
 //	@Produce		json
 //	@Success		200	{object}	controller.Full{data=JwtToken}	"code:200 成功"
 //	@Failure		500	{object}	controller.Base					"错误返回内容"
-//	@Router			/refreshToken [get]
+//	@Router			/api/v1/refreshToken [get]
 //	@Security		ApiKeyAuth
 func (auth *Auth) RefreshResponse(ctx *gin.Context, _ int, token string, expires time.Time) {
 	control := controller.New(ctx)
@@ -182,13 +182,13 @@ func (auth *Auth) RefreshResponse(ctx *gin.Context, _ int, token string, expires
 
 // UserAuth
 // 用户鉴权
-func (auth *Auth) UserAuth(info *repository.Login) (*model.User, error) {
-	user, err := service.NewUser(global.DB).FindUser(info)
+func (auth *Auth) UserAuth(info *repository.Login) (*model.UserInfo, error) {
+	user, err := service.NewUser().FindUser(info)
 	if err != nil {
 		return nil, err
 	}
 
-	if user.ID == 0 {
+	if user.ID == "" {
 		return nil, fmt.Errorf("未查找到用户[%s]信息", info.Account)
 	}
 	return user, nil
@@ -226,12 +226,12 @@ func (auth *Auth) GetJwtMaxRefresh() int64 {
 
 // GetUser
 // 获取用户信息
-func (auth *Auth) GetUser(ctx *gin.Context) (*model.User, error) {
+func (auth *Auth) GetUser(ctx *gin.Context) (*model.UserInfo, error) {
 	user, ok := ctx.Get("user")
 	if !ok {
 		return nil, errors.New("未获取到用户信息")
 	}
 
-	u := user.(*model.User)
+	u := user.(*model.UserInfo)
 	return u, nil
 }

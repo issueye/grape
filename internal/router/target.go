@@ -3,6 +3,7 @@ package router
 import (
 	"github.com/gin-gonic/gin"
 	v1 "github.com/issueye/grape/internal/controller/v1"
+	"github.com/issueye/grape/internal/global"
 )
 
 type TargetRouter struct {
@@ -12,7 +13,7 @@ type TargetRouter struct {
 
 func NewTargetRouter() *TargetRouter {
 	return &TargetRouter{
-		Name:    "target",
+		Name:    string(global.RGN_target),
 		control: &v1.TargetController{},
 	}
 }

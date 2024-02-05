@@ -3,6 +3,7 @@ package router
 import (
 	"github.com/gin-gonic/gin"
 	v1 "github.com/issueye/grape/internal/controller/v1"
+	"github.com/issueye/grape/internal/global"
 )
 
 type PortRouter struct {
@@ -12,7 +13,7 @@ type PortRouter struct {
 
 func NewPortRouter() *PortRouter {
 	return &PortRouter{
-		Name:    "port",
+		Name:    string(global.RGN_port),
 		control: &v1.PortController{},
 	}
 }

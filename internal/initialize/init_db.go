@@ -17,20 +17,28 @@ func InitData() {
 
 	// 初始化表
 	err := global.DB.AutoMigrate(
-		&model.User{},
-		&model.PortInfo{},
-		&model.NodeInfo{},
-		&model.RuleInfo{},
-		&model.CertInfo{},
-		&model.TargetInfo{},
+		&model.UserInfo{},      // 用户
+		&model.UserGroupInfo{}, // 用户组
+		&model.Menu{},          // 菜单
+		&model.GroupMenu{},     // 用户组菜单权限
+		&model.PortInfo{},      // 端口信息
+		&model.NodeInfo{},      // 节点信息
+		&model.RuleInfo{},      // 规则信息
+		&model.CertInfo{},      // 证书信息
+		&model.TargetInfo{},    // 目标服务地址信息
 	)
 
 	if err != nil {
 		panic(fmt.Errorf("初始化表失败 %s", err.Error()))
 	}
 
+	err = service.NewUserGroup().CreateAdminNonExistent()
+	if err != nil {
+		panic("检查管理员用户组信息失败 " + err.Error())
+	}
+
 	// 创建 admin 用户
-	err = service.NewUser(global.DB).CreateAdminNonExistent()
+	err = service.NewUser().CreateAdminNonExistent()
 	if err != nil {
 		panic("初始化数据失败 " + err.Error())
 	}

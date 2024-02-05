@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"mime"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/issueye/grape/internal/config"
@@ -11,13 +12,13 @@ import (
 	"github.com/issueye/grape/internal/router"
 	"github.com/issueye/grape/pkg/middleware"
 	orange_validator "github.com/issueye/grape/pkg/validator"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func InitServer() {
 	mode := config.GetParam(config.CfgServerMode, "release").String()
 	gin.SetMode(mode)
-
-	gin.SetMode(gin.ReleaseMode)
 
 	// gin引擎对象
 	global.Router = gin.New()
@@ -31,6 +32,11 @@ func InitServer() {
 
 	// 设置一个静态文件服务器
 	global.Router.Static("/www", "./runtime/static")
+
+	if strings.ToLower(mode) == "debug" {
+		// 设置 swagger
+		global.Router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	}
 
 	// 告诉服务文件的MIME类型
 	_ = mime.AddExtensionType(".js", "application/javascript")

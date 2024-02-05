@@ -3,6 +3,7 @@ package router
 import (
 	"github.com/gin-gonic/gin"
 	v1 "github.com/issueye/grape/internal/controller/v1"
+	"github.com/issueye/grape/internal/global"
 )
 
 type NodeRouter struct {
@@ -12,7 +13,7 @@ type NodeRouter struct {
 
 func NewNodeRouter() *NodeRouter {
 	return &NodeRouter{
-		Name:    "node",
+		Name:    string(global.RGN_node),
 		control: &v1.NodeController{},
 	}
 }

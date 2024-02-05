@@ -1,5 +1,7 @@
 package repository
 
+import "github.com/issueye/grape/internal/common/model"
+
 type CreateUser struct {
 	Account  string `json:"account"`  // uid 登录名
 	Name     string `json:"name"`     // 用户姓名
@@ -8,7 +10,7 @@ type CreateUser struct {
 }
 
 type ModifyUser struct {
-	ID       int64  `json:"id"`       // 编码
+	ID       string `json:"id"`       // 编码
 	Account  string `json:"account"`  // uid 登录名
 	Name     string `json:"name"`     // 用户姓名
 	Password string `json:"password"` // 密码
@@ -16,14 +18,15 @@ type ModifyUser struct {
 }
 
 type StatusUser struct {
-	ID    int64 `json:"id"`    // 编码
-	State uint  `json:"state"` // 备注
+	ID    string `json:"id"`    // 编码
+	State uint   `json:"state"` // 备注
 }
 
 type QueryUser struct {
 	Account string `json:"account"` // uid 登录名
 	Name    string `json:"name"`    // 用户姓名
 	Mark    string `json:"mark"`    // 备注
+	model.Page
 }
 
 // Login

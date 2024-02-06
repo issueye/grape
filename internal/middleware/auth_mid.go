@@ -112,6 +112,7 @@ func (auth *Auth) Authorizator(data interface{}, c *gin.Context) bool {
 
 type JwtToken struct {
 	ID      string `json:"id"`      // id
+	GroupId string `json:"groupId"` // 组编码
 	UID     string `json:"uid"`     // 用户ID
 	Name    string `json:"name"`    // 用户名
 	Token   string `json:"token"`   // token
@@ -143,6 +144,7 @@ func (auth *Auth) LoginResponse(ctx *gin.Context, _ int, token string, expires t
 	jt.ID = user.ID
 	jt.UID = user.Account
 	jt.Name = user.Name
+	jt.GroupId = user.GroupId
 	control.SuccessData(jt)
 }
 

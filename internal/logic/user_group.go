@@ -83,6 +83,7 @@ func (UserGroup) CreateAdminNonExistent() error {
 		if menu == nil {
 			data := model.GroupMenu{}.New()
 			data.Copy2(&element.MenuBase)
+			data.MenuId = element.ID
 			data.GroupId = global.AdminGroupId
 			insertData = append(insertData, data)
 		}

@@ -20,26 +20,6 @@ func NewGroupMenu() *GroupMenu {
 	}
 }
 
-// CreateAdminNonExistent
-// 创建管理员用户组菜单，如果不存在
-// func (GroupMenu *GroupMenu) CreateAdminNonExistent() error {
-// 	isHave := int64(0)
-// 	err := GroupMenu.Db.Model(&model.GroupMenu{}).Where("account = ?", global.AdminName).Where("id = ?", global.AdminId).Count(&isHave).Error
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	if isHave == 0 {
-// 		info := new(model.GroupMenu)
-// 		info.ID = global.AdminId
-// 		info.GroupId = global.AdminGroupId
-
-// 		return GroupMenu.Db.Create(info).Error
-// 	} else {
-// 		return nil
-// 	}
-// }
-
 // Create
 // 创建用户组菜单信息
 func (GroupMenu *GroupMenu) Create(data *repository.CreateGroupMenu) error {
@@ -100,7 +80,7 @@ func (GroupMenu *GroupMenu) List(info *repository.QueryGroupMenu) ([]*model.Grou
 	GroupMenuInfo := new(model.GroupMenu)
 	list := make([]*model.GroupMenu, 0)
 	err := GroupMenu.DataFilter(GroupMenuInfo.TableName(), info, &list, func(db *gorm.DB) (*gorm.DB, error) {
-		query := db.Order("id")
+		query := db.Order("level").Order("[order]")
 
 		if info.Condition != "" {
 			query = query.

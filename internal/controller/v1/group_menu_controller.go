@@ -43,12 +43,109 @@ func (GroupMenuController) List(ctx *gin.Context) {
 
 	list, err := service.NewGroupMenu().List(req)
 	if err != nil {
-		global.Log.Errorf("查询菜单组信息列表失败 %s", err.Error())
-		control.FailByMsg("查询菜单组信息列表失败")
+		control.FailByMsgf("查询菜单组信息列表失败 %s", err.Error())
 		return
 	}
 
 	control.SuccessAutoData(req, list)
+}
+
+// getMenu doc
+//
+//	@tags			菜单组管理
+//	@Summary		获取菜单树列表
+//	@Description	获取菜单树列表
+//	@Produce		json
+//	@Param			groupId	path		string								true	"id"
+//	@Success		200		{object}	controller.Full{[]model.GroupMenu}	"code: 200 成功"
+//	@Failure		500		{object}	controller.Base						"错误返回内容"
+//	@Router			/api/v1/groupMenu/getMenu/{groupId} [get]
+//	@Security		ApiKeyAuth
+func (GroupMenuController) GetMenu(ctx *gin.Context) {
+	control := controller.New(ctx)
+
+	id := control.Param("groupId")
+	if id == "" {
+		control.FailByMsg("[groupId]不能为空")
+		return
+	}
+
+	req := new(repository.QueryGroupMenu)
+	list, err := service.NewGroupMenu().List(req)
+	if err != nil {
+		control.FailByMsgf("查询菜单组信息列表失败 %s", err.Error())
+		return
+	}
+
+	resDatas := make([]*repository.ResGroupMenu, 0)
+
+	findFirstLayer := func(id string) *repository.ResGroupMenu {
+		for _, element := range resDatas {
+			if element.ID == id {
+				return element
+			}
+		}
+
+		resData := new(repository.ResGroupMenu)
+		resData.ID = id
+		resData.Chirdren = make([]*repository.ResGroupMenu, 0)
+
+		resDatas = append(resDatas, resData)
+		return resData
+	}
+
+	findSecondLayer := func(parentId, id string) *repository.ResGroupMenu {
+		menu := findFirstLayer(parentId)
+
+		for _, element := range menu.Chirdren {
+			if element.ID == id {
+				return element
+			}
+		}
+
+		resData := new(repository.ResGroupMenu)
+		resData.ID = id
+		resData.Chirdren = make([]*repository.ResGroupMenu, 0)
+		menu.Chirdren = append(menu.Chirdren, resData)
+
+		return resData
+	}
+
+	for _, element := range list {
+		if element.State == 0 {
+			continue
+		}
+
+		if element.Level == 0 {
+			menu := findFirstLayer(element.MenuId)
+			if menu.Route != "" {
+				continue
+			}
+
+			menu.ID = element.MenuId
+			menu.Name = element.Name
+			menu.Title = element.Title
+			menu.Route = element.Route
+			menu.Icon = element.Icon
+			menu.Auth = element.Auth
+		}
+
+		if element.Level == 1 {
+			menu := findSecondLayer(element.ParentId, element.MenuId)
+			if menu.Route != "" {
+				continue
+			}
+
+			menu.ID = element.MenuId
+			menu.Name = element.Name
+			menu.Title = element.Title
+			menu.Route = element.Route
+			menu.Icon = element.Icon
+			menu.Auth = element.Auth
+		}
+	}
+
+	control.SuccessData(resDatas)
 }
 
 // GetById doc

@@ -40,12 +40,13 @@ func NewMenuGroupRouter() *MenuGroupRouter {
 	}
 }
 
-func (Menu *MenuGroupRouter) Register(group *gin.RouterGroup) {
-	f := group.Group(Menu.Name)
-	f.GET("", Menu.control.List)
-	f.GET(":id", Menu.control.GetById)
-	f.POST("", Menu.control.Create)
-	f.PUT(":id", Menu.control.Modify)
-	f.PUT("state/:id", Menu.control.ModifyState)
-	f.DELETE(":id", Menu.control.Delete)
+func (menu *MenuGroupRouter) Register(group *gin.RouterGroup) {
+	f := group.Group(menu.Name)
+	f.GET("", menu.control.List)
+	f.GET("getMenu/:groupId", menu.control.GetMenu)
+	f.GET(":id", menu.control.GetById)
+	f.POST("", menu.control.Create)
+	f.PUT(":id", menu.control.Modify)
+	f.PUT("state/:id", menu.control.ModifyState)
+	f.DELETE(":id", menu.control.Delete)
 }

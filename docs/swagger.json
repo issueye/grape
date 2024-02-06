@@ -245,6 +245,12 @@
                         "in": "query"
                     },
                     {
+                        "type": "string",
+                        "description": "用户组编码",
+                        "name": "groupId",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "页数",
                         "name": "pageNum",
@@ -254,6 +260,12 @@
                         "type": "integer",
                         "description": "页码",
                         "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "备注",
+                        "name": "state",
                         "in": "query"
                     },
                     {
@@ -308,6 +320,46 @@
                         "description": "code: 200 成功",
                         "schema": {
                             "$ref": "#/definitions/controller.Base"
+                        }
+                    },
+                    "500": {
+                        "description": "错误返回内容",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/groupMenu/getMenu/{groupId}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "获取菜单树列表",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "菜单组管理"
+                ],
+                "summary": "获取菜单树列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "groupId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code: 200 成功",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Full"
                         }
                     },
                     "500": {

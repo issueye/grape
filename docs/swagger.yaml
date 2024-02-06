@@ -774,6 +774,10 @@ paths:
         in: query
         name: condition
         type: string
+      - description: 用户组编码
+        in: query
+        name: groupId
+        type: string
       - description: 页数
         in: query
         name: pageNum
@@ -781,6 +785,10 @@ paths:
       - description: 页码
         in: query
         name: pageSize
+        type: integer
+      - description: 备注
+        in: query
+        name: state
         type: integer
       - description: 总数  由服务器返回回去
         in: query
@@ -909,6 +917,31 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: 修改菜单组信息
+      tags:
+      - 菜单组管理
+  /api/v1/groupMenu/getMenu/{groupId}:
+    get:
+      description: 获取菜单树列表
+      parameters:
+      - description: id
+        in: path
+        name: groupId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'code: 200 成功'
+          schema:
+            $ref: '#/definitions/controller.Full'
+        "500":
+          description: 错误返回内容
+          schema:
+            $ref: '#/definitions/controller.Base'
+      security:
+      - ApiKeyAuth: []
+      summary: 获取菜单树列表
       tags:
       - 菜单组管理
   /api/v1/groupMenu/state/{id}:

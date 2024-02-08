@@ -21,6 +21,7 @@ func NewMenuRouter() *MenuRouter {
 func (Menu MenuRouter) Register(group *gin.RouterGroup) {
 	f := group.Group(Menu.Name)
 	f.GET("", Menu.control.List)
+	f.GET("tree", Menu.control.TreeList)
 	f.GET(":id", Menu.control.GetById)
 	f.POST("", Menu.control.Create)
 	f.PUT(":id", Menu.control.Modify)

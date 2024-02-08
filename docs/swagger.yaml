@@ -42,6 +42,9 @@ definitions:
       expires:
         description: 时间
         type: string
+      groupId:
+        description: 组编码
+        type: string
       id:
         description: id
         type: string
@@ -75,9 +78,15 @@ definitions:
       level:
         description: 菜单层级级别 0 代表第一层
         type: integer
+      menu_id:
+        description: 菜单编码
+        type: string
       name:
         description: 菜单名称
         type: string
+      order:
+        description: 排序
+        type: integer
       parentId:
         description: 父级菜单编码 如果没有则传"0"
         type: string
@@ -95,6 +104,7 @@ definitions:
         type: string
     required:
     - group_id
+    - menu_id
     - name
     - parentId
     - route
@@ -120,6 +130,9 @@ definitions:
       name:
         description: 菜单名称
         type: string
+      order:
+        description: 排序
+        type: integer
       parentId:
         description: 父级菜单编码 如果没有则传"0"
         type: string
@@ -229,9 +242,15 @@ definitions:
       level:
         description: 菜单层级级别 0 代表第一层
         type: integer
+      menu_id:
+        description: 菜单编码
+        type: string
       name:
         description: 菜单名称
         type: string
+      order:
+        description: 排序
+        type: integer
       parentId:
         description: 父级菜单编码 如果没有则传"0"
         type: string
@@ -246,6 +265,7 @@ definitions:
         type: string
     required:
     - group_id
+    - menu_id
     - name
     - parentId
     - route
@@ -265,6 +285,9 @@ definitions:
       name:
         description: 菜单名称
         type: string
+      order:
+        description: 排序
+        type: integer
       parentId:
         description: 父级菜单编码 如果没有则传"0"
         type: string
@@ -438,9 +461,15 @@ definitions:
       level:
         description: 菜单层级级别 0 代表第一层
         type: integer
+      menu_id:
+        description: 菜单编码
+        type: string
       name:
         description: 菜单名称
         type: string
+      order:
+        description: 排序
+        type: integer
       parentId:
         description: 父级菜单编码 如果没有则传"0"
         type: string
@@ -455,6 +484,7 @@ definitions:
         type: string
     required:
     - group_id
+    - menu_id
     - name
     - parentId
     - route
@@ -477,6 +507,9 @@ definitions:
       name:
         description: 菜单名称
         type: string
+      order:
+        description: 排序
+        type: integer
       parentId:
         description: 父级菜单编码 如果没有则传"0"
         type: string
@@ -1017,12 +1050,16 @@ paths:
       - 基本接口
   /api/v1/menu:
     get:
-      description: 获取菜单列表
+      description: 获取菜单列表-树形结构
       parameters:
       - description: 条件
         in: query
         name: condition
         type: string
+      - description: 等级
+        in: query
+        name: level
+        type: integer
       - description: 页数
         in: query
         name: pageNum
@@ -1048,7 +1085,7 @@ paths:
             $ref: '#/definitions/controller.Base'
       security:
       - ApiKeyAuth: []
-      summary: 获取菜单列表
+      summary: 获取菜单列表-树形结构
       tags:
       - 菜单管理
     post:

@@ -30,5 +30,5 @@ type ResGroupMenu struct {
 	Route    string          `json:"route"`    // 路由
 	Icon     string          `json:"icon"`     // 菜单图标
 	Auth     int             `json:"auth"`     // 菜单权限级别
-	Chirdren []*ResGroupMenu `json:"chirdren"` // 子菜单
+	Children []*ResGroupMenu `json:"children"` // 子菜单
 }

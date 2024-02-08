@@ -130,7 +130,80 @@ func (Menu *Menu) List(info *repository.QueryMenu) ([]*model.Menu, error) {
 				Or("route like ?", fmt.Sprintf("%%%s%%", info.Condition))
 		}
 
+		if info.Level > -1 {
+			query = query.Where("level = ?", info.Level)
+		}
+
 		return query, nil
 	})
 	return list, err
+}
+
+// List
+// 获取用户列表
+func (Menu *Menu) TreeList(info *repository.QueryMenu) ([]*repository.ResTreeMenus, error) {
+	MenuInfo := new(model.Menu)
+	list := make([]*model.Menu, 0)
+	err := Menu.DataFilter(MenuInfo.TableName(), info, &list, func(db *gorm.DB) (*gorm.DB, error) {
+		query := db.Order("id")
+
+		// 通用统一条件
+		if info.Condition != "" {
+			query = query.
+				Where("name like ?", fmt.Sprintf("%%%s%%", info.Condition)).
+				Or("title like ?", fmt.Sprintf("%%%s%%", info.Condition)).
+				Or("route like ?", fmt.Sprintf("%%%s%%", info.Condition))
+		}
+
+		if info.Level > -1 {
+			query = query.Where("level = ?", info.Level)
+		}
+
+		return query, nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	resDatas := make([]*repository.ResTreeMenus, 0)
+
+	findFirst := func(id string) *repository.ResTreeMenus {
+		for _, element := range resDatas {
+			if element.ID == id {
+				return element
+			}
+		}
+
+		return nil
+	}
+
+	for _, element := range list {
+		if element.Level == 0 {
+			menu := new(repository.ResTreeMenus)
+			menu.MenuBase.Copy(&element.MenuBase)
+			menu.ID = element.ID
+			resDatas = append(resDatas, menu)
+		}
+	}
+
+	for _, element := range list {
+		if element.Level == 1 {
+			menu := new(repository.ResTreeMenus)
+			menu.MenuBase.Copy(&element.MenuBase)
+			menu.ID = element.ID
+			parent := findFirst(menu.ParentId)
+			if parent != nil {
+				parent.Children = append(parent.Children, &menu.Menu)
+			}
+		}
+	}
+
+	for _, element := range resDatas {
+		if len(element.Children) > 0 {
+			element.HasChildren = true
+		}
+	}
+
+	return resDatas, nil
 }

@@ -50,6 +50,37 @@ func (MenuController) List(ctx *gin.Context) {
 	control.SuccessAutoData(req, list)
 }
 
+// TreeList doc
+//
+//	@tags			菜单管理
+//	@Summary		获取菜单列表-树形结构
+//	@Description	获取菜单列表-树形结构
+//	@Produce		json
+//	@Param			params	query		repository.QueryMenu						true	"查询条件"
+//	@Success		200		{object}	controller.Full{[]repository.ResTreeMenus}	"code: 200 成功"
+//	@Failure		500		{object}	controller.Base								"错误返回内容"
+//	@Router			/api/v1/menu [get]
+//	@Security		ApiKeyAuth
+func (MenuController) TreeList(ctx *gin.Context) {
+	control := controller.New(ctx)
+
+	req := new(repository.QueryMenu)
+	err := control.Bind(req)
+	if err != nil {
+		global.Log.Errorf("绑定请求内容失败 %s", err.Error())
+		control.FailBind(err)
+		return
+	}
+
+	list, err := service.NewMenu().TreeList(req)
+	if err != nil {
+		control.FailByMsgf("查询菜单信息列表失败 %s", err.Error())
+		return
+	}
+
+	control.SuccessAutoData(req, list)
+}
+
 // GetById doc
 //
 //	@tags			菜单管理

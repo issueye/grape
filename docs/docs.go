@@ -631,19 +631,25 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "获取菜单列表",
+                "description": "获取菜单列表-树形结构",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "菜单管理"
                 ],
-                "summary": "获取菜单列表",
+                "summary": "获取菜单列表-树形结构",
                 "parameters": [
                     {
                         "type": "string",
                         "description": "条件",
                         "name": "condition",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "等级",
+                        "name": "level",
                         "in": "query"
                     },
                     {
@@ -2611,6 +2617,10 @@ const docTemplate = `{
                     "description": "时间",
                     "type": "string"
                 },
+                "groupId": {
+                    "description": "组编码",
+                    "type": "string"
+                },
                 "id": {
                     "description": "id",
                     "type": "string"
@@ -2633,6 +2643,7 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "group_id",
+                "menu_id",
                 "name",
                 "parentId",
                 "route",
@@ -2663,9 +2674,17 @@ const docTemplate = `{
                     "description": "菜单层级级别 0 代表第一层",
                     "type": "integer"
                 },
+                "menu_id": {
+                    "description": "菜单编码",
+                    "type": "string"
+                },
                 "name": {
                     "description": "菜单名称",
                     "type": "string"
+                },
+                "order": {
+                    "description": "排序",
+                    "type": "integer"
                 },
                 "parentId": {
                     "description": "父级菜单编码 如果没有则传\"0\"",
@@ -2721,6 +2740,10 @@ const docTemplate = `{
                 "name": {
                     "description": "菜单名称",
                     "type": "string"
+                },
+                "order": {
+                    "description": "排序",
+                    "type": "integer"
                 },
                 "parentId": {
                     "description": "父级菜单编码 如果没有则传\"0\"",
@@ -2850,6 +2873,7 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "group_id",
+                "menu_id",
                 "name",
                 "parentId",
                 "route",
@@ -2872,9 +2896,17 @@ const docTemplate = `{
                     "description": "菜单层级级别 0 代表第一层",
                     "type": "integer"
                 },
+                "menu_id": {
+                    "description": "菜单编码",
+                    "type": "string"
+                },
                 "name": {
                     "description": "菜单名称",
                     "type": "string"
+                },
+                "order": {
+                    "description": "排序",
+                    "type": "integer"
                 },
                 "parentId": {
                     "description": "父级菜单编码 如果没有则传\"0\"",
@@ -2918,6 +2950,10 @@ const docTemplate = `{
                 "name": {
                     "description": "菜单名称",
                     "type": "string"
+                },
+                "order": {
+                    "description": "排序",
+                    "type": "integer"
                 },
                 "parentId": {
                     "description": "父级菜单编码 如果没有则传\"0\"",
@@ -3133,6 +3169,7 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "group_id",
+                "menu_id",
                 "name",
                 "parentId",
                 "route",
@@ -3159,9 +3196,17 @@ const docTemplate = `{
                     "description": "菜单层级级别 0 代表第一层",
                     "type": "integer"
                 },
+                "menu_id": {
+                    "description": "菜单编码",
+                    "type": "string"
+                },
                 "name": {
                     "description": "菜单名称",
                     "type": "string"
+                },
+                "order": {
+                    "description": "排序",
+                    "type": "integer"
                 },
                 "parentId": {
                     "description": "父级菜单编码 如果没有则传\"0\"",
@@ -3209,6 +3254,10 @@ const docTemplate = `{
                 "name": {
                     "description": "菜单名称",
                     "type": "string"
+                },
+                "order": {
+                    "description": "排序",
+                    "type": "integer"
                 },
                 "parentId": {
                     "description": "父级菜单编码 如果没有则传\"0\"",

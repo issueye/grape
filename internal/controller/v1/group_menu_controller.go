@@ -88,7 +88,7 @@ func (GroupMenuController) GetMenu(ctx *gin.Context) {
 
 		resData := new(repository.ResGroupMenu)
 		resData.ID = id
-		resData.Chirdren = make([]*repository.ResGroupMenu, 0)
+		resData.Children = make([]*repository.ResGroupMenu, 0)
 
 		resDatas = append(resDatas, resData)
 		return resData
@@ -97,7 +97,7 @@ func (GroupMenuController) GetMenu(ctx *gin.Context) {
 	findSecondLayer := func(parentId, id string) *repository.ResGroupMenu {
 		menu := findFirstLayer(parentId)
 
-		for _, element := range menu.Chirdren {
+		for _, element := range menu.Children {
 			if element.ID == id {
 				return element
 			}
@@ -105,8 +105,8 @@ func (GroupMenuController) GetMenu(ctx *gin.Context) {
 
 		resData := new(repository.ResGroupMenu)
 		resData.ID = id
-		resData.Chirdren = make([]*repository.ResGroupMenu, 0)
-		menu.Chirdren = append(menu.Chirdren, resData)
+		resData.Children = make([]*repository.ResGroupMenu, 0)
+		menu.Children = append(menu.Children, resData)
 
 		return resData
 	}

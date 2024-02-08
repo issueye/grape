@@ -143,8 +143,6 @@ func SuccessAutoData(ctx *gin.Context, req interface{}, data interface{}) {
 		ctx.Set("RQ_PAGE_NUM", num)
 		ctx.Set("RQ_PAGE_SIZE", size)
 
-		// 获取数据起点和终点
-		begin, end := utils.SlicePage(int(num), int(size), int(Total))
 		dataRef := reflect.ValueOf(data)
 		if dataRef.Kind() == reflect.Ptr {
 			dataRef = dataRef.Elem()
@@ -152,8 +150,11 @@ func SuccessAutoData(ctx *gin.Context, req interface{}, data interface{}) {
 
 		// 判断是否是切片，如果是切片则获取切片的对应数据
 		if dataRef.Kind() == reflect.Slice {
+			dataLen := dataRef.Len()
+			// 获取数据起点和终点
+			begin, end := utils.SlicePage(int(num), int(size), int(dataLen))
 			// 判断传入的切片长度，如果传入的长度和 size相等，则不需要再重新切
-			if dataRef.Len() >= int(size) {
+			if dataLen > int(size) {
 				data = dataRef.Slice(begin, end).Interface()
 			}
 		}

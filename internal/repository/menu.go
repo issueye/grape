@@ -17,6 +17,13 @@ type StatusMenu struct {
 }
 
 type QueryMenu struct {
-	Condition string `json:"condition" form:"condition"` // 条件
+	Condition string `json:"condition" form:"condition"`    // 条件
+	Level     int    `json:"level" form:"level,default=-1"` // 等级
 	model.Page
+}
+
+type ResTreeMenus struct {
+	model.Menu
+	HasChildren bool          `json:"hasChildren"` // 是否有子集
+	Children    []*model.Menu `json:"children"`
 }

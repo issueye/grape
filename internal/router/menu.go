@@ -49,5 +49,6 @@ func (menu *MenuGroupRouter) Register(group *gin.RouterGroup) {
 	f.POST("", menu.control.Create)
 	f.PUT(":id", menu.control.Modify)
 	f.PUT("state/:id", menu.control.ModifyState)
+	f.PUT("auth/:id", menu.control.ModifyGroupMenuState)
 	f.DELETE(":id", menu.control.Delete)
 }

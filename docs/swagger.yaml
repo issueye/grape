@@ -395,6 +395,9 @@ definitions:
       account:
         description: uid 登录名
         type: string
+      groupId:
+        description: 用户组
+        type: string
       mark:
         description: 备注
         type: string
@@ -489,6 +492,14 @@ definitions:
     - parentId
     - route
     - title
+    type: object
+  repository.ModifyGroupMenuState:
+    properties:
+      datas:
+        description: 需要更新的菜单
+        items:
+          type: string
+        type: array
     type: object
   repository.ModifyMenu:
     properties:
@@ -632,6 +643,9 @@ definitions:
     properties:
       account:
         description: uid 登录名
+        type: string
+      groupId:
+        description: 用户组
         type: string
       id:
         description: 编码
@@ -807,6 +821,10 @@ paths:
         in: query
         name: condition
         type: string
+      - description: 获取所有
+        in: query
+        name: getAll
+        type: boolean
       - description: 用户组编码
         in: query
         name: groupId
@@ -952,6 +970,37 @@ paths:
       summary: 修改菜单组信息
       tags:
       - 菜单组管理
+  /api/v1/groupMenu/auth/{id}:
+    put:
+      description: 修改菜单组状态信息
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: 修改信息
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/repository.ModifyGroupMenuState'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'code: 200 成功'
+          schema:
+            $ref: '#/definitions/controller.Base'
+        "500":
+          description: 错误返回内容
+          schema:
+            $ref: '#/definitions/controller.Base'
+      security:
+      - ApiKeyAuth: []
+      summary: 修改菜单组状态信息
+      tags:
+      - 菜单组管理
   /api/v1/groupMenu/getMenu/{groupId}:
     get:
       description: 获取菜单树列表
@@ -961,6 +1010,34 @@ paths:
         name: groupId
         required: true
         type: string
+      - description: 条件
+        in: query
+        name: condition
+        type: string
+      - description: 获取所有
+        in: query
+        name: getAll
+        type: boolean
+      - description: 用户组编码
+        in: query
+        name: groupId
+        type: string
+      - description: 页数
+        in: query
+        name: pageNum
+        type: integer
+      - description: 页码
+        in: query
+        name: pageSize
+        type: integer
+      - description: 备注
+        in: query
+        name: state
+        type: integer
+      - description: 总数  由服务器返回回去
+        in: query
+        name: total
+        type: integer
       produces:
       - application/json
       responses:
@@ -1050,7 +1127,7 @@ paths:
       - 基本接口
   /api/v1/menu:
     get:
-      description: 获取菜单列表-树形结构
+      description: 获取菜单列表
       parameters:
       - description: 条件
         in: query
@@ -1085,7 +1162,7 @@ paths:
             $ref: '#/definitions/controller.Base'
       security:
       - ApiKeyAuth: []
-      summary: 获取菜单列表-树形结构
+      summary: 获取菜单列表
       tags:
       - 菜单管理
     post:
@@ -1220,6 +1297,46 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: 修改菜单状态
+      tags:
+      - 菜单管理
+  /api/v1/menu/tree:
+    get:
+      description: 获取菜单列表-树形结构
+      parameters:
+      - description: 条件
+        in: query
+        name: condition
+        type: string
+      - description: 等级
+        in: query
+        name: level
+        type: integer
+      - description: 页数
+        in: query
+        name: pageNum
+        type: integer
+      - description: 页码
+        in: query
+        name: pageSize
+        type: integer
+      - description: 总数  由服务器返回回去
+        in: query
+        name: total
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'code: 200 成功'
+          schema:
+            $ref: '#/definitions/controller.Full'
+        "500":
+          description: 错误返回内容
+          schema:
+            $ref: '#/definitions/controller.Base'
+      security:
+      - ApiKeyAuth: []
+      summary: 获取菜单列表-树形结构
       tags:
       - 菜单管理
   /api/v1/node:
@@ -1361,30 +1478,6 @@ paths:
       tags:
       - 节点信息
   /api/v1/port:
-    delete:
-      description: 删除端口信息
-      parameters:
-      - description: id
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 'code: 200 成功'
-          schema:
-            $ref: '#/definitions/controller.Base'
-        "500":
-          description: 错误返回内容
-          schema:
-            $ref: '#/definitions/controller.Base'
-      security:
-      - ApiKeyAuth: []
-      summary: 删除端口信息
-      tags:
-      - 端口信息
     get:
       description: 查询端口信息
       parameters:
@@ -1445,6 +1538,55 @@ paths:
       summary: 创建端口信息
       tags:
       - 端口信息
+  /api/v1/port/{id}:
+    delete:
+      description: 删除端口信息
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'code: 200 成功'
+          schema:
+            $ref: '#/definitions/controller.Base'
+        "500":
+          description: 错误返回内容
+          schema:
+            $ref: '#/definitions/controller.Base'
+      security:
+      - ApiKeyAuth: []
+      summary: 删除端口信息
+      tags:
+      - 端口信息
+    get:
+      description: 通过编码查询端口信息
+      parameters:
+      - description: 端口信息编码
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'code: 200 成功'
+          schema:
+            $ref: '#/definitions/controller.Base'
+        "500":
+          description: 错误返回内容
+          schema:
+            $ref: '#/definitions/controller.Base'
+      security:
+      - ApiKeyAuth: []
+      summary: 通过编码查询端口信息
+      tags:
+      - 端口信息
     put:
       description: 修改端口信息
       parameters:
@@ -1468,31 +1610,6 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: 修改端口信息
-      tags:
-      - 端口信息
-  /api/v1/port/{id}:
-    get:
-      description: 通过编码查询端口信息
-      parameters:
-      - description: 端口信息编码
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 'code: 200 成功'
-          schema:
-            $ref: '#/definitions/controller.Base'
-        "500":
-          description: 错误返回内容
-          schema:
-            $ref: '#/definitions/controller.Base'
-      security:
-      - ApiKeyAuth: []
-      summary: 通过编码查询端口信息
       tags:
       - 端口信息
   /api/v1/port/reload/{id}:
@@ -1767,30 +1884,6 @@ paths:
       tags:
       - 匹配规则信息
   /api/v1/target:
-    delete:
-      description: 删除目标地址信息
-      parameters:
-      - description: id
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 'code: 200 成功'
-          schema:
-            $ref: '#/definitions/controller.Base'
-        "500":
-          description: 错误返回内容
-          schema:
-            $ref: '#/definitions/controller.Base'
-      security:
-      - ApiKeyAuth: []
-      summary: 删除目标地址信息
-      tags:
-      - 目标地址信息
     get:
       description: 查询目标地址信息
       parameters:
@@ -1851,6 +1944,55 @@ paths:
       summary: 创建目标地址信息
       tags:
       - 目标地址信息
+  /api/v1/target/{id}:
+    delete:
+      description: 删除目标地址信息
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'code: 200 成功'
+          schema:
+            $ref: '#/definitions/controller.Base'
+        "500":
+          description: 错误返回内容
+          schema:
+            $ref: '#/definitions/controller.Base'
+      security:
+      - ApiKeyAuth: []
+      summary: 删除目标地址信息
+      tags:
+      - 目标地址信息
+    get:
+      description: 通过编码查询目标地址信息
+      parameters:
+      - description: 目标地址信息编码
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'code: 200 成功'
+          schema:
+            $ref: '#/definitions/controller.Base'
+        "500":
+          description: 错误返回内容
+          schema:
+            $ref: '#/definitions/controller.Base'
+      security:
+      - ApiKeyAuth: []
+      summary: 通过编码查询目标地址信息
+      tags:
+      - 目标地址信息
     put:
       description: 修改目标地址信息
       parameters:
@@ -1876,31 +2018,6 @@ paths:
       summary: 修改目标地址信息
       tags:
       - 目标地址信息
-  /api/v1/target/{id}:
-    get:
-      description: 通过编码查询目标地址信息
-      parameters:
-      - description: 目标地址信息编码
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 'code: 200 成功'
-          schema:
-            $ref: '#/definitions/controller.Base'
-        "500":
-          description: 错误返回内容
-          schema:
-            $ref: '#/definitions/controller.Base'
-      security:
-      - ApiKeyAuth: []
-      summary: 通过编码查询目标地址信息
-      tags:
-      - 目标地址信息
   /api/v1/user:
     get:
       description: 获取定时任务列表
@@ -1908,6 +2025,10 @@ paths:
       - description: uid 登录名
         in: query
         name: account
+        type: string
+      - description: 条件
+        in: query
+        name: condition
         type: string
       - description: 备注
         in: query

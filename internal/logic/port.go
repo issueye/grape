@@ -21,9 +21,9 @@ func (Port) GetById(id string) (*model.PortInfo, error) {
 
 // Modify
 // 修改信息 不包含状态
-func (Port) Modify(req *repository.ModifyPort) error {
+func (Port) Modify(id string, req *repository.ModifyPort) error {
 	portService := service.NewPort()
-	return portService.Modify(req)
+	return portService.Modify(id, req)
 }
 
 // ModifyState

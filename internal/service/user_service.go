@@ -77,6 +77,7 @@ func (user *User) Create(data *repository.CreateUser) error {
 	info.Name = data.Name
 	info.Password = data.Password
 	info.Mark = data.Mark
+	info.GroupId = data.GroupId
 	info.State = 1
 	info.Sys = 0
 	return user.Db.Create(info).Error
@@ -106,6 +107,7 @@ func (user *User) Modify(info *repository.ModifyUser) error {
 	m["name"] = info.Name
 	m["password"] = info.Password
 	m["mark"] = info.Mark
+	m["group_id"] = info.GroupId
 
 	return user.Db.Model(&model.UserInfo{}).Where("id = ?", info.ID).Updates(m).Error
 }
@@ -128,15 +130,24 @@ func (user *User) Delete(id string) error {
 
 // List
 // 获取用户列表
-func (user *User) List(info *repository.QueryUser) ([]*model.UserInfo, error) {
+func (user *User) List(info *repository.QueryUser) ([]*repository.ResUserGroupData, error) {
 	userInfo := new(model.UserInfo)
-	list := make([]*model.UserInfo, 0)
-	err := user.DataFilter(userInfo.TableName(), info, &list, func(db *gorm.DB) (*gorm.DB, error) {
+	list := make([]*repository.ResUserGroupData, 0)
+
+	sqlStr := fmt.Sprintf("SELECT U.*, G.name as group_name FROM %s U, %s G WHERE U.group_id = G.id", userInfo.TableName(), model.UserGroupInfo{}.TableName())
+	err := user.DataFilter(fmt.Sprintf("(%s)TB", sqlStr), info, &list, func(db *gorm.DB) (*gorm.DB, error) {
 		query := db.Order("id")
 
 		// 用户姓名
 		if info.Name != "" {
 			query = query.Where("name like ?", fmt.Sprintf("%%%s%%", info.Name))
+		}
+
+		// 查询条件
+		if info.Conditon != "" {
+			query = query.
+				Where("name like ?", fmt.Sprintf("%%%s%%", info.Conditon)).
+				Or("mark like ?", fmt.Sprintf("%%%s%%", info.Conditon))
 		}
 
 		return query, nil

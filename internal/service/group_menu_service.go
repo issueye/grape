@@ -14,10 +14,17 @@ type GroupMenu struct {
 	*service.BaseService
 }
 
-func NewGroupMenu() *GroupMenu {
-	return &GroupMenu{
+func NewGroupMenu(args ...any) *GroupMenu {
+	gm := &GroupMenu{
 		BaseService: service.NewBaseService(global.DB),
 	}
+
+	if len(args) > 0 {
+		gm.OpenTx = args[0].(bool)
+	}
+
+	gm.Tx = gm.Db.Begin()
+	return gm
 }
 
 // Create
@@ -26,20 +33,20 @@ func (GroupMenu *GroupMenu) Create(data *repository.CreateGroupMenu) error {
 	info := model.GroupMenu{}.New()
 	info.Copy(&data.GroupMenuBase)
 	info.State = 1
-	return GroupMenu.Db.Create(info).Error
+	return GroupMenu.GetDB().Create(info).Error
 }
 
 // Create
 // 创建用户组菜单信息
 func (GroupMenu *GroupMenu) BatchCreate(datas *[]*model.GroupMenu) error {
-	return GroupMenu.Db.Create(datas).Error
+	return GroupMenu.GetDB().Create(datas).Error
 }
 
 // GetById
 // 根据用户组菜单ID查找用户组菜单信息
 func (GroupMenu *GroupMenu) GetById(id string) (*model.GroupMenu, error) {
 	info := new(model.GroupMenu)
-	err := GroupMenu.Db.Model(info).Where("id = ?", id).Find(info).Error
+	err := GroupMenu.GetDB().Model(info).Where("id = ?", id).Find(info).Error
 	return info, err
 }
 
@@ -55,23 +62,39 @@ func (GroupMenu *GroupMenu) Modify(id string, info *repository.ModifyGroupMenu) 
 	m["level"] = info.Level
 	m["parent_id"] = info.ParentId
 
-	return GroupMenu.Db.Model(&model.GroupMenu{}).Where("id = ?", id).Updates(m).Error
+	return GroupMenu.GetDB().Model(&model.GroupMenu{}).Where("id = ?", id).Updates(m).Error
 }
 
 // Status
 // 修改用户组菜单信息
 func (GroupMenu *GroupMenu) Status(info *repository.StatusGroupMenu) error {
-	return GroupMenu.Db.
+	return GroupMenu.GetDB().
 		Model(&model.GroupMenu{}).
 		Where("id = ?", info.ID).
 		Update("state", info.State).
 		Error
 }
 
+// Status
+// 修改用户组菜单信息
+func (GroupMenu *GroupMenu) ModifyStateByGroupId(groupId string, state uint) error {
+	return GroupMenu.GetDB().
+		Model(&model.GroupMenu{}).
+		Where("group_id = ?", groupId).
+		Update("state", state).
+		Error
+}
+
 // Delete
 // 删除用户组菜单信息
 func (GroupMenu *GroupMenu) Delete(id string) error {
-	return GroupMenu.Db.Where("id = ?", id).Delete(&model.GroupMenu{}).Error
+	return GroupMenu.GetDB().Where("id = ?", id).Delete(&model.GroupMenu{}).Error
+}
+
+// Delete
+// 删除用户组菜单信息
+func (GroupMenu *GroupMenu) DelByGroupId(id string) error {
+	return GroupMenu.GetDB().Where("group_id = ?", id).Delete(&model.GroupMenu{}).Error
 }
 
 // List
@@ -81,6 +104,10 @@ func (GroupMenu *GroupMenu) List(info *repository.QueryGroupMenu) ([]*model.Grou
 	list := make([]*model.GroupMenu, 0)
 	err := GroupMenu.DataFilter(GroupMenuInfo.TableName(), info, &list, func(db *gorm.DB) (*gorm.DB, error) {
 		query := db.Order("level").Order("[order]")
+
+		if info.GroupId != "" {
+			query = query.Where("group_id = ?", info.GroupId)
+		}
 
 		if info.Condition != "" {
 			query = query.

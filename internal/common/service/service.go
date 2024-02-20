@@ -8,7 +8,9 @@ import (
 )
 
 type BaseService struct {
-	Db *gorm.DB
+	Db     *gorm.DB
+	Tx     *gorm.DB
+	OpenTx bool
 }
 
 func NewBaseService(db *gorm.DB) *BaseService {
@@ -19,9 +21,25 @@ func NewBaseService(db *gorm.DB) *BaseService {
 
 type ListFilter func(db *gorm.DB) (*gorm.DB, error)
 
+func (srv *BaseService) GetDB() *gorm.DB {
+	if srv.OpenTx && srv.Tx != nil {
+		return srv.Tx
+	}
+
+	return srv.Db
+}
+
+func (srv *BaseService) Rollback() *gorm.DB {
+	return srv.Tx.Rollback()
+}
+
+func (srv *BaseService) Commit() *gorm.DB {
+	return srv.Tx.Commit()
+}
+
 // DataFilter 数据过滤
-func (srv BaseService) DataFilter(tableName string, req, list interface{}, f ListFilter) error {
-	query := srv.Db.Table(tableName)
+func (srv *BaseService) DataFilter(tableName string, req, list interface{}, f ListFilter) error {
+	query := srv.GetDB().Table(tableName)
 	db, err := f(query)
 	if err != nil {
 		return err

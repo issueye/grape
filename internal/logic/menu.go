@@ -54,7 +54,7 @@ func (Menu) Modify(id string, data *repository.ModifyMenu) error {
 
 // 如果菜单信息不存在则创建
 func (Menu) CreateMenuNonExistent() {
-	service.NewMenu().CreateNoExistent(&model.MenuBase{Title: "首页", Name: "dashbord", Route: "/home/dashbord", Icon: "", Auth: 0, Level: 0, ParentId: "0", State: 1, Order: 1})
+	service.NewMenu().CreateNoExistent(&model.MenuBase{Title: "首页", Name: "dashboard", Route: "/home/dashboard", Icon: "", Auth: 0, Level: 0, ParentId: "0", State: 1, Order: 1})
 
 	// 服务地址管理
 	serverId := service.NewMenu().CreateNoExistent(&model.MenuBase{Title: "服务管理", Name: "server_manage", Route: "/home/server", Icon: "", Auth: 0, Level: 0, ParentId: "0", State: 1, Order: 1})

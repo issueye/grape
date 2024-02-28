@@ -66,13 +66,52 @@ func (UserGroup *UserGroup) CreateAdminNonExistent() error {
 // Create
 // 创建用户信息
 func (UserGroup *UserGroup) Create(data *repository.CreateUserGroup) error {
+	tx := UserGroup.Db.Begin()
+	var err error
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+			return
+		}
+
+		tx.Commit()
+	}()
+
 	info := new(model.UserGroupInfo)
 	info.ID = strconv.FormatInt(utils.GenID(), 10)
 	info.Name = data.Name
 	info.Mark = data.Mark
 	info.State = 1
 	info.Sys = 0
-	return UserGroup.Db.Create(info).Error
+	err = UserGroup.Db.Create(info).Error
+	if err != nil {
+		return err
+	}
+
+	var menuList []*model.Menu
+	menuList, err = NewMenu().List(&repository.QueryMenu{Level: -1})
+	if err != nil {
+		return err
+	}
+
+	datas := make([]*model.GroupMenu, 0)
+
+	for _, element := range menuList {
+		menu := model.GroupMenu{}.New()
+		menu.Copy2(&element.MenuBase)
+		menu.GroupId = info.ID
+		menu.MenuId = element.ID
+		menu.State = 0
+
+		datas = append(datas, menu)
+	}
+
+	err = NewGroupMenu().BatchCreate(&datas)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // GetById
@@ -106,7 +145,32 @@ func (UserGroup *UserGroup) Status(info *repository.StatusUserGroup) error {
 // Delete
 // 删除用户信息
 func (UserGroup *UserGroup) Delete(id string) error {
-	return UserGroup.Db.Where("id = ?", id).Delete(&model.UserGroupInfo{}).Error
+	tx := UserGroup.Db.Begin()
+
+	var (
+		err error
+	)
+
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+			return
+		}
+
+		tx.Commit()
+	}()
+
+	err = UserGroup.Db.Where("id = ?", id).Delete(&model.UserGroupInfo{}).Error
+	if err != nil {
+		return err
+	}
+
+	err = NewGroupMenu().DelByGroupId(id)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // List

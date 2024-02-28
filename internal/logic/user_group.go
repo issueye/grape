@@ -71,7 +71,7 @@ func (UserGroup) CreateAdminNonExistent() error {
 		return nil
 	}
 
-	menus, err := service.NewMenu().List(&repository.QueryMenu{})
+	menus, err := service.NewMenu().List(&repository.QueryMenu{Level: -1})
 	if err != nil {
 		return err
 	}

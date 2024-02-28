@@ -55,12 +55,12 @@ func (s *Port) Query(req *repository.QueryPort) ([]*model.PortInfo, error) {
 
 // Modify
 // 修改信息
-func (s *Port) Modify(data *repository.ModifyPort) error {
+func (s *Port) Modify(id string, data *repository.ModifyPort) error {
 	updateData := make(map[string]any)
 	updateData["is_tls"] = data.IsTLS
 	updateData["cert_id"] = data.CertId
 	updateData["mark"] = data.Mark
-	return s.Db.Model(&model.PortInfo{}).Where("id = ?", data.ID).Updates(updateData).Error
+	return s.Db.Model(&model.PortInfo{}).Where("id = ?", id).Updates(updateData).Error
 }
 
 // Modify

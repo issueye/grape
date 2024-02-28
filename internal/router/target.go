@@ -23,6 +23,6 @@ func (router TargetRouter) Register(group *gin.RouterGroup) {
 	f.GET("", router.control.Query)
 	f.GET(":id", router.control.GetById)
 	f.POST("", router.control.Create)
-	f.PUT("", router.control.Modify)
+	f.PUT(":id", router.control.Modify)
 	f.DELETE(":id", router.control.Del)
 }

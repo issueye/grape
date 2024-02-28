@@ -253,6 +253,12 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "boolean",
+                        "description": "获取所有",
+                        "name": "getAll",
+                        "in": "query"
+                    },
+                    {
                         "type": "string",
                         "description": "用户组编码",
                         "name": "groupId",
@@ -339,6 +345,55 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/groupMenu/auth/{id}": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "修改菜单组状态信息",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "菜单组管理"
+                ],
+                "summary": "修改菜单组状态信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "修改信息",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/repository.ModifyGroupMenuState"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code: 200 成功",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    },
+                    "500": {
+                        "description": "错误返回内容",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/groupMenu/getMenu/{groupId}": {
             "get": {
                 "security": [
@@ -361,6 +416,48 @@ const docTemplate = `{
                         "name": "groupId",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "条件",
+                        "name": "condition",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "获取所有",
+                        "name": "getAll",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "用户组编码",
+                        "name": "groupId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页数",
+                        "name": "pageNum",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页码",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "备注",
+                        "name": "state",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "总数  由服务器返回回去",
+                        "name": "total",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -631,14 +728,14 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "获取菜单列表-树形结构",
+                "description": "获取菜单列表",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "菜单管理"
                 ],
-                "summary": "获取菜单列表-树形结构",
+                "summary": "获取菜单列表",
                 "parameters": [
                     {
                         "type": "string",
@@ -756,6 +853,69 @@ const docTemplate = `{
                         "description": "code: 200 成功",
                         "schema": {
                             "$ref": "#/definitions/controller.Base"
+                        }
+                    },
+                    "500": {
+                        "description": "错误返回内容",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/menu/tree": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "获取菜单列表-树形结构",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "菜单管理"
+                ],
+                "summary": "获取菜单列表-树形结构",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "条件",
+                        "name": "condition",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "等级",
+                        "name": "level",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页数",
+                        "name": "pageNum",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页码",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "总数  由服务器返回回去",
+                        "name": "total",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code: 200 成功",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Full"
                         }
                     },
                     "500": {
@@ -1179,46 +1339,6 @@ const docTemplate = `{
                     }
                 }
             },
-            "put": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "修改端口信息",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "端口信息"
-                ],
-                "summary": "修改端口信息",
-                "parameters": [
-                    {
-                        "description": "修改端口信息",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/repository.ModifyPort"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "code: 200 成功",
-                        "schema": {
-                            "$ref": "#/definitions/controller.Base"
-                        }
-                    },
-                    "500": {
-                        "description": "错误返回内容",
-                        "schema": {
-                            "$ref": "#/definitions/controller.Base"
-                        }
-                    }
-                }
-            },
             "post": {
                 "security": [
                     {
@@ -1242,44 +1362,6 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/repository.CreatePort"
                         }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "code: 200 成功",
-                        "schema": {
-                            "$ref": "#/definitions/controller.Base"
-                        }
-                    },
-                    "500": {
-                        "description": "错误返回内容",
-                        "schema": {
-                            "$ref": "#/definitions/controller.Base"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "删除端口信息",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "端口信息"
-                ],
-                "summary": "删除端口信息",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -1477,6 +1559,84 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "端口信息编码",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code: 200 成功",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    },
+                    "500": {
+                        "description": "错误返回内容",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "修改端口信息",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "端口信息"
+                ],
+                "summary": "修改端口信息",
+                "parameters": [
+                    {
+                        "description": "修改端口信息",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/repository.ModifyPort"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code: 200 成功",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    },
+                    "500": {
+                        "description": "错误返回内容",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "删除端口信息",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "端口信息"
+                ],
+                "summary": "删除端口信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -1830,46 +1990,6 @@ const docTemplate = `{
                     }
                 }
             },
-            "put": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "修改目标地址信息",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "目标地址信息"
-                ],
-                "summary": "修改目标地址信息",
-                "parameters": [
-                    {
-                        "description": "修改目标地址信息",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/repository.ModifyTarget"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "code: 200 成功",
-                        "schema": {
-                            "$ref": "#/definitions/controller.Base"
-                        }
-                    },
-                    "500": {
-                        "description": "错误返回内容",
-                        "schema": {
-                            "$ref": "#/definitions/controller.Base"
-                        }
-                    }
-                }
-            },
             "post": {
                 "security": [
                     {
@@ -1892,6 +2012,86 @@ const docTemplate = `{
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/repository.CreateTarget"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code: 200 成功",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    },
+                    "500": {
+                        "description": "错误返回内容",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/target/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "通过编码查询目标地址信息",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "目标地址信息"
+                ],
+                "summary": "通过编码查询目标地址信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "目标地址信息编码",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code: 200 成功",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    },
+                    "500": {
+                        "description": "错误返回内容",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "修改目标地址信息",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "目标地址信息"
+                ],
+                "summary": "修改目标地址信息",
+                "parameters": [
+                    {
+                        "description": "修改目标地址信息",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/repository.ModifyTarget"
                         }
                     }
                 ],
@@ -1949,46 +2149,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/target/{id}": {
-            "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "通过编码查询目标地址信息",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "目标地址信息"
-                ],
-                "summary": "通过编码查询目标地址信息",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "目标地址信息编码",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "code: 200 成功",
-                        "schema": {
-                            "$ref": "#/definitions/controller.Base"
-                        }
-                    },
-                    "500": {
-                        "description": "错误返回内容",
-                        "schema": {
-                            "$ref": "#/definitions/controller.Base"
-                        }
-                    }
-                }
-            }
-        },
         "/api/v1/user": {
             "get": {
                 "security": [
@@ -2009,6 +2169,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "uid 登录名",
                         "name": "account",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "条件",
+                        "name": "condition",
                         "in": "query"
                     },
                     {
@@ -3096,6 +3262,10 @@ const docTemplate = `{
                     "description": "uid 登录名",
                     "type": "string"
                 },
+                "groupId": {
+                    "description": "用户组",
+                    "type": "string"
+                },
                 "mark": {
                     "description": "备注",
                     "type": "string"
@@ -3223,6 +3393,18 @@ const docTemplate = `{
                 "title": {
                     "description": "菜单标题",
                     "type": "string"
+                }
+            }
+        },
+        "repository.ModifyGroupMenuState": {
+            "type": "object",
+            "properties": {
+                "datas": {
+                    "description": "需要更新的菜单",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },
@@ -3418,6 +3600,10 @@ const docTemplate = `{
             "properties": {
                 "account": {
                     "description": "uid 登录名",
+                    "type": "string"
+                },
+                "groupId": {
+                    "description": "用户组",
                     "type": "string"
                 },
                 "id": {

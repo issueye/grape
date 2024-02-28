@@ -50,3 +50,35 @@ func (GroupMenu) ModifyState(id string) error {
 func (GroupMenu) Modify(id string, data *repository.ModifyGroupMenu) error {
 	return service.NewGroupMenu().Modify(id, data)
 }
+
+func (GroupMenu) ModifyGroupMenuState(id string, data *repository.ModifyGroupMenuState) error {
+	gm := service.NewGroupMenu(true)
+
+	var (
+		err error
+	)
+
+	defer func() {
+		if err != nil {
+			gm.Rollback()
+			return
+		}
+
+		gm.Commit()
+	}()
+
+	// 将对应组的权限全部置空
+	err = gm.ModifyStateByGroupId(id, 0)
+	if err != nil {
+		return err
+	}
+
+	for _, element := range data.Datas {
+		err = gm.Status(&repository.StatusGroupMenu{ID: element, State: 1})
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}

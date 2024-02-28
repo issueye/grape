@@ -59,7 +59,7 @@ func (MenuController) List(ctx *gin.Context) {
 //	@Param			params	query		repository.QueryMenu						true	"查询条件"
 //	@Success		200		{object}	controller.Full{[]repository.ResTreeMenus}	"code: 200 成功"
 //	@Failure		500		{object}	controller.Base								"错误返回内容"
-//	@Router			/api/v1/menu [get]
+//	@Router			/api/v1/menu/tree [get]
 //	@Security		ApiKeyAuth
 func (MenuController) TreeList(ctx *gin.Context) {
 	control := controller.New(ctx)

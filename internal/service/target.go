@@ -51,11 +51,11 @@ func (s *Target) Query(req *repository.QueryTarget) ([]*model.TargetInfo, error)
 
 // Modify
 // 修改信息
-func (s *Target) Modify(data *repository.ModifyTarget) error {
+func (s *Target) Modify(id string, data *repository.ModifyTarget) error {
 	updateData := make(map[string]any)
 	updateData["name"] = data.Name
 	updateData["mark"] = data.Mark
-	return s.Db.Model(&model.TargetInfo{}).Where("id = ?", data.ID).Updates(updateData).Error
+	return s.Db.Model(&model.TargetInfo{}).Where("id = ?", id).Updates(updateData).Error
 }
 
 // Del

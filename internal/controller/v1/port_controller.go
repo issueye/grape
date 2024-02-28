@@ -54,10 +54,16 @@ func (PortController) Create(ctx *gin.Context) {
 //	@Param			data	body		repository.ModifyPort	true	"修改端口信息"
 //	@Success		200		{object}	controller.Base			"code: 200 成功"
 //	@Failure		500		{object}	controller.Base			"错误返回内容"
-//	@Router			/api/v1/port [put]
+//	@Router			/api/v1/port/{id} [put]
 //	@Security		ApiKeyAuth
 func (PortController) Modify(ctx *gin.Context) {
 	c := controller.New(ctx)
+
+	id := c.Param("id")
+	if id == "" {
+		c.FailBind(errors.New("[id]不能为空"))
+		return
+	}
 
 	// 绑定请求数据
 	req := new(repository.ModifyPort)
@@ -67,7 +73,7 @@ func (PortController) Modify(ctx *gin.Context) {
 		return
 	}
 
-	err = logic.Port{}.Modify(req)
+	err = logic.Port{}.Modify(id, req)
 	if err != nil {
 		c.FailByMsgf("更新信息失败 %s", err.Error())
 		return
@@ -325,7 +331,7 @@ func (PortController) GetById(ctx *gin.Context) {
 //	@Param			id	path		string			true	"id"
 //	@Success		200	{object}	controller.Base	"code: 200 成功"
 //	@Failure		500	{object}	controller.Base	"错误返回内容"
-//	@Router			/api/v1/port [delete]
+//	@Router			/api/v1/port/{id} [delete]
 //	@Security		ApiKeyAuth
 func (PortController) Del(ctx *gin.Context) {
 	c := controller.New(ctx)

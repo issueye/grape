@@ -20,9 +20,9 @@ func (Target) GetById(id string) (*model.TargetInfo, error) {
 
 // Modify
 // 修改信息 不包含状态
-func (Target) Modify(req *repository.ModifyTarget) error {
+func (Target) Modify(id string, req *repository.ModifyTarget) error {
 	TargetService := service.NewTarget()
-	return TargetService.Modify(req)
+	return TargetService.Modify(id, req)
 }
 
 // Create

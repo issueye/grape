@@ -120,7 +120,7 @@ func (Menu *Menu) List(info *repository.QueryMenu) ([]*model.Menu, error) {
 	MenuInfo := new(model.Menu)
 	list := make([]*model.Menu, 0)
 	err := Menu.DataFilter(MenuInfo.TableName(), info, &list, func(db *gorm.DB) (*gorm.DB, error) {
-		query := db.Order("id")
+		query := db.Order("[order]")
 
 		// 通用统一条件
 		if info.Condition != "" {
@@ -145,7 +145,7 @@ func (Menu *Menu) TreeList(info *repository.QueryMenu) ([]*repository.ResTreeMen
 	MenuInfo := new(model.Menu)
 	list := make([]*model.Menu, 0)
 	err := Menu.DataFilter(MenuInfo.TableName(), info, &list, func(db *gorm.DB) (*gorm.DB, error) {
-		query := db.Order("id")
+		query := db.Order("[order]")
 
 		// 通用统一条件
 		if info.Condition != "" {

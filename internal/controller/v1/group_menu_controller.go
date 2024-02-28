@@ -2,6 +2,7 @@ package v1
 
 import (
 	"errors"
+	"slices"
 
 	"github.com/gin-gonic/gin"
 	"github.com/issueye/grape/internal/common/controller"
@@ -57,6 +58,7 @@ func (GroupMenuController) List(ctx *gin.Context) {
 //	@Description	获取菜单树列表
 //	@Produce		json
 //	@Param			groupId	path		string								true	"id"
+//	@Param			params	query		repository.QueryGroupMenu			true	"查询条件"
 //	@Success		200		{object}	controller.Full{[]model.GroupMenu}	"code: 200 成功"
 //	@Failure		500		{object}	controller.Base						"错误返回内容"
 //	@Router			/api/v1/groupMenu/getMenu/{groupId} [get]
@@ -71,6 +73,14 @@ func (GroupMenuController) GetMenu(ctx *gin.Context) {
 	}
 
 	req := new(repository.QueryGroupMenu)
+	err := control.Bind(req)
+	if err != nil {
+		global.Log.Errorf("绑定请求内容失败 %s", err.Error())
+		control.FailBind(err)
+		return
+	}
+
+	req.GroupId = id
 	list, err := service.NewGroupMenu().List(req)
 	if err != nil {
 		control.FailByMsgf("查询菜单组信息列表失败 %s", err.Error())
@@ -81,13 +91,13 @@ func (GroupMenuController) GetMenu(ctx *gin.Context) {
 
 	findFirstLayer := func(id string) *repository.ResGroupMenu {
 		for _, element := range resDatas {
-			if element.ID == id {
+			if element.MenuId == id {
 				return element
 			}
 		}
 
 		resData := new(repository.ResGroupMenu)
-		resData.ID = id
+		resData.MenuId = id
 		resData.Children = make([]*repository.ResGroupMenu, 0)
 
 		resDatas = append(resDatas, resData)
@@ -98,13 +108,13 @@ func (GroupMenuController) GetMenu(ctx *gin.Context) {
 		menu := findFirstLayer(parentId)
 
 		for _, element := range menu.Children {
-			if element.ID == id {
+			if element.MenuId == id {
 				return element
 			}
 		}
 
 		resData := new(repository.ResGroupMenu)
-		resData.ID = id
+		resData.MenuId = id
 		resData.Children = make([]*repository.ResGroupMenu, 0)
 		menu.Children = append(menu.Children, resData)
 
@@ -112,8 +122,10 @@ func (GroupMenuController) GetMenu(ctx *gin.Context) {
 	}
 
 	for _, element := range list {
-		if element.State == 0 {
-			continue
+		if !req.GetAll {
+			if element.State == 0 && element.Level == 1 {
+				continue
+			}
 		}
 
 		if element.Level == 0 {
@@ -122,12 +134,14 @@ func (GroupMenuController) GetMenu(ctx *gin.Context) {
 				continue
 			}
 
-			menu.ID = element.MenuId
+			menu.ID = element.ID
+			menu.MenuId = element.MenuId
 			menu.Name = element.Name
 			menu.Title = element.Title
 			menu.Route = element.Route
 			menu.Icon = element.Icon
 			menu.Auth = element.Auth
+			menu.State = element.State
 		}
 
 		if element.Level == 1 {
@@ -136,14 +150,21 @@ func (GroupMenuController) GetMenu(ctx *gin.Context) {
 				continue
 			}
 
-			menu.ID = element.MenuId
+			menu.ID = element.ID
+			menu.MenuId = element.MenuId
 			menu.Name = element.Name
 			menu.Title = element.Title
 			menu.Route = element.Route
 			menu.Icon = element.Icon
 			menu.Auth = element.Auth
+			menu.State = element.State
 		}
 	}
+
+	// 处理一级菜单，如果一级菜单没有子菜单的则移除
+	resDatas = slices.DeleteFunc(resDatas, func(rgm *repository.ResGroupMenu) bool {
+		return len(rgm.Children) == 0 && rgm.Title != "首页"
+	})
 
 	control.SuccessData(resDatas)
 }
@@ -238,6 +259,44 @@ func (GroupMenuController) Modify(ctx *gin.Context) {
 	}
 
 	err = logic.GroupMenu{}.Modify(id, req)
+	if err != nil {
+		control.FailByMsgf("修改菜单组信息失败 %s", err.Error())
+		return
+	}
+
+	control.Success()
+}
+
+// ModifyGroupMenuState doc
+//
+//	@tags			菜单组管理
+//	@Summary		修改菜单组状态信息
+//	@Description	修改菜单组状态信息
+//	@Produce		json
+//	@Param			id		path		string							true	"id"
+//	@Param			data	body		repository.ModifyGroupMenuState	true	"修改信息"
+//	@Success		200		{object}	controller.Base					"code: 200 成功"
+//	@Failure		500		{object}	controller.Base					"错误返回内容"
+//	@Router			/api/v1/groupMenu/auth/{id} [put]
+//	@Security		ApiKeyAuth
+func (GroupMenuController) ModifyGroupMenuState(ctx *gin.Context) {
+	control := controller.New(ctx)
+
+	req := new(repository.ModifyGroupMenuState)
+	err := ctx.Bind(req)
+	if err != nil {
+		global.Log.Errorf("绑定参数失败 %s", err.Error())
+		control.FailBind(err)
+		return
+	}
+
+	id := control.Param("id")
+	if id == "" {
+		control.FailByMsg("修改菜单组信息[id]不能为空")
+		return
+	}
+
+	err = logic.GroupMenu{}.ModifyGroupMenuState(id, req)
 	if err != nil {
 		control.FailByMsgf("修改菜单组信息失败 %s", err.Error())
 		return

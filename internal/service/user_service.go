@@ -144,10 +144,10 @@ func (user *User) List(info *repository.QueryUser) ([]*repository.ResUserGroupDa
 		}
 
 		// 查询条件
-		if info.Conditon != "" {
+		if info.Condition != "" {
 			query = query.
-				Where("name like ?", fmt.Sprintf("%%%s%%", info.Conditon)).
-				Or("mark like ?", fmt.Sprintf("%%%s%%", info.Conditon))
+				Where("name like ?", fmt.Sprintf("%%%s%%", info.Condition)).
+				Or("mark like ?", fmt.Sprintf("%%%s%%", info.Condition))
 		}
 
 		return query, nil

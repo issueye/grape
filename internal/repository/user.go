@@ -25,10 +25,10 @@ type StatusUser struct {
 }
 
 type QueryUser struct {
-	Conditon string `json:"condition" form:"condition"` // 条件
-	Account  string `json:"account" form:"account"`     // uid 登录名
-	Name     string `json:"name" form:"name"`           // 用户姓名
-	Mark     string `json:"mark" form:"mark"`           // 备注
+	Condition string `json:"condition" form:"condition"` // 条件
+	Account   string `json:"account" form:"account"`     // uid 登录名
+	Name      string `json:"name" form:"name"`           // 用户姓名
+	Mark      string `json:"mark" form:"mark"`           // 备注
 	model.Page
 }
 

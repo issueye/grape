@@ -24,5 +24,6 @@ func (router TargetRouter) Register(group *gin.RouterGroup) {
 	f.GET(":id", router.control.GetById)
 	f.POST("", router.control.Create)
 	f.PUT(":id", router.control.Modify)
+	f.PUT("state/:id", router.control.ModifyState)
 	f.DELETE(":id", router.control.Del)
 }

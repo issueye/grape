@@ -80,6 +80,35 @@ func (TargetController) Modify(ctx *gin.Context) {
 	c.Success()
 }
 
+// Modify doc
+//
+//	@tags			目标地址信息
+//	@Summary		修改目标地址可用状态
+//	@Description	修改目标地址可用状态
+//	@Produce		json
+//	@Param			data	body		repository.ModifyTarget	true	"修改目标地址信息"
+//	@Success		200		{object}	controller.Base			"code: 200 成功"
+//	@Failure		500		{object}	controller.Base			"错误返回内容"
+//	@Router			/api/v1/target/state/{id} [put]
+//	@Security		ApiKeyAuth
+func (TargetController) ModifyState(ctx *gin.Context) {
+	c := controller.New(ctx)
+
+	id := c.Param("id")
+	if id == "" {
+		c.FailBind(errors.New("[id]不能为空"))
+		return
+	}
+
+	err := logic.Target{}.ModifyState(id)
+	if err != nil {
+		c.FailByMsgf("更新状态失败 %s", err.Error())
+		return
+	}
+
+	c.Success()
+}
+
 // Query doc
 //
 //	@tags			目标地址信息

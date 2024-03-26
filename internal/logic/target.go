@@ -25,6 +25,24 @@ func (Target) Modify(id string, req *repository.ModifyTarget) error {
 	return TargetService.Modify(id, req)
 }
 
+// Modify
+// 修改信息 不包含状态
+func (Target) ModifyState(id string) error {
+
+	info, err := Target{}.GetById(id)
+	if err != nil {
+		return err
+	}
+
+	state := uint(0)
+	if info.State == 0 {
+		state = 1
+	}
+
+	TargetService := service.NewTarget()
+	return TargetService.ModifyState(id, state)
+}
+
 // Create
 // 创建数据
 func (Target) Create(req *repository.CreateTarget) error {

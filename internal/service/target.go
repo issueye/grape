@@ -58,6 +58,12 @@ func (s *Target) Modify(id string, data *repository.ModifyTarget) error {
 	return s.Db.Model(&model.TargetInfo{}).Where("id = ?", id).Updates(updateData).Error
 }
 
+// Modify
+// 修改信息
+func (s *Target) ModifyState(id string, state uint) error {
+	return s.Db.Model(&model.TargetInfo{}).Where("id = ?", id).Update("state", state).Error
+}
+
 // Del
 // 删除
 func (s *Target) Del(id string) error {

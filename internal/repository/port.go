@@ -21,6 +21,6 @@ type ModifyPort struct {
 
 // 查询信息
 type QueryPort struct {
-	Conditon string `json:"condition"` // 条件
+	Condition string `json:"condition"` // 条件
 	model.Page
 }

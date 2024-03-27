@@ -41,10 +41,10 @@ func (s *Port) Query(req *repository.QueryPort) ([]*model.PortInfo, error) {
 	err := s.DataFilter(model.PortInfo{}.TableName(), req, &list, func(db *gorm.DB) (*gorm.DB, error) {
 		q := db.Order("created_at")
 
-		if req.Conditon != "" {
-			q = q.Where("convert(varchar, port) like ?", fmt.Sprintf("%%%s%%", req.Conditon))
-			q = q.Where("cert_code like ?", fmt.Sprintf("%%%s%%", req.Conditon))
-			q = q.Where("mark like ?", fmt.Sprintf("%%%s%%", req.Conditon))
+		if req.Condition != "" {
+			q = q.Where("convert(varchar, port) like ?", fmt.Sprintf("%%%s%%", req.Condition))
+			q = q.Where("cert_code like ?", fmt.Sprintf("%%%s%%", req.Condition))
+			q = q.Where("mark like ?", fmt.Sprintf("%%%s%%", req.Condition))
 		}
 
 		return q, nil

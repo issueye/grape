@@ -66,9 +66,9 @@ func (s *Rule) Query(req *repository.QueryRule) ([]*repository.QueryRuleRes, err
 	err := s.DataFilter(fmt.Sprintf("(%s)tb", sqlStr), req, &list, func(db *gorm.DB) (*gorm.DB, error) {
 		q := db.Order("created_at")
 
-		if req.Conditon != "" {
-			q = q.Where("name like ?", fmt.Sprintf("%%%s%%", req.Conditon))
-			q = q.Where("mark like ?", fmt.Sprintf("%%%s%%", req.Conditon))
+		if req.Condition != "" {
+			q = q.Where("name like ?", fmt.Sprintf("%%%s%%", req.Condition))
+			q = q.Where("mark like ?", fmt.Sprintf("%%%s%%", req.Condition))
 		}
 
 		if req.PortId != "" {

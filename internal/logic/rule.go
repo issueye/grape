@@ -21,8 +21,8 @@ func (Route) GetById(id string) (*model.RuleInfo, error) {
 // Modify
 // 修改信息 不包含状态
 func (Route) Modify(req *repository.ModifyRule) error {
-	RouteServie := service.NewRule()
-	return RouteServie.Modify(req)
+	RouteService := service.NewRule()
+	return RouteService.Modify(req)
 }
 
 // Create
@@ -35,8 +35,8 @@ func (Route) Create(req *repository.CreateRule) error {
 	}
 
 	// 判断端口号在当前系统是否已经被使用
-	RouteServie := service.NewRule()
-	info, err := RouteServie.FindByName(req.Name, req.PortId)
+	RouteService := service.NewRule()
+	info, err := RouteService.FindByName(req.Name, req.PortId)
 	if err != nil {
 		return fmt.Errorf("检查端口失败 %s", err.Error())
 	}
@@ -46,7 +46,7 @@ func (Route) Create(req *repository.CreateRule) error {
 	}
 
 	// 创建数据
-	err = RouteServie.Create(req)
+	err = RouteService.Create(req)
 	if err != nil {
 		return fmt.Errorf("创建信息失败 %s", err.Error())
 	}
@@ -57,13 +57,13 @@ func (Route) Create(req *repository.CreateRule) error {
 // Del
 // 根据ID删除信息
 func (Route) Del(id string) error {
-	RouteServie := service.NewRule()
+	RouteService := service.NewRule()
 
 	// 检查使用状态，如果是正在使用则不允许删除
-	_, err := RouteServie.FindById(id)
+	_, err := RouteService.FindById(id)
 	if err != nil {
 		return err
 	}
 
-	return RouteServie.Del(id)
+	return RouteService.Del(id)
 }

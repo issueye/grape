@@ -26,9 +26,6 @@ func (s *Node) Create(data *repository.CreateNode) error {
 	info := model.NodeInfo{}.New()
 	info.Name = data.Name
 	info.PortId = data.PortId
-	info.Target = data.Target
-	info.NodeType = data.NodeType
-	info.PagePath = data.PagePath
 	info.Mark = data.Mark
 
 	return s.Db.Model(info).Create(info).Error
@@ -44,8 +41,6 @@ func (s *Node) Query(req *repository.QueryNode) ([]*model.NodeInfo, error) {
 
 		if req.Condition != "" {
 			q = q.Where("name like ?", fmt.Sprintf("%%%s%%", req.Condition)).
-				Or("page_path like ?", fmt.Sprintf("%%%s%%", req.Condition)).
-				Or("target like ?", fmt.Sprintf("%%%s%%", req.Condition)).
 				Or("mark like ?", fmt.Sprintf("%%%s%%", req.Condition))
 		}
 

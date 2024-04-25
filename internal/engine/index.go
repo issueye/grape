@@ -322,12 +322,7 @@ func runServer(portId string, port int) {
 	grape := NewGrapeEngine(portId, port)
 	err := grape.Init()
 	if err != nil {
-		global.Log.Errorf("初始化失败 %s", err.Error())
-		return
-	}
-
-	err = grape.Run()
-	if err != nil {
+		err = grape.Run()
 		global.Log.Errorf("启动失败 %s", err.Error())
 		return
 	}

@@ -1,0 +1,33 @@
+syntax = "proto3";
+package proto;
+option go_package = "./proto";
+
+// message Get
+message ParamRequest {
+    string secens = 1;
+    string params = 2;
+    string defValue = 3;
+}
+
+message Empty {}
+
+message ResultString {
+    string value = 1;
+}
+
+message InitRequest {
+    uint32 add_server = 1;
+}
+
+message HeartbeatResponse {
+    string value = 1;
+}
+
+service HostHelper {
+    rpc GetParam(ParamRequest) returns (ResultString);
+}
+
+service CommonHelper {
+    rpc Init(InitRequest) returns (Empty); // 初始化
+    rpc Heartbeat(Empty) returns (HeartbeatResponse); // 心跳
+}

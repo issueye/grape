@@ -1,0 +1,1 @@
+protoc -I internal/common/plugin/shared/proto/ --go_out=plugins=grpc:internal/common/plugin/shared/proto/ internal/common/plugin/shared/proto/*.proto

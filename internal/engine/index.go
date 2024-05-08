@@ -107,6 +107,8 @@ func (grape *GrapeEngine) Init() error {
 	return grape.CustomRoutes()
 }
 
+// GinPages
+// 加载页面
 func (grape *GrapeEngine) GinPages() error {
 	// 处理页面
 	pageList, err := logic.Page{}.Get(&repository.QueryPage{

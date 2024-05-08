@@ -10,10 +10,10 @@ import (
 // 页面信息
 type PageInfo struct {
 	Base
-	NodeBase
+	PageBase
 }
 
-type NodeBase struct {
+type PageBase struct {
 	Name     string `binding:"required" label:"名称" gorm:"column:name;size:300;comment:名称;" json:"name"`                     // 名称
 	Title    string `binding:"required" label:"标题" gorm:"column:title;size:300;comment:标题;" json:"title"`                   // 标题
 	Version  string `binding:"required" label:"版本" gorm:"column:version;size:50;comment:版本;" json:"version"`                // 版本
@@ -22,7 +22,7 @@ type NodeBase struct {
 	Mark     string `label:"备注" gorm:"column:mark;type:nvarchar(2000);comment:备注;" json:"mark"`                             // 备注
 }
 
-func (mod *PageInfo) Copy(data *NodeBase) {
+func (mod *PageInfo) Copy(data *PageBase) {
 	mod.Name = data.Name
 	mod.Title = data.Title
 	mod.Version = data.Version

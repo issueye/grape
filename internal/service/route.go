@@ -28,7 +28,6 @@ func (s *Rule) Create(data *repository.CreateRule) error {
 	info.MatchType = data.MatchType
 	info.Method = data.Method
 	info.Mark = data.Mark
-	info.NodeId = data.NodeId
 	info.PortId = data.PortId
 	info.TargetId = data.TargetId
 	info.TargetRoute = data.TargetRoute
@@ -75,14 +74,6 @@ func (s *Rule) Query(req *repository.QueryRule) ([]*repository.QueryRuleRes, err
 			q = q.Where("port_id = ?", req.PortId)
 		}
 
-		if req.NodeId != "" {
-			if req.NodeId == "-" {
-				q = q.Where("node_id = ''")
-			} else {
-				q = q.Where("node_id = ?", req.NodeId)
-			}
-		}
-
 		if req.MatchType > 0 {
 			q = q.Where("match_type = ?", req.MatchType)
 		}
@@ -102,7 +93,6 @@ func (s *Rule) Modify(data *repository.ModifyRule) error {
 	updateData["method"] = data.Method
 	updateData["target_id"] = data.TargetId
 	updateData["target_route"] = data.TargetRoute
-	updateData["node_id"] = data.NodeId
 	updateData["port_id"] = data.PortId
 	updateData["mark"] = data.Mark
 	return s.Db.Model(&model.RuleInfo{}).Where("id = ?", data.ID).Updates(updateData).Error

@@ -21,4 +21,5 @@ const (
 	RGN_rule      RouterGroupName = "rule"
 	RGN_port      RouterGroupName = "port"
 	RGN_page      RouterGroupName = "page"
+	RGN_resource  RouterGroupName = "resource"
 )

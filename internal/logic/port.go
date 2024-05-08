@@ -127,7 +127,7 @@ func (Port) Del(id string) error {
 	}
 
 	// 删除节点
-	service.NewNode().DelByPortId(id)
+	service.NewPage().DelByPortId(id)
 	if err != nil {
 		return fmt.Errorf("删除端口号[%d]下的节点失败 %s", pi.Port, err.Error())
 	}

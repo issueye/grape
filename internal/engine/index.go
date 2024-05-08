@@ -57,7 +57,7 @@ type Rule struct {
 	Name    string                 `json:"name"`   // 匹配规则
 	Target  string                 `json:"target"` // 目标地址
 	Route   string                 `json:"route"`  // 路由
-	Node    string                 `json:"node"`   // 节点
+	Page    string                 `json:"Page"`   // 节点
 	Method  string                 `json:"method"` // 方法
 	Proxy   *httputil.ReverseProxy `json:"proxy"`  // 代理转发
 	Handler gin.HandlerFunc        // 方法
@@ -67,7 +67,7 @@ type CustomRouteRule struct {
 	Name    string                 `json:"name"`   // 匹配规则
 	Target  string                 `json:"target"` // 目标地址
 	Route   string                 `json:"route"`  // 路由
-	Node    string                 `json:"node"`   // 节点
+	Page    string                 `json:"Page"`   // 节点
 	Method  string                 `json:"method"` // 方法
 	Proxy   *httputil.ReverseProxy `json:"proxy"`  // 代理转发
 	Handler muxHandler             // 方法
@@ -93,12 +93,12 @@ func NewGrapeEngine(portId string, port int) *GrapeEngine {
 }
 
 func (grape *GrapeEngine) Init() error {
-	err := grape.GinRoutes()
+	err := grape.GinPages()
 	if err != nil {
 		return err
 	}
 
-	err = grape.GinPages()
+	err = grape.GinRoutes()
 	if err != nil {
 		return err
 	}
@@ -109,18 +109,18 @@ func (grape *GrapeEngine) Init() error {
 
 func (grape *GrapeEngine) GinPages() error {
 	// 处理页面
-	nodeList, err := logic.Node{}.Get(&repository.QueryNode{
+	pageList, err := logic.Page{}.Get(&repository.QueryPage{
 		PortId: grape.PortId,
 	})
 	if err != nil {
 		return err
 	}
 
-	for _, node := range nodeList {
-		nodePage := grape.Engine.Group(node.Name)
-		dir := filepath.Join("runtime", "static", "pages", node.PortId, node.Name, node.FileName)
+	for _, page := range pageList {
+		pageRoute := grape.Engine.Group(page.Name)
+		dir := filepath.Join("runtime", "static", "pages", page.PortId, page.Name, page.FileName)
 		fmt.Println("静态文件路径：", dir)
-		nodePage.Static("/web", dir)
+		pageRoute.Static("/web", dir)
 	}
 
 	return nil
@@ -130,7 +130,6 @@ func (grape *GrapeEngine) GinRoutes() error {
 	// 获取匹配规则
 	ruleList, err := service.NewRule().Query(&repository.QueryRule{
 		PortId:    grape.PortId,
-		NodeId:    "-",
 		MatchType: 1,
 	})
 
@@ -322,7 +321,12 @@ func runServer(portId string, port int) {
 	grape := NewGrapeEngine(portId, port)
 	err := grape.Init()
 	if err != nil {
-		err = grape.Run()
+		global.Log.Errorf("初始化失败 %s", err.Error())
+		return
+	}
+
+	err = grape.Run()
+	if err != nil {
 		global.Log.Errorf("启动失败 %s", err.Error())
 		return
 	}

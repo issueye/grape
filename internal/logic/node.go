@@ -9,28 +9,28 @@ import (
 	"github.com/issueye/grape/internal/service"
 )
 
-type Node struct{}
+type Page struct{}
 
-func (Node) Get(req *repository.QueryNode) ([]*model.NodeInfo, error) {
-	return service.NewNode().Query(req)
+func (Page) Get(req *repository.QueryPage) ([]*model.PageInfo, error) {
+	return service.NewPage().Query(req)
 }
 
-func (Node) GetById(id string) (*model.NodeInfo, error) {
-	return service.NewNode().FindById(id)
-}
-
-// Modify
-// 修改信息 不包含状态
-func (Node) Modify(req *repository.ModifyNode) error {
-	NodeService := service.NewNode()
-	return NodeService.Modify(req)
+func (Page) GetById(id string) (*model.PageInfo, error) {
+	return service.NewPage().FindById(id)
 }
 
 // Modify
 // 修改信息 不包含状态
-func (Node) CheckData(portId string, args ...any) error {
-	NodeService := service.NewNode()
-	list, err := NodeService.Query(&repository.QueryNode{
+func (Page) Modify(req *repository.ModifyPage) error {
+	PageService := service.NewPage()
+	return PageService.Modify(req)
+}
+
+// Modify
+// 修改信息 不包含状态
+func (Page) CheckData(portId string, args ...any) error {
+	PageService := service.NewPage()
+	list, err := PageService.Query(&repository.QueryPage{
 		PortId: portId,
 	})
 
@@ -41,23 +41,23 @@ func (Node) CheckData(portId string, args ...any) error {
 	// 对比名字
 	if len(args) > 0 {
 		name := args[0].(string)
-		for _, node := range list {
-			if strings.HasPrefix(name, fmt.Sprintf("/%s", node.Name)) {
-				return fmt.Errorf("[GIN匹配]类型的匹配规则与页面[%s]冲突，请修改为[MUX匹配]", node.Name)
+		for _, Page := range list {
+			if strings.HasPrefix(name, fmt.Sprintf("/%s", Page.Name)) {
+				return fmt.Errorf("[GIN匹配]类型的匹配规则与页面[%s]冲突，请修改为[MUX匹配]", Page.Name)
 			}
 		}
 	}
 
-	for _, node := range list {
+	for _, Page := range list {
 		// 节点里面去查询所有的节点
-		ok, err := service.NewRule().FindLikeName(node.Name)
+		ok, err := service.NewRule().FindLikeName(Page.Name)
 		if err != nil {
 			return err
 		}
 
 		// 查询到有相似的直接返回错误
 		if ok {
-			return fmt.Errorf("[GIN匹配]类型的匹配规则中发现了与页面[%s]冲突的路由，请修改为[MUX匹配]", node.Name)
+			return fmt.Errorf("[GIN匹配]类型的匹配规则中发现了与页面[%s]冲突的路由，请修改为[MUX匹配]", Page.Name)
 		}
 	}
 
@@ -66,17 +66,17 @@ func (Node) CheckData(portId string, args ...any) error {
 
 // Modify
 // 修改信息 不包含状态
-func (Node) ModifyByMap(id string, datas map[string]any) error {
-	NodeService := service.NewNode()
-	return NodeService.ModifyByMap(id, datas)
+func (Page) ModifyByMap(id string, datas map[string]any) error {
+	PageService := service.NewPage()
+	return PageService.ModifyByMap(id, datas)
 }
 
 // Create
 // 创建数据
-func (Node) Create(req *repository.CreateNode) error {
+func (Page) Create(req *repository.CreatePage) error {
 	// 判断端口号在当前系统是否已经被使用
-	NodeService := service.NewNode()
-	info, err := NodeService.FindByName(req.Name, req.PortId)
+	PageService := service.NewPage()
+	info, err := PageService.FindByName(req.Name, req.PortId)
 	if err != nil {
 		return fmt.Errorf("检查节点失败 %s", err.Error())
 	}
@@ -86,7 +86,7 @@ func (Node) Create(req *repository.CreateNode) error {
 	}
 
 	// 创建数据
-	err = NodeService.Create(req)
+	err = PageService.Create(req)
 	if err != nil {
 		return fmt.Errorf("创建信息失败 %s", err.Error())
 	}
@@ -96,14 +96,14 @@ func (Node) Create(req *repository.CreateNode) error {
 
 // Del
 // 根据ID删除信息
-func (Node) Del(id string) error {
-	NodeService := service.NewNode()
+func (Page) Del(id string) error {
+	PageService := service.NewPage()
 
 	// 检查使用状态，如果是正在使用则不允许删除
-	_, err := NodeService.FindById(id)
+	_, err := PageService.FindById(id)
 	if err != nil {
 		return err
 	}
 
-	return NodeService.Del(id)
+	return PageService.Del(id)
 }

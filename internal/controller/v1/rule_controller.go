@@ -35,7 +35,7 @@ func (RuleController) Create(ctx *gin.Context) {
 
 	// 如果匹配类型为 GIN匹配时 需要检查是否符合规范
 	if req.MatchType == 1 {
-		err = logic.Node{}.CheckData(req.PortId, req.Name)
+		err = logic.Page{}.CheckData(req.PortId, req.Name)
 		if err != nil {
 			c.FailByMsg(err.Error())
 			return
@@ -76,7 +76,7 @@ func (RuleController) Modify(ctx *gin.Context) {
 
 	// 如果匹配类型为 GIN匹配时 需要检查是否符合规范
 	if req.MatchType == 1 {
-		err = logic.Node{}.CheckData(req.PortId, req.Name)
+		err = logic.Page{}.CheckData(req.PortId, req.Name)
 		if err != nil {
 			c.FailByMsg(err.Error())
 			return

@@ -14,31 +14,31 @@ import (
 	"github.com/issueye/grape/pkg/utils"
 )
 
-type NodeController struct{}
+type PageController struct{}
 
 // Create doc
 //
-//	@tags			节点信息
-//	@Summary		创建节点信息
-//	@Description	创建节点信息
+//	@tags			页面信息
+//	@Summary		创建页面信息
+//	@Description	创建页面信息
 //	@Produce		json
-//	@Param			data	body		repository.CreateNode	true	"创建节点信息"
+//	@Param			data	body		repository.CreatePage	true	"创建页面信息"
 //	@Success		200		{object}	controller.Base			"code: 200 成功"
 //	@Failure		500		{object}	controller.Base			"错误返回内容"
-//	@Router			/api/v1/node [post]
+//	@Router			/api/v1/page [post]
 //	@Security		ApiKeyAuth
-func (NodeController) Create(ctx *gin.Context) {
+func (PageController) Create(ctx *gin.Context) {
 	c := controller.New(ctx)
 
 	// 绑定请求数据
-	req := new(repository.CreateNode)
+	req := new(repository.CreatePage)
 	err := c.Bind(req)
 	if err != nil {
 		c.FailBind(err)
 		return
 	}
 
-	err = logic.Node{}.Create(req)
+	err = logic.Page{}.Create(req)
 	if err != nil {
 		c.FailByMsg(err.Error())
 		return
@@ -50,33 +50,33 @@ func (NodeController) Create(ctx *gin.Context) {
 
 // Modify doc
 //
-//	@tags			节点信息
-//	@Summary		修改节点信息
-//	@Description	修改节点信息
+//	@tags			页面信息
+//	@Summary		修改页面信息
+//	@Description	修改页面信息
 //	@Produce		json
-//	@Param			data	body		repository.ModifyNode	true	"修改节点信息"
+//	@Param			data	body		repository.ModifyPage	true	"修改页面信息"
 //	@Success		200		{object}	controller.Base			"code: 200 成功"
 //	@Failure		500		{object}	controller.Base			"错误返回内容"
-//	@Router			/api/v1/node [put]
+//	@Router			/api/v1/page [put]
 //	@Security		ApiKeyAuth
-func (NodeController) Modify(ctx *gin.Context) {
+func (PageController) Modify(ctx *gin.Context) {
 	c := controller.New(ctx)
 
 	// 绑定请求数据
-	req := new(repository.ModifyNode)
+	req := new(repository.ModifyPage)
 	err := c.Bind(req)
 	if err != nil {
 		c.FailBind(err)
 		return
 	}
 
-	err = logic.Node{}.CheckData(req.PortId)
+	err = logic.Page{}.CheckData(req.PortId)
 	if err != nil {
 		c.FailByMsg(err.Error())
 		return
 	}
 
-	err = logic.Node{}.Modify(req)
+	err = logic.Page{}.Modify(req)
 	if err != nil {
 		c.FailByMsgf("更新信息失败 %s", err.Error())
 		return
@@ -87,27 +87,27 @@ func (NodeController) Modify(ctx *gin.Context) {
 
 // Query doc
 //
-//	@tags			节点信息
-//	@Summary		查询节点信息
-//	@Description	查询节点信息
+//	@tags			页面信息
+//	@Summary		查询页面信息
+//	@Description	查询页面信息
 //	@Produce		json
-//	@Param			params	query		repository.QueryNode	true	"查询条件"
+//	@Param			params	query		repository.QueryPage	true	"查询条件"
 //	@Success		200		{object}	controller.Base			"code: 200 成功"
 //	@Failure		500		{object}	controller.Base			"错误返回内容"
-//	@Router			/api/v1/node [get]
+//	@Router			/api/v1/page [get]
 //	@Security		ApiKeyAuth
-func (NodeController) Query(ctx *gin.Context) {
+func (PageController) Query(ctx *gin.Context) {
 	c := controller.New(ctx)
 
 	// 绑定请求数据
-	req := new(repository.QueryNode)
+	req := new(repository.QueryPage)
 	err := c.Bind(req)
 	if err != nil {
 		c.FailBind(err)
 		return
 	}
 
-	list, err := logic.Node{}.Get(req)
+	list, err := logic.Page{}.Get(req)
 	if err != nil {
 		c.FailByMsgf("查询失败 %s", err.Error())
 		return
@@ -118,16 +118,16 @@ func (NodeController) Query(ctx *gin.Context) {
 
 // GetById doc
 //
-//	@tags			节点信息
-//	@Summary		通过编码查询节点信息
-//	@Description	通过编码查询节点信息
+//	@tags			页面信息
+//	@Summary		通过编码查询页面信息
+//	@Description	通过编码查询页面信息
 //	@Produce		json
-//	@Param			id	path		string			true	"节点信息编码"
+//	@Param			id	path		string			true	"页面信息编码"
 //	@Success		200	{object}	controller.Base	"code: 200 成功"
 //	@Failure		500	{object}	controller.Base	"错误返回内容"
-//	@Router			/api/v1/node/{id} [get]
+//	@Router			/api/v1/page/{id} [get]
 //	@Security		ApiKeyAuth
-func (NodeController) GetById(ctx *gin.Context) {
+func (PageController) GetById(ctx *gin.Context) {
 	c := controller.New(ctx)
 
 	id := c.Param("id")
@@ -136,7 +136,7 @@ func (NodeController) GetById(ctx *gin.Context) {
 		return
 	}
 
-	info, err := logic.Node{}.GetById(id)
+	info, err := logic.Page{}.GetById(id)
 	if err != nil {
 		c.FailByMsgf("查询失败 %s", err.Error())
 		return
@@ -147,16 +147,16 @@ func (NodeController) GetById(ctx *gin.Context) {
 
 // Del doc
 //
-//	@tags			节点信息
-//	@Summary		删除节点信息
-//	@Description	删除节点信息
+//	@tags			页面信息
+//	@Summary		删除页面信息
+//	@Description	删除页面信息
 //	@Produce		json
 //	@Param			id	path		string			true	"id"
 //	@Success		200	{object}	controller.Base	"code: 200 成功"
 //	@Failure		500	{object}	controller.Base	"错误返回内容"
-//	@Router			/api/v1/node [delete]
+//	@Router			/api/v1/page [delete]
 //	@Security		ApiKeyAuth
-func (NodeController) Del(ctx *gin.Context) {
+func (PageController) Del(ctx *gin.Context) {
 	c := controller.New(ctx)
 
 	id := c.Param("id")
@@ -165,7 +165,7 @@ func (NodeController) Del(ctx *gin.Context) {
 		return
 	}
 
-	err := logic.Node{}.Del(id)
+	err := logic.Page{}.Del(id)
 	if err != nil {
 		c.FailByMsg(err.Error())
 		return
@@ -176,16 +176,16 @@ func (NodeController) Del(ctx *gin.Context) {
 
 // uploadFile doc
 //
-//	@tags			节点信息
+//	@tags			页面信息
 //	@Summary		上传静态页面
 //	@Description	上传静态页面
 //	@Produce		json
 //	@Param			id	path		string			true	"id"
 //	@Success		200	{object}	controller.Base	"code: 200 成功"
 //	@Failure		500	{object}	controller.Base	"错误返回内容"
-//	@Router			/api/v1/node [post]
+//	@Router			/api/v1/page [post]
 //	@Security		ApiKeyAuth
-func (NodeController) UploadFile(ctx *gin.Context) {
+func (PageController) UploadFile(ctx *gin.Context) {
 	c := controller.New(ctx)
 	//form表单
 	file, header, err := c.Request.FormFile("upload")
@@ -201,9 +201,9 @@ func (NodeController) UploadFile(ctx *gin.Context) {
 		return
 	}
 
-	nodeInfo, err := logic.Node{}.GetById(nodeId)
+	nodeInfo, err := logic.Page{}.GetById(nodeId)
 	if err != nil {
-		c.FailByMsgf("获取节点信息失败 %s", err.Error())
+		c.FailByMsgf("获取页面信息失败 %s", err.Error())
 		return
 	}
 
@@ -248,9 +248,9 @@ func (NodeController) UploadFile(ctx *gin.Context) {
 	}
 
 	// 更新节点状态
-	err = logic.Node{}.ModifyByMap(nodeId, map[string]any{"page_path": fmt.Sprintf("/%s/%s/", nodeInfo.Name, name), "file_name": name})
+	err = logic.Page{}.ModifyByMap(nodeId, map[string]any{"page_path": fmt.Sprintf("/%s/%s/", nodeInfo.Name, name), "file_name": name})
 	if err != nil {
-		c.FailByMsgf("更新节点信息失败 %s", err.Error())
+		c.FailByMsgf("更新页面信息失败 %s", err.Error())
 		return
 	}
 

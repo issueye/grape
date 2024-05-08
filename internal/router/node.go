@@ -6,19 +6,19 @@ import (
 	"github.com/issueye/grape/internal/global"
 )
 
-type NodeRouter struct {
+type PageRouter struct {
 	Name    string
-	control *v1.NodeController
+	control *v1.PageController
 }
 
-func NewNodeRouter() *NodeRouter {
-	return &NodeRouter{
-		Name:    string(global.RGN_node),
-		control: &v1.NodeController{},
+func NewPageRouter() *PageRouter {
+	return &PageRouter{
+		Name:    string(global.RGN_page),
+		control: &v1.PageController{},
 	}
 }
 
-func (router NodeRouter) Register(group *gin.RouterGroup) {
+func (router PageRouter) Register(group *gin.RouterGroup) {
 	f := group.Group(router.Name)
 	f.GET("", router.control.Query)
 	f.GET(":id", router.control.GetById)

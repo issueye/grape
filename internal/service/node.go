@@ -10,20 +10,20 @@ import (
 	"gorm.io/gorm"
 )
 
-type Node struct {
+type Page struct {
 	*service.BaseService
 }
 
-func NewNode() *Node {
-	return &Node{
+func NewPage() *Page {
+	return &Page{
 		BaseService: service.NewBaseService(global.DB),
 	}
 }
 
 // Create
 // 创建信息
-func (s *Node) Create(data *repository.CreateNode) error {
-	info := model.NodeInfo{}.New()
+func (s *Page) Create(data *repository.CreatePage) error {
+	info := model.PageInfo{}.New()
 	info.Name = data.Name
 	info.PortId = data.PortId
 	info.Mark = data.Mark
@@ -33,10 +33,10 @@ func (s *Node) Create(data *repository.CreateNode) error {
 
 // Query
 // 查询数据
-func (s *Node) Query(req *repository.QueryNode) ([]*model.NodeInfo, error) {
-	list := make([]*model.NodeInfo, 0)
+func (s *Page) Query(req *repository.QueryPage) ([]*model.PageInfo, error) {
+	list := make([]*model.PageInfo, 0)
 
-	err := s.DataFilter(model.NodeInfo{}.TableName(), req, &list, func(db *gorm.DB) (*gorm.DB, error) {
+	err := s.DataFilter(model.PageInfo{}.TableName(), req, &list, func(db *gorm.DB) (*gorm.DB, error) {
 		q := db.Order("created_at")
 
 		if req.Condition != "" {
@@ -56,47 +56,45 @@ func (s *Node) Query(req *repository.QueryNode) ([]*model.NodeInfo, error) {
 
 // Modify
 // 修改信息
-func (s *Node) Modify(data *repository.ModifyNode) error {
+func (s *Page) Modify(data *repository.ModifyPage) error {
 	updateData := make(map[string]any)
 	updateData["name"] = data.Name
-	updateData["node_type"] = data.NodeType
 	updateData["page_path"] = data.PagePath
 	updateData["port_id"] = data.PortId
-	updateData["target"] = data.Target
 	updateData["mark"] = data.Mark
-	return s.Db.Model(&model.NodeInfo{}).Where("id = ?", data.ID).Updates(updateData).Error
+	return s.Db.Model(&model.PageInfo{}).Where("id = ?", data.ID).Updates(updateData).Error
 }
 
 // Modify
 // 修改信息
-func (s *Node) ModifyByMap(id string, datas map[string]any) error {
-	return s.Db.Model(&model.NodeInfo{}).Where("id = ?", id).Updates(datas).Error
+func (s *Page) ModifyByMap(id string, datas map[string]any) error {
+	return s.Db.Model(&model.PageInfo{}).Where("id = ?", id).Updates(datas).Error
 }
 
 // Del
 // 删除
-func (s *Node) Del(id string) error {
-	return s.Db.Model(&model.NodeInfo{}).Delete("id = ?", id).Error
+func (s *Page) Del(id string) error {
+	return s.Db.Model(&model.PageInfo{}).Delete("id = ?", id).Error
 }
 
 // Del
 // 删除
-func (s *Node) DelByPortId(id string) error {
-	return s.Db.Model(&model.NodeInfo{}).Delete("port_id = ?", id).Error
+func (s *Page) DelByPortId(id string) error {
+	return s.Db.Model(&model.PageInfo{}).Delete("port_id = ?", id).Error
 }
 
 // FindById
 // 通过ID查找信息
-func (s *Node) FindById(id string) (*model.NodeInfo, error) {
-	info := new(model.NodeInfo)
+func (s *Page) FindById(id string) (*model.PageInfo, error) {
+	info := new(model.PageInfo)
 	err := s.Db.Model(info).Where("id = ?", id).Find(info).Error
 	return info, err
 }
 
 // FindById
 // 通过ID查找信息
-func (s *Node) FindByName(name string, portId string) (*model.NodeInfo, error) {
-	info := new(model.NodeInfo)
+func (s *Page) FindByName(name string, portId string) (*model.PageInfo, error) {
+	info := new(model.PageInfo)
 	err := s.Db.Model(info).Where("name = ?", name).Where("port_id = ?", portId).Find(info).Error
 	return info, err
 }

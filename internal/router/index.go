@@ -34,7 +34,7 @@ func InitRouter(r *gin.Engine) {
 		NewMenuRouter(),      // 菜单
 		NewMenuGroupRouter(), // 用户组菜单
 		NewPortRouter(),      // 端口号
-		NewNodeRouter(),      // 节点
+		NewPageRouter(),      // 页面
 		NewRouteRouter(),     // 路由
 		NewTargetRouter(),    // 服务地址
 		NewCertRouter(),      // 证书

@@ -23,7 +23,7 @@ func InitData() {
 		&model.Menu{},          // 菜单
 		&model.GroupMenu{},     // 用户组菜单权限
 		&model.PortInfo{},      // 端口信息
-		&model.NodeInfo{},      // 节点信息
+		&model.PageInfo{},      // 页面信息
 		&model.RuleInfo{},      // 规则信息
 		&model.CertInfo{},      // 证书信息
 		&model.TargetInfo{},    // 目标服务地址信息

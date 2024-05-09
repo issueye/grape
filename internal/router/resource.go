@@ -13,7 +13,7 @@ type ResourceRouter struct {
 
 func NewResourceRouter() *ResourceRouter {
 	return &ResourceRouter{
-		Name:    string(global.RGN_page),
+		Name:    string(global.RGN_resource),
 		control: &v1.ResourceController{},
 	}
 }
@@ -26,4 +26,5 @@ func (router ResourceRouter) Register(group *gin.RouterGroup) {
 	f.PUT("", router.control.Modify)
 	f.DELETE(":id", router.control.Del)
 	f.POST("upload", router.control.UploadFile)
+	f.DELETE("upload/:name", router.control.UnUploadFile)
 }

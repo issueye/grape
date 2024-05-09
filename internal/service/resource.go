@@ -24,7 +24,9 @@ func NewResource() *Resource {
 // 创建信息
 func (s *Resource) Create(data *repository.CreateResource) error {
 	info := model.ResourceInfo{}.New()
-	info.Name = data.Name
+	info.Title = data.Title
+	info.FileName = data.FileName
+	info.Ext = data.Ext
 	info.Mark = data.Mark
 
 	return s.Db.Model(info).Create(info).Error
@@ -39,7 +41,9 @@ func (s *Resource) Query(req *repository.QueryResource) ([]*model.ResourceInfo, 
 		q := db.Order("created_at")
 
 		if req.Condition != "" {
-			q = q.Where("name like ?", fmt.Sprintf("%%%s%%", req.Condition)).
+			q = q.Where("file_name like ?", fmt.Sprintf("%%%s%%", req.Condition)).
+				Or("ext like ?", fmt.Sprintf("%%%s%%", req.Condition)).
+				Or("title like ?", fmt.Sprintf("%%%s%%", req.Condition)).
 				Or("mark like ?", fmt.Sprintf("%%%s%%", req.Condition))
 		}
 
@@ -53,9 +57,8 @@ func (s *Resource) Query(req *repository.QueryResource) ([]*model.ResourceInfo, 
 // 修改信息
 func (s *Resource) Modify(data *repository.ModifyResource) error {
 	updateData := make(map[string]any)
-	updateData["name"] = data.Name
 	updateData["title"] = data.Title
-	updateData["folder"] = data.Folder
+	updateData["ext"] = data.Ext
 	updateData["file_name"] = data.FileName
 	updateData["mark"] = data.Mark
 	return s.Db.Model(&model.ResourceInfo{}).Where("id = ?", data.ID).Updates(updateData).Error
@@ -85,6 +88,6 @@ func (s *Resource) FindById(id string) (*model.ResourceInfo, error) {
 // 通过ID查找信息
 func (s *Resource) FindByName(name string) (*model.ResourceInfo, error) {
 	info := new(model.ResourceInfo)
-	err := s.Db.Model(info).Where("name = ?", name).Find(info).Error
+	err := s.Db.Model(info).Where("file_name = ?", name).Find(info).Error
 	return info, err
 }

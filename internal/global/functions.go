@@ -2,6 +2,7 @@ package global
 
 import (
 	"fmt"
+	"path/filepath"
 
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/issueye/grape/internal/common/model"
@@ -37,4 +38,9 @@ func ParseToken(token string) (*model.UserInfo, error) {
 	user := new(model.UserInfo)
 	utils.Json2Struct(claims["user"].(string), user)
 	return user, nil
+}
+
+func GetResourceRootPath() string {
+	path := filepath.Join("runtime", "static", "resources")
+	return path
 }

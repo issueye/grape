@@ -27,6 +27,7 @@ func InitData() {
 		&model.RuleInfo{},      // 规则信息
 		&model.CertInfo{},      // 证书信息
 		&model.TargetInfo{},    // 目标服务地址信息
+		&model.ResourceInfo{},  // 资源信息
 	)
 
 	if err != nil {

@@ -38,6 +38,7 @@ func InitRouter(r *gin.Engine) {
 		NewRouteRouter(),     // 路由
 		NewTargetRouter(),    // 服务地址
 		NewCertRouter(),      // 证书
+		NewResourceRouter(),  // 资源
 	)
 }
 

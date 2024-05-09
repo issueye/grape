@@ -16,6 +16,7 @@ func InitRuntime() {
 	isExistsCreatePath(rtPath, "logs")
 	staticPath := isExistsCreatePath(rtPath, "static")
 	isExistsCreatePath(staticPath, "admin")
+	isExistsCreatePath(staticPath, "resources")
 }
 
 func isExistsCreatePath(path, name string) string {

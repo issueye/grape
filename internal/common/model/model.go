@@ -9,7 +9,7 @@ type Page struct {
 }
 
 type Base struct {
-	ID        string    `gorm:"column:id;type:nvarchar(100);comment:编码;primaryKey;autoIncrement:false;" json:"id"` // 编码
-	CreatedAt time.Time `gorm:"column:created_at;type:datetime;comment:创建时间;" json:"createdAt"`                    // 创建时间
-	UpdatedAt time.Time `gorm:"column:updated_at;type:datetime;comment:修改时间;" json:"updatedAt"`                    // 修改时间
+	ID        string    `gorm:"column:id;size:100;comment:编码;primaryKey;autoIncrement:false;" json:"id"` // 编码
+	CreatedAt time.Time `gorm:"column:created_at;type:datetime;comment:创建时间;" json:"createdAt"`          // 创建时间
+	UpdatedAt time.Time `gorm:"column:updated_at;type:datetime;comment:修改时间;" json:"updatedAt"`          // 修改时间
 }

@@ -32,6 +32,7 @@ func InitServer() {
 
 	// 设置一个静态文件服务器
 	global.Router.Static("/www", "./runtime/static")
+	global.Router.Static("/resources", "./runtime/static/resources")
 
 	if strings.ToLower(mode) == "debug" {
 		// 设置 swagger

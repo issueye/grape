@@ -40,7 +40,14 @@ func ParseToken(token string) (*model.UserInfo, error) {
 	return user, nil
 }
 
-func GetResourceRootPath() string {
-	path := filepath.Join("runtime", "static", "resources")
+func GetResourceRootPath(ext string) string {
+	path := filepath.Join("runtime", "static", "resources", ext)
+	utils.PathExists(path)
+	return path
+}
+
+func GetResourcePagePath(ext string) string {
+	path := filepath.Join("runtime", "static", "resources", "page", ext)
+	utils.PathExists(path)
 	return path
 }

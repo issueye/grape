@@ -28,6 +28,6 @@ type QueryResource struct {
 }
 
 type UploadData struct {
-	Type      string                `json:"type"`                               // 类型
+	Type      string                `json:"type"`                               // 类型  page 页面文件
 	UploadKey *multipart.FileHeader `binding:"required" label:"文件" form:"file"` // 文件
 }

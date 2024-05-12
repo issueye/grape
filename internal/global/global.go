@@ -6,6 +6,7 @@ import (
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
+	"gopkg.in/antage/eventsource.v1"
 	"gorm.io/gorm"
 )
 
@@ -16,6 +17,7 @@ var (
 	Router     *gin.Engine
 	HttpServer *http.Server
 	Auth       *jwt.GinJWTMiddleware
+	SSE        eventsource.EventSource
 )
 
 type ActionType int

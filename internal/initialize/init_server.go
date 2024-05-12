@@ -14,6 +14,7 @@ import (
 	orange_validator "github.com/issueye/grape/pkg/validator"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+	"gopkg.in/antage/eventsource.v1"
 )
 
 func InitServer() {
@@ -24,6 +25,8 @@ func InitServer() {
 	global.Router = gin.New()
 	// 注册一个form表单验证器
 	orange_validator.RegisterValidator()
+
+	global.SSE = eventsource.New(nil, nil)
 
 	// 加载中间件
 	global.Router.Use(middleware.CORSMiddleware([]string{}))       // 处理前端跨域

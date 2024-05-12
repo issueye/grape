@@ -27,4 +27,5 @@ func (router ResourceRouter) Register(group *gin.RouterGroup) {
 	f.DELETE(":id", router.control.Del)
 	f.POST("upload", router.control.UploadFile)
 	f.DELETE("upload/:name", router.control.UnUploadFile)
+	f.GET("upload/sse", router.control.UploadFileSSE)
 }

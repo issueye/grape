@@ -184,8 +184,8 @@ func (ResourceController) Del(ctx *gin.Context) {
 //	@Security		ApiKeyAuth
 func (ResourceController) UploadFile(ctx *gin.Context) {
 	c := controller.New(ctx)
-
 	data := new(repository.UploadData)
+
 	err := c.ShouldBind(data)
 	if err != nil {
 		c.FailByMsgf("绑定参数失败 %s", err.Error())
@@ -198,7 +198,67 @@ func (ResourceController) UploadFile(ctx *gin.Context) {
 	filename = utils.Sha256_2Str(fmt.Sprintf("%s-%s", filename, utils.GetUUID()))
 
 	// 获取文件名，并创建新的文件存储
-	path := filepath.Join(global.GetResourceRootPath(), fmt.Sprintf("%s%s", filename, ext))
+	path := filepath.Join(global.GetResourceRootPath(ext), fmt.Sprintf("%s%s", filename, ext))
+
+	// 创建上传文件
+	out, err := os.Create(path)
+	if err != nil {
+		c.FailByMsgf("创建文件失败 %s", err.Error())
+		return
+	}
+
+	src, err := data.UploadKey.Open()
+	if err != nil {
+		c.FailByMsgf("打开上传的文件失败 %s", err.Error())
+		return
+	}
+
+	defer out.Close()
+	//将读取的文件流写到文件中
+	_, err = io.Copy(out, src)
+	if err != nil {
+		c.FailByMsgf("读取失败 %s", err.Error())
+		return
+	}
+
+	c.SuccessData(map[string]string{
+		"name": filename,
+		"path": path,
+		"ext":  ext,
+	})
+}
+
+// UploadFileSSE doc
+//
+//	@tags			资源
+//	@Summary		上传资源并且等待服务端返回
+//	@Description	上传资源并且等待服务端返回
+//	@Produce		json
+//	@Param			id	path		string			true	"id"
+//	@Success		200	{object}	controller.Base	"code: 200 成功"
+//	@Failure		500	{object}	controller.Base	"错误返回内容"
+//	@Router			/api/v1/resource/upload/sse [get]
+//	@Security		ApiKeyAuth
+func (ResourceController) UploadFileSSE(ctx *gin.Context) {
+	c := controller.New(ctx)
+	data := new(repository.UploadData)
+
+	err := c.ShouldBind(data)
+	if err != nil {
+		c.FailByMsgf("绑定参数失败 %s", err.Error())
+		return
+	}
+
+	// 使用 sse 代理此请求
+	global.SSE.ServeHTTP(c.Writer, c.Request)
+
+	ext := filepath.Ext(data.UploadKey.Filename)
+	filename := strings.TrimSuffix(path.Base(data.UploadKey.Filename), ext)
+	// 生成一个sha字符串
+	filename = utils.Sha256_2Str(fmt.Sprintf("%s-%s", filename, utils.GetUUID()))
+
+	// 获取文件名，并创建新的文件存储
+	path := filepath.Join(global.GetResourceRootPath(ext), fmt.Sprintf("%s%s", filename, ext))
 
 	// 创建上传文件
 	out, err := os.Create(path)
@@ -248,7 +308,9 @@ func (ResourceController) UnUploadFile(ctx *gin.Context) {
 		return
 	}
 
-	path := filepath.Join(global.GetResourceRootPath(), name)
+	ext := filepath.Ext(name)
+
+	path := filepath.Join(global.GetResourceRootPath(ext), name)
 	err := os.Remove(path)
 	if err != nil {
 		c.FailByMsgf("移除文件失败 %s", err.Error())

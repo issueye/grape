@@ -18,8 +18,8 @@ func NewMenuRouter() *MenuRouter {
 	}
 }
 
-func (Menu MenuRouter) Register(group *gin.RouterGroup) {
-	f := group.Group(Menu.Name)
+func (Menu MenuRouter) Register(group *gin.RouterGroup, auth gin.HandlerFunc) {
+	f := group.Group(Menu.Name, auth)
 	f.GET("", Menu.control.List)
 	f.GET("tree", Menu.control.TreeList)
 	f.GET(":id", Menu.control.GetById)
@@ -41,8 +41,8 @@ func NewMenuGroupRouter() *MenuGroupRouter {
 	}
 }
 
-func (menu *MenuGroupRouter) Register(group *gin.RouterGroup) {
-	f := group.Group(menu.Name)
+func (menu *MenuGroupRouter) Register(group *gin.RouterGroup, auth gin.HandlerFunc) {
+	f := group.Group(menu.Name, auth)
 	f.GET("", menu.control.List)
 	f.GET("getMenu/:groupId", menu.control.GetMenu)
 	f.GET(":id", menu.control.GetById)

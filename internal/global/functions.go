@@ -3,6 +3,7 @@ package global
 import (
 	"fmt"
 	"path/filepath"
+	"time"
 
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/issueye/grape/internal/common/model"
@@ -40,14 +41,28 @@ func ParseToken(token string) (*model.UserInfo, error) {
 	return user, nil
 }
 
-func GetResourceRootPath(ext string) string {
+func GetResourceRootPath() string {
+	path := filepath.Join("runtime", "static", "resources")
+	utils.PathExists(path)
+	return path
+}
+
+func GetResourcePathByType(ext string) string {
 	path := filepath.Join("runtime", "static", "resources", ext)
 	utils.PathExists(path)
 	return path
 }
 
-func GetResourcePagePath(ext string) string {
-	path := filepath.Join("runtime", "static", "resources", "page", ext)
+func GetResourcePagePath() string {
+	path := filepath.Join("runtime", "static", "resources", "page")
+	utils.PathExists(path)
+	return path
+}
+
+func GetTempPath() string {
+	timeUnixNano := time.Now().UnixNano()
+	temp := utils.Sha256_2Str(fmt.Sprintf("%d-%s", timeUnixNano, utils.GetUUID()))
+	path := filepath.Join("runtime", "static", "temppath", temp)
 	utils.PathExists(path)
 	return path
 }

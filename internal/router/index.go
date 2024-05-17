@@ -8,7 +8,7 @@ import (
 )
 
 type IRouters interface {
-	Register(group *gin.RouterGroup)
+	Register(group *gin.RouterGroup, auth gin.HandlerFunc)
 }
 
 func InitRouter(r *gin.Engine) {
@@ -27,8 +27,8 @@ func InitRouter(r *gin.Engine) {
 	}
 
 	// 鉴权
-	version.Use(global.Auth.MiddlewareFunc())
-	registerVersionRouter(version,
+	// version.Use(global.Auth.MiddlewareFunc())
+	registerVersionRouter(version, global.Auth.MiddlewareFunc(),
 		NewUserRouter(),      // 用户
 		NewUserGroupRouter(), // 用户组
 		NewMenuRouter(),      // 菜单
@@ -43,8 +43,8 @@ func InitRouter(r *gin.Engine) {
 }
 
 // registerRouter 注册路由
-func registerVersionRouter(r *gin.RouterGroup, iRouters ...IRouters) {
+func registerVersionRouter(r *gin.RouterGroup, auth gin.HandlerFunc, iRouters ...IRouters) {
 	for _, iRouter := range iRouters {
-		iRouter.Register(r)
+		iRouter.Register(r, auth)
 	}
 }

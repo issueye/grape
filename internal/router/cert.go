@@ -17,8 +17,8 @@ func NewCertRouter() *CertRouter {
 	}
 }
 
-func (router CertRouter) Register(group *gin.RouterGroup) {
-	f := group.Group(router.Name)
+func (router CertRouter) Register(group *gin.RouterGroup, auth gin.HandlerFunc) {
+	f := group.Group(router.Name, auth)
 	f.GET("", router.control.Query)
 	f.GET(":id", router.control.GetById)
 	f.POST("", router.control.Create)

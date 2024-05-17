@@ -18,8 +18,8 @@ func NewUserRouter() *UserRouter {
 	}
 }
 
-func (user UserRouter) Register(group *gin.RouterGroup) {
-	f := group.Group(user.Name)
+func (user UserRouter) Register(group *gin.RouterGroup, auth gin.HandlerFunc) {
+	f := group.Group(user.Name, auth)
 	f.GET("", user.control.List)
 	f.GET(":id", user.control.GetById)
 	f.POST("", user.control.Create)
@@ -40,8 +40,8 @@ func NewUserGroupRouter() *UserGroupRouter {
 	}
 }
 
-func (user *UserGroupRouter) Register(group *gin.RouterGroup) {
-	f := group.Group(user.Name)
+func (user *UserGroupRouter) Register(group *gin.RouterGroup, auth gin.HandlerFunc) {
+	f := group.Group(user.Name, auth)
 	f.GET("", user.control.List)
 	f.GET(":id", user.control.GetById)
 	f.POST("", user.control.Create)

@@ -2,19 +2,14 @@ package v1
 
 import (
 	"errors"
-	"fmt"
-	"io"
 	"os"
-	"path"
 	"path/filepath"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/issueye/grape/internal/common/controller"
 	"github.com/issueye/grape/internal/global"
 	"github.com/issueye/grape/internal/logic"
 	"github.com/issueye/grape/internal/repository"
-	"github.com/issueye/grape/pkg/utils"
 )
 
 type ResourceController struct{}
@@ -192,40 +187,13 @@ func (ResourceController) UploadFile(ctx *gin.Context) {
 		return
 	}
 
-	ext := filepath.Ext(data.UploadKey.Filename)
-	filename := strings.TrimSuffix(path.Base(data.UploadKey.Filename), ext)
-	// 生成一个sha字符串
-	filename = utils.Sha256_2Str(fmt.Sprintf("%s-%s", filename, utils.GetUUID()))
-
-	// 获取文件名，并创建新的文件存储
-	path := filepath.Join(global.GetResourceRootPath(ext), fmt.Sprintf("%s%s", filename, ext))
-
-	// 创建上传文件
-	out, err := os.Create(path)
+	resData, err := logic.Resource{}.Upload(data)
 	if err != nil {
-		c.FailByMsgf("创建文件失败 %s", err.Error())
+		c.FailByMsgf("上传文件失败")
 		return
 	}
 
-	src, err := data.UploadKey.Open()
-	if err != nil {
-		c.FailByMsgf("打开上传的文件失败 %s", err.Error())
-		return
-	}
-
-	defer out.Close()
-	//将读取的文件流写到文件中
-	_, err = io.Copy(out, src)
-	if err != nil {
-		c.FailByMsgf("读取失败 %s", err.Error())
-		return
-	}
-
-	c.SuccessData(map[string]string{
-		"name": filename,
-		"path": path,
-		"ext":  ext,
-	})
+	c.SuccessData(resData)
 }
 
 // UploadFileSSE doc
@@ -241,51 +209,9 @@ func (ResourceController) UploadFile(ctx *gin.Context) {
 //	@Security		ApiKeyAuth
 func (ResourceController) UploadFileSSE(ctx *gin.Context) {
 	c := controller.New(ctx)
-	data := new(repository.UploadData)
-
-	err := c.ShouldBind(data)
-	if err != nil {
-		c.FailByMsgf("绑定参数失败 %s", err.Error())
-		return
-	}
 
 	// 使用 sse 代理此请求
 	global.SSE.ServeHTTP(c.Writer, c.Request)
-
-	ext := filepath.Ext(data.UploadKey.Filename)
-	filename := strings.TrimSuffix(path.Base(data.UploadKey.Filename), ext)
-	// 生成一个sha字符串
-	filename = utils.Sha256_2Str(fmt.Sprintf("%s-%s", filename, utils.GetUUID()))
-
-	// 获取文件名，并创建新的文件存储
-	path := filepath.Join(global.GetResourceRootPath(ext), fmt.Sprintf("%s%s", filename, ext))
-
-	// 创建上传文件
-	out, err := os.Create(path)
-	if err != nil {
-		c.FailByMsgf("创建文件失败 %s", err.Error())
-		return
-	}
-
-	src, err := data.UploadKey.Open()
-	if err != nil {
-		c.FailByMsgf("打开上传的文件失败 %s", err.Error())
-		return
-	}
-
-	defer out.Close()
-	//将读取的文件流写到文件中
-	_, err = io.Copy(out, src)
-	if err != nil {
-		c.FailByMsgf("读取失败 %s", err.Error())
-		return
-	}
-
-	c.SuccessData(map[string]string{
-		"name": filename,
-		"path": path,
-		"ext":  ext,
-	})
 }
 
 // uploadFile doc
@@ -309,8 +235,7 @@ func (ResourceController) UnUploadFile(ctx *gin.Context) {
 	}
 
 	ext := filepath.Ext(name)
-
-	path := filepath.Join(global.GetResourceRootPath(ext), name)
+	path := filepath.Join(global.GetResourcePathByType(ext), name)
 	err := os.Remove(path)
 	if err != nil {
 		c.FailByMsgf("移除文件失败 %s", err.Error())

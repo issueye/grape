@@ -5,19 +5,24 @@ import (
 
 	"github.com/issueye/grape/internal/common/model"
 	"github.com/issueye/grape/internal/common/service"
-	"github.com/issueye/grape/internal/global"
 	"github.com/issueye/grape/internal/repository"
 	"gorm.io/gorm"
 )
 
 type Menu struct {
-	*service.BaseService
+	service.BaseService
 }
 
-func NewMenu() *Menu {
-	return &Menu{
-		BaseService: service.NewBaseService(global.DB),
-	}
+func (owner *Menu) Self() *Menu {
+	return owner
+}
+
+func (owner *Menu) SetBase(base service.BaseService) {
+	owner.BaseService = base
+}
+
+func NewMenu(args ...service.ServiceContext) *Menu {
+	return service.NewServiceSelf(&Menu{}, args...)
 }
 
 // CreateAdminNonExistent
@@ -48,14 +53,14 @@ func (Menu *Menu) Create(data *repository.CreateMenu) error {
 	info := model.Menu{}.New()
 	info.Copy(&data.MenuBase)
 
-	return Menu.Db.Create(info).Error
+	return Menu.GetDB().Create(info).Error
 }
 
 // Create
 // 创建用户信息
 func (Menu *Menu) CreateNoExistent(data *model.MenuBase) string {
 	info := new(model.Menu)
-	err := Menu.Db.Model(info).Where("route = ?", data.Route).Where("level = ?", data.Level).Find(info).Error
+	err := Menu.GetDB().Model(info).Where("route = ?", data.Route).Where("level = ?", data.Level).Find(info).Error
 	if err != nil {
 		panic("查询菜单失败 " + err.Error())
 	}
@@ -67,7 +72,7 @@ func (Menu *Menu) CreateNoExistent(data *model.MenuBase) string {
 	menuInfo := model.Menu{}.New()
 	menuInfo.Copy(data)
 
-	err = Menu.Db.Create(menuInfo).Error
+	err = Menu.GetDB().Create(menuInfo).Error
 	if err != nil {
 		panic("创建菜单失败 " + err.Error())
 	}
@@ -79,7 +84,7 @@ func (Menu *Menu) CreateNoExistent(data *model.MenuBase) string {
 // 根据用户ID查找用户信息
 func (Menu *Menu) GetById(id string) (*model.Menu, error) {
 	info := new(model.Menu)
-	err := Menu.Db.Model(info).Where("id = ?", id).Find(info).Error
+	err := Menu.GetDB().Model(info).Where("id = ?", id).Find(info).Error
 	return info, err
 }
 
@@ -95,13 +100,13 @@ func (Menu *Menu) Modify(id string, info *repository.ModifyMenu) error {
 	m["level"] = info.Level
 	m["parent_id"] = info.ParentId
 
-	return Menu.Db.Model(&model.Menu{}).Where("id = ?", id).Updates(m).Error
+	return Menu.GetDB().Model(&model.Menu{}).Where("id = ?", id).Updates(m).Error
 }
 
 // Status
 // 修改用户信息
 func (Menu *Menu) Status(info *repository.StatusMenu) error {
-	return Menu.Db.
+	return Menu.GetDB().
 		Model(&model.Menu{}).
 		Where("id = ?", info.ID).
 		Update("state", info.State).
@@ -111,7 +116,7 @@ func (Menu *Menu) Status(info *repository.StatusMenu) error {
 // Delete
 // 删除用户信息
 func (Menu *Menu) Delete(id string) error {
-	return Menu.Db.Where("id = ?", id).Delete(&model.Menu{}).Error
+	return Menu.GetDB().Where("id = ?", id).Delete(&model.Menu{}).Error
 }
 
 // List

@@ -5,19 +5,24 @@ import (
 
 	"github.com/issueye/grape/internal/common/model"
 	"github.com/issueye/grape/internal/common/service"
-	"github.com/issueye/grape/internal/global"
 	"github.com/issueye/grape/internal/repository"
 	"gorm.io/gorm"
 )
 
 type Page struct {
-	*service.BaseService
+	service.BaseService
 }
 
-func NewPage() *Page {
-	return &Page{
-		BaseService: service.NewBaseService(global.DB),
-	}
+func (owner *Page) Self() *Page {
+	return owner
+}
+
+func (owner *Page) SetBase(base service.BaseService) {
+	owner.BaseService = base
+}
+
+func NewPage(args ...service.ServiceContext) *Page {
+	return service.NewServiceSelf(&Page{}, args...)
 }
 
 // Create
@@ -25,10 +30,26 @@ func NewPage() *Page {
 func (s *Page) Create(data *repository.CreatePage) error {
 	info := model.PageInfo{}.New()
 	info.Name = data.Name
+	info.Title = data.Title
 	info.PortId = data.PortId
+	info.ProductCode = data.ProductCode
 	info.Mark = data.Mark
 
-	return s.Db.Model(info).Create(info).Error
+	err := s.GetDB().Model(info).Create(info).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Create
+// 创建信息
+func (s *Page) CreatePageVersion(data *model.PageVersionBase) error {
+	version := model.PageVersionInfo{}.New()
+	version.Copy(data)
+
+	return s.GetDB().Create(version).Error
 }
 
 // Query
@@ -44,7 +65,7 @@ func (s *Page) Query(req *repository.QueryPage) ([]*model.PageInfo, error) {
 				Or("mark like ?", fmt.Sprintf("%%%s%%", req.Condition))
 		}
 
-		if req.PortId != "" {
+		if req.PortId > -1 {
 			q = q.Where("port_id = ?", req.PortId)
 		}
 
@@ -62,39 +83,61 @@ func (s *Page) Modify(data *repository.ModifyPage) error {
 	updateData["page_path"] = data.PagePath
 	updateData["port_id"] = data.PortId
 	updateData["mark"] = data.Mark
-	return s.Db.Model(&model.PageInfo{}).Where("id = ?", data.ID).Updates(updateData).Error
+	return s.GetDB().Model(&model.PageInfo{}).Where("id = ?", data.ID).Updates(updateData).Error
 }
 
 // Modify
 // 修改信息
 func (s *Page) ModifyByMap(id string, datas map[string]any) error {
-	return s.Db.Model(&model.PageInfo{}).Where("id = ?", id).Updates(datas).Error
+	return s.GetDB().Model(&model.PageInfo{}).Where("id = ?", id).Updates(datas).Error
 }
 
 // Del
 // 删除
 func (s *Page) Del(id string) error {
-	return s.Db.Model(&model.PageInfo{}).Delete("id = ?", id).Error
+	return s.GetDB().Model(&model.PageInfo{}).Delete("id = ?", id).Error
+}
+
+// Del
+// 删除
+func (s *Page) DelAllVersion(productCode string) error {
+	return s.GetDB().Model(&model.PageVersionInfo{}).Delete("product_code = ?", productCode).Error
 }
 
 // Del
 // 删除
 func (s *Page) DelByPortId(id string) error {
-	return s.Db.Model(&model.PageInfo{}).Delete("port_id = ?", id).Error
+	return s.GetDB().Model(&model.PageInfo{}).Delete("port_id = ?", id).Error
 }
 
 // FindById
 // 通过ID查找信息
 func (s *Page) FindById(id string) (*model.PageInfo, error) {
 	info := new(model.PageInfo)
-	err := s.Db.Model(info).Where("id = ?", id).Find(info).Error
+	err := s.GetDB().Model(info).Where("id = ?", id).Find(info).Error
 	return info, err
 }
 
 // FindById
 // 通过ID查找信息
-func (s *Page) FindByName(name string, portId string) (*model.PageInfo, error) {
+func (s *Page) FindByName(name string, portId int) (*model.PageInfo, error) {
 	info := new(model.PageInfo)
-	err := s.Db.Model(info).Where("name = ?", name).Where("port_id = ?", portId).Find(info).Error
+	err := s.GetDB().Model(info).Where("name = ?", name).Where("port_id = ?", portId).Find(info).Error
+	return info, err
+}
+
+// FindById
+// 通过ID查找信息
+func (s *Page) FindByProductCode(productCode string) (*model.PageInfo, error) {
+	info := new(model.PageInfo)
+	err := s.GetDB().Model(info).Where("product_code = ?", productCode).Find(info).Error
+	return info, err
+}
+
+// FindById
+// 通过ID查找信息
+func (s *Page) FindByVersion(productCode string, version string) (*model.PageVersionInfo, error) {
+	info := new(model.PageVersionInfo)
+	err := s.GetDB().Model(info).Where("product_code = ?", productCode).Where("version = ?", version).Find(info).Error
 	return info, err
 }

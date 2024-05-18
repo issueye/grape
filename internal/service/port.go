@@ -5,19 +5,24 @@ import (
 
 	"github.com/issueye/grape/internal/common/model"
 	"github.com/issueye/grape/internal/common/service"
-	"github.com/issueye/grape/internal/global"
 	"github.com/issueye/grape/internal/repository"
 	"gorm.io/gorm"
 )
 
 type Port struct {
-	*service.BaseService
+	service.BaseService
 }
 
-func NewPort() *Port {
-	return &Port{
-		BaseService: service.NewBaseService(global.DB),
-	}
+func (owner *Port) Self() *Port {
+	return owner
+}
+
+func (owner *Port) SetBase(base service.BaseService) {
+	owner.BaseService = base
+}
+
+func NewPort(args ...service.ServiceContext) *Port {
+	return service.NewServiceSelf(&Port{}, args...)
 }
 
 // Create
@@ -30,7 +35,7 @@ func (s *Port) Create(data *repository.CreatePort) error {
 	info.CerId = data.CertId
 	info.Mark = data.Mark
 
-	return s.Db.Model(info).Create(info).Error
+	return s.GetDB().Model(info).Create(info).Error
 }
 
 // Query
@@ -60,26 +65,26 @@ func (s *Port) Modify(id string, data *repository.ModifyPort) error {
 	updateData["is_tls"] = data.IsTLS
 	updateData["cert_id"] = data.CertId
 	updateData["mark"] = data.Mark
-	return s.Db.Model(&model.PortInfo{}).Where("id = ?", id).Updates(updateData).Error
+	return s.GetDB().Model(&model.PortInfo{}).Where("id = ?", id).Updates(updateData).Error
 }
 
 // Modify
 // 修改信息
 func (s *Port) ModifyState(id string, state bool) error {
-	return s.Db.Model(&model.PortInfo{}).Where("id = ?", id).Update("state", state).Error
+	return s.GetDB().Model(&model.PortInfo{}).Where("id = ?", id).Update("state", state).Error
 }
 
 // Del
 // 删除
 func (s *Port) Del(id string) error {
-	return s.Db.Model(&model.PortInfo{}).Delete("id = ?", id).Error
+	return s.GetDB().Model(&model.PortInfo{}).Delete("id = ?", id).Error
 }
 
 // FindByPort
 // 通过端口号查找信息
 func (s *Port) FindByPort(port int) (*model.PortInfo, error) {
 	info := new(model.PortInfo)
-	err := s.Db.Model(info).Where("port = ?", port).Find(info).Error
+	err := s.GetDB().Model(info).Where("port = ?", port).Find(info).Error
 	return info, err
 }
 
@@ -87,6 +92,6 @@ func (s *Port) FindByPort(port int) (*model.PortInfo, error) {
 // 通过ID查找信息
 func (s *Port) FindById(id string) (*model.PortInfo, error) {
 	info := new(model.PortInfo)
-	err := s.Db.Model(info).Where("id = ?", id).Find(info).Error
+	err := s.GetDB().Model(info).Where("id = ?", id).Find(info).Error
 	return info, err
 }

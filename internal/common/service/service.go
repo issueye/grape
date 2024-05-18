@@ -7,34 +7,105 @@ import (
 	"gorm.io/gorm"
 )
 
-type BaseService struct {
-	Db     *gorm.DB
-	Tx     *gorm.DB
-	OpenTx bool
+var (
+	DB *gorm.DB
+)
+
+type ServiceContext struct {
+	db       *gorm.DB
+	tx       *gorm.DB
+	isOpenTx bool
 }
 
-func NewBaseService(db *gorm.DB) *BaseService {
-	return &BaseService{
-		Db: db,
+type BaseService struct {
+	ctx ServiceContext
+}
+
+func (base *BaseService) OpenTx() {
+	base.ctx.isOpenTx = true
+	base.ctx.tx = base.ctx.db.Begin()
+}
+
+func NewBaseService(args ...ServiceContext) *BaseService {
+	base := &BaseService{
+		ctx: ServiceContext{},
 	}
+
+	if len(args) > 0 {
+		base.SetContext(args[0])
+	} else {
+		base.ctx.db = DB
+	}
+
+	return base
+}
+
+type BaseIntf[T any] interface {
+	SetContext(ctx ServiceContext)
+	GetContext() ServiceContext
+	OpenTx()
+	Rollback() *gorm.DB
+	Commit() *gorm.DB
+	GetDB() *gorm.DB
+	DataFilter(tableName string, req, list interface{}, f ListFilter) error
+	Self() *T
+	SetBase(BaseService)
+}
+
+func NewService[T any](obj BaseIntf[T], args ...ServiceContext) BaseIntf[T] {
+	if len(args) > 0 {
+		obj.SetContext(args[0])
+	} else {
+		obj.SetBase(NewBase())
+	}
+
+	return obj
+}
+
+func NewServiceSelf[T any](obj BaseIntf[T], args ...ServiceContext) *T {
+	return NewService(obj).Self()
 }
 
 type ListFilter func(db *gorm.DB) (*gorm.DB, error)
 
-func (srv *BaseService) GetDB() *gorm.DB {
-	if srv.OpenTx && srv.Tx != nil {
-		return srv.Tx
-	}
+func (srv *BaseService) SetContext(ctx ServiceContext) {
+	srv.ctx = ctx
+}
 
-	return srv.Db
+func (srv *BaseService) GetContext() ServiceContext {
+	return srv.ctx
+}
+
+func NewBase() BaseService {
+	return BaseService{
+		ctx: ServiceContext{
+			db: DB,
+		},
+	}
 }
 
 func (srv *BaseService) Rollback() *gorm.DB {
-	return srv.Tx.Rollback()
+	if srv.ctx.isOpenTx && srv.ctx.tx != nil {
+		return srv.ctx.tx.Rollback()
+	}
+
+	return nil
 }
 
 func (srv *BaseService) Commit() *gorm.DB {
-	return srv.Tx.Commit()
+	if srv.ctx.isOpenTx && srv.ctx.tx != nil {
+		return srv.ctx.tx.Commit()
+	}
+
+	return nil
+}
+
+func (srv *BaseService) GetDB() *gorm.DB {
+	if srv.ctx.isOpenTx && srv.ctx.tx != nil {
+		return srv.ctx.tx
+	}
+
+	return srv.ctx.db
 }
 
 // DataFilter 数据过滤

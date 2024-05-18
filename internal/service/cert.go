@@ -5,19 +5,24 @@ import (
 
 	"github.com/issueye/grape/internal/common/model"
 	"github.com/issueye/grape/internal/common/service"
-	"github.com/issueye/grape/internal/global"
 	"github.com/issueye/grape/internal/repository"
 	"gorm.io/gorm"
 )
 
 type Cert struct {
-	*service.BaseService
+	service.BaseService
 }
 
-func NewCert() *Cert {
-	return &Cert{
-		BaseService: service.NewBaseService(global.DB),
-	}
+func (owner *Cert) Self() *Cert {
+	return owner
+}
+
+func (owner *Cert) SetBase(base service.BaseService) {
+	owner.BaseService = base
+}
+
+func NewCert(args ...service.ServiceContext) *Cert {
+	return service.NewServiceSelf(&Cert{}, args...)
 }
 
 // Create
@@ -29,7 +34,7 @@ func (s *Cert) Create(data *repository.CreateCert) error {
 	info.Private = data.Private
 	info.Mark = data.Mark
 
-	return s.Db.Model(info).Create(info).Error
+	return s.GetDB().Model(info).Create(info).Error
 }
 
 // Query
@@ -61,20 +66,20 @@ func (s *Cert) Modify(data *repository.ModifyCert) error {
 	updateData["public"] = data.Public
 	updateData["private"] = data.Private
 	updateData["mark"] = data.Mark
-	return s.Db.Model(&model.CertInfo{}).Where("id = ?", data.ID).Updates(updateData).Error
+	return s.GetDB().Model(&model.CertInfo{}).Where("id = ?", data.ID).Updates(updateData).Error
 }
 
 // Del
 // 删除
 func (s *Cert) Del(id string) error {
-	return s.Db.Model(&model.CertInfo{}).Delete("id = ?", id).Error
+	return s.GetDB().Model(&model.CertInfo{}).Delete("id = ?", id).Error
 }
 
 // FindById
 // 通过ID查找信息
 func (s *Cert) FindById(id string) (*model.CertInfo, error) {
 	info := new(model.CertInfo)
-	err := s.Db.Model(info).Where("id = ?", id).Find(info).Error
+	err := s.GetDB().Model(info).Where("id = ?", id).Find(info).Error
 	return info, err
 }
 
@@ -82,6 +87,6 @@ func (s *Cert) FindById(id string) (*model.CertInfo, error) {
 // 通过ID查找信息
 func (s *Cert) FindByName(name string) (*model.CertInfo, error) {
 	info := new(model.CertInfo)
-	err := s.Db.Model(info).Where("name = ?", name).Find(info).Error
+	err := s.GetDB().Model(info).Where("name = ?", name).Find(info).Error
 	return info, err
 }

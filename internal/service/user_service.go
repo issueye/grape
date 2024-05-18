@@ -15,19 +15,25 @@ import (
 )
 
 type User struct {
-	*service.BaseService
+	service.BaseService
 }
 
-func NewUser() *User {
-	return &User{
-		BaseService: service.NewBaseService(global.DB),
-	}
+func (owner *User) Self() *User {
+	return owner
+}
+
+func (owner *User) SetBase(base service.BaseService) {
+	owner.BaseService = base
+}
+
+func NewUser(args ...service.ServiceContext) *User {
+	return service.NewServiceSelf(&User{}, args...)
 }
 
 // FindUser
 // 查找用户
 func (user *User) FindUser(info *repository.Login) (*model.UserInfo, error) {
-	query := user.Db.Model(&model.UserInfo{}).Order("id")
+	query := user.GetDB().Model(&model.UserInfo{}).Order("id")
 	query = query.Where("account = ?", info.Account)
 
 	// 判断是否需要验证密码
@@ -46,7 +52,7 @@ func (user *User) FindUser(info *repository.Login) (*model.UserInfo, error) {
 // 创建管理员用户，如果不存在
 func (user *User) CreateAdminNonExistent() error {
 	isHave := int64(0)
-	err := user.Db.Model(&model.UserInfo{}).Where("account = ?", global.AdminName).Where("id = ?", global.AdminId).Count(&isHave).Error
+	err := user.GetDB().Model(&model.UserInfo{}).Where("account = ?", global.AdminName).Where("id = ?", global.AdminId).Count(&isHave).Error
 	if err != nil {
 		return err
 	}
@@ -62,7 +68,7 @@ func (user *User) CreateAdminNonExistent() error {
 		info.State = 1
 		info.Sys = 1
 
-		return user.Db.Create(info).Error
+		return user.GetDB().Create(info).Error
 	} else {
 		return nil
 	}
@@ -80,14 +86,14 @@ func (user *User) Create(data *repository.CreateUser) error {
 	info.GroupId = data.GroupId
 	info.State = 1
 	info.Sys = 0
-	return user.Db.Create(info).Error
+	return user.GetDB().Create(info).Error
 }
 
 // GetByAccount
 // 查找用户是否存在
 func (user *User) GetByAccount(account string) (*model.UserInfo, error) {
 	info := new(model.UserInfo)
-	err := user.Db.Model(info).Where("account = ?", account).Find(info).Error
+	err := user.GetDB().Model(info).Where("account = ?", account).Find(info).Error
 	return info, err
 }
 
@@ -95,7 +101,7 @@ func (user *User) GetByAccount(account string) (*model.UserInfo, error) {
 // 根据用户ID查找用户信息
 func (user *User) GetById(id string) (*model.UserInfo, error) {
 	info := new(model.UserInfo)
-	err := user.Db.Model(info).Where("id = ?", id).Find(info).Error
+	err := user.GetDB().Model(info).Where("id = ?", id).Find(info).Error
 	return info, err
 }
 
@@ -109,13 +115,13 @@ func (user *User) Modify(info *repository.ModifyUser) error {
 	m["mark"] = info.Mark
 	m["group_id"] = info.GroupId
 
-	return user.Db.Model(&model.UserInfo{}).Where("id = ?", info.ID).Updates(m).Error
+	return user.GetDB().Model(&model.UserInfo{}).Where("id = ?", info.ID).Updates(m).Error
 }
 
 // Status
 // 修改用户信息
 func (user *User) Status(info *repository.StatusUser) error {
-	return user.Db.
+	return user.GetDB().
 		Model(&model.UserInfo{}).
 		Where("id = ?", info.ID).
 		Update("state", info.State).
@@ -125,7 +131,7 @@ func (user *User) Status(info *repository.StatusUser) error {
 // Delete
 // 删除用户信息
 func (user *User) Delete(id string) error {
-	return user.Db.Where("id = ?", id).Delete(&model.UserInfo{}).Error
+	return user.GetDB().Where("id = ?", id).Delete(&model.UserInfo{}).Error
 }
 
 // List

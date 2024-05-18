@@ -5,19 +5,24 @@ import (
 
 	"github.com/issueye/grape/internal/common/model"
 	"github.com/issueye/grape/internal/common/service"
-	"github.com/issueye/grape/internal/global"
 	"github.com/issueye/grape/internal/repository"
 	"gorm.io/gorm"
 )
 
 type Rule struct {
-	*service.BaseService
+	service.BaseService
 }
 
-func NewRule() *Rule {
-	return &Rule{
-		BaseService: service.NewBaseService(global.DB),
-	}
+func (owner *Rule) Self() *Rule {
+	return owner
+}
+
+func (owner *Rule) SetBase(base service.BaseService) {
+	owner.BaseService = base
+}
+
+func NewRule(args ...service.ServiceContext) *Rule {
+	return service.NewServiceSelf(&Rule{}, args...)
 }
 
 // Create
@@ -32,7 +37,7 @@ func (s *Rule) Create(data *repository.CreateRule) error {
 	info.TargetId = data.TargetId
 	info.TargetRoute = data.TargetRoute
 
-	return s.Db.Model(info).Create(info).Error
+	return s.GetDB().Model(info).Create(info).Error
 }
 
 // Query
@@ -95,26 +100,26 @@ func (s *Rule) Modify(data *repository.ModifyRule) error {
 	updateData["target_route"] = data.TargetRoute
 	updateData["port_id"] = data.PortId
 	updateData["mark"] = data.Mark
-	return s.Db.Model(&model.RuleInfo{}).Where("id = ?", data.ID).Updates(updateData).Error
+	return s.GetDB().Model(&model.RuleInfo{}).Where("id = ?", data.ID).Updates(updateData).Error
 }
 
 // Del
 // 删除
 func (s *Rule) Del(id string) error {
-	return s.Db.Model(&model.RuleInfo{}).Delete("id = ?", id).Error
+	return s.GetDB().Model(&model.RuleInfo{}).Delete("id = ?", id).Error
 }
 
 // Del
 // 删除
 func (s *Rule) DelByPortId(id string) error {
-	return s.Db.Model(&model.RuleInfo{}).Delete("port_id = ?", id).Error
+	return s.GetDB().Model(&model.RuleInfo{}).Delete("port_id = ?", id).Error
 }
 
 // FindById
 // 通过ID查找信息
 func (s *Rule) FindById(id string) (*model.RuleInfo, error) {
 	info := new(model.RuleInfo)
-	err := s.Db.Model(info).Where("id = ?", id).Find(info).Error
+	err := s.GetDB().Model(info).Where("id = ?", id).Find(info).Error
 	return info, err
 }
 
@@ -122,7 +127,7 @@ func (s *Rule) FindById(id string) (*model.RuleInfo, error) {
 // 通过ID查找信息
 func (s *Rule) FindLikeName(name string) (bool, error) {
 	list := make([]*model.RuleInfo, 0)
-	err := s.Db.Model(&model.RuleInfo{}).Where("match_type = ?", 1).Where("name like ?", fmt.Sprintf("/%s%%", name)).Find(&list).Error
+	err := s.GetDB().Model(&model.RuleInfo{}).Where("match_type = ?", 1).Where("name like ?", fmt.Sprintf("/%s%%", name)).Find(&list).Error
 
 	if len(list) > 0 {
 		return true, err
@@ -133,8 +138,8 @@ func (s *Rule) FindLikeName(name string) (bool, error) {
 
 // FindById
 // 通过ID查找信息
-func (s *Rule) FindByName(name, portId string) (*model.RuleInfo, error) {
+func (s *Rule) FindByName(name string, portId int) (*model.RuleInfo, error) {
 	info := new(model.RuleInfo)
-	err := s.Db.Model(info).Where("name = ?", name).Where("port_id = ?", portId).Find(info).Error
+	err := s.GetDB().Model(info).Where("name = ?", name).Where("port_id = ?", portId).Find(info).Error
 	return info, err
 }

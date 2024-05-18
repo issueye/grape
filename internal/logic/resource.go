@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/BurntSushi/toml"
 	"github.com/issueye/grape/internal/common/model"
 	"github.com/issueye/grape/internal/global"
 	"github.com/issueye/grape/internal/repository"
@@ -114,7 +115,7 @@ func NewSend(event string) *Send {
 	}
 }
 
-func (s *Send) Success(progress int, msg string) {
+func (s *Send) Info(progress int, msg string) {
 	global.SSE.SendEventMessage(getProgress(1, progress, msg), s.event, "")
 	time.Sleep(1 * time.Second)
 }
@@ -123,72 +124,106 @@ func (s *Send) Fail(progress int, msg string) {
 	global.SSE.SendEventMessage(getProgress(0, progress, msg), s.event, "")
 }
 
+func (s *Send) Failf(progress int, formatStr string, args ...any) {
+	global.SSE.SendEventMessage(getProgress(0, progress, fmt.Sprintf(formatStr, args...)), s.event, "")
+}
+
 func (Resource) fileParse(data *repository.UploadData, filename string, ext string) {
 	send := NewSend(data.Id)
 
 	path := filepath.Join(global.GetResourcePathByType(ext), fmt.Sprintf("%s%s", filename, ext))
-	send.Success(30, "开始创建文件")
+	send.Info(10, "开始创建文件")
 
 	// 创建上传文件
 	out, err := os.Create(path)
 	if err != nil {
 		global.Log.Errorf("创建文件失败 %s", err.Error())
-		send.Fail(30, "创建文件失败...")
+		send.Fail(10, "创建文件失败...")
 		return
 	}
 
-	global.Log.Info("创建文件副本成功")
-	send.Success(40, "创建文件副本成功...")
-
+	send.Info(20, "创建文件副本成功...")
 	src, err := data.UploadKey.Open()
 	if err != nil {
 		global.Log.Errorf("打开上传的文件失败 %s", err.Error())
-		send.Fail(40, "打开上传的文件失败...")
+		send.Fail(20, "打开上传的文件失败...")
 		return
 	}
 
-	global.Log.Info("打开上传的文件成功")
-	send.Success(60, "打开上传的文件成功...")
-
-	global.Log.Info("开始拷贝文件流")
-	send.Success(70, "开始拷贝文件流...")
+	send.Info(25, "打开上传的文件成功...")
+	send.Info(26, "开始拷贝文件流...")
 
 	defer out.Close()
 	//将读取的文件流写到文件中
 	_, err = io.Copy(out, src)
 	if err != nil {
 		global.Log.Errorf("读取失败 %s", err.Error())
-		send.Fail(70, "读取失败...")
+		send.Fail(26, "读取失败...")
 		return
 	}
 
-	global.Log.Info("完成文件流拷贝")
-	send.Success(75, "完成文件流拷贝...")
+	send.Info(30, "完成文件流拷贝...")
 
 	switch strings.ToLower(data.Type) {
 	case "page":
 		{
-			send.Success(77, "开始解压文件...")
+			send.Info(35, "开始解压文件...")
 
 			tempPath := global.GetTempPath()
 			err = utils.Unzip(path, tempPath)
 			if err != nil {
 				global.Log.Errorf("解压文件失败 %s", err.Error())
-				send.Fail(77, "解压文件失败...")
+				send.Fail(35, "解压文件失败...")
 				return
 			}
 
+			send.Info(37, "读取页面配置文件...")
 			configFile := filepath.Join(tempPath, "pageConfig.toml")
 			info, err := os.ReadFile(configFile)
 			if err != nil {
 				global.Log.Errorf("读取页面配置信息失败 %s", err.Error())
-				send.Fail(80, "读取页面配置信息失败...")
+				send.Fail(37, "读取页面配置信息失败...")
 				return
 			}
 
-			fmt.Println("info", string(info))
+			send.Info(50, "解析配置文件...")
+			pageCfg := &repository.PageConfig{}
+			if _, err := toml.Decode(string(info), pageCfg); err != nil {
+				global.Log.Errorf("解析配置文件失败 %s", err.Error())
+				send.Fail(50, "解析配置文件失败...")
+				return
+			}
+
+			send.Info(70, "移除临时文件夹...")
+			err = os.RemoveAll(tempPath)
+			if err != nil {
+				global.Log.Errorf("移除临时文件夹失败 %s", err.Error())
+				send.Failf(70, "移除临时文件夹失败 %s", err.Error())
+				return
+			}
+
+			targetPath := global.GetPagePath(pageCfg.Name, pageCfg.Version)
+			send.Info(90, "创建页面信息...")
+			err = Page{}.Create(&repository.CreatePage{
+				Name:        pageCfg.Name,
+				Title:       pageCfg.Title,
+				PortId:      pageCfg.Port,
+				ProductCode: pageCfg.ProductCode,
+				Version:     pageCfg.Version,
+				PagePath:    targetPath,
+				Mark:        "",
+			})
+
+			if err != nil {
+				global.Log.Errorf("创建页面信息失败 %s", err.Error())
+				send.Failf(90, "创建页面信息失败 %s", err.Error())
+				return
+			}
+
+			send.Info(95, "创建静态资源...")
+			utils.Unzip(path, targetPath)
 		}
 	}
 
-	send.Success(100, "上传成功")
+	send.Info(100, "上传成功")
 }

@@ -3,6 +3,7 @@ module github.com/issueye/grape
 go 1.21
 
 require (
+	github.com/BurntSushi/toml v1.3.2
 	github.com/appleboy/gin-jwt/v2 v2.9.1
 	github.com/gin-gonic/gin v1.9.0
 	github.com/glebarez/sqlite v1.8.0

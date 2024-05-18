@@ -66,3 +66,9 @@ func GetTempPath() string {
 	utils.PathExists(path)
 	return path
 }
+
+func GetPagePath(name string, version string) string {
+	path := filepath.Join("runtime", "static", "pages", name, version)
+	utils.PathExists(path)
+	return path
+}

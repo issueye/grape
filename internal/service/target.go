@@ -5,19 +5,24 @@ import (
 
 	"github.com/issueye/grape/internal/common/model"
 	"github.com/issueye/grape/internal/common/service"
-	"github.com/issueye/grape/internal/global"
 	"github.com/issueye/grape/internal/repository"
 	"gorm.io/gorm"
 )
 
 type Target struct {
-	*service.BaseService
+	service.BaseService
 }
 
-func NewTarget() *Target {
-	return &Target{
-		BaseService: service.NewBaseService(global.DB),
-	}
+func (owner *Target) Self() *Target {
+	return owner
+}
+
+func (owner *Target) SetBase(base service.BaseService) {
+	owner.BaseService = base
+}
+
+func NewTarget(args ...service.ServiceContext) *Target {
+	return service.NewServiceSelf(&Target{}, args...)
 }
 
 // Create
@@ -27,7 +32,7 @@ func (s *Target) Create(data *repository.CreateTarget) error {
 	info.Name = data.Name
 	info.Mark = data.Mark
 
-	return s.Db.Model(info).Create(info).Error
+	return s.GetDB().Model(info).Create(info).Error
 }
 
 // Query
@@ -55,26 +60,26 @@ func (s *Target) Modify(id string, data *repository.ModifyTarget) error {
 	updateData := make(map[string]any)
 	updateData["name"] = data.Name
 	updateData["mark"] = data.Mark
-	return s.Db.Model(&model.TargetInfo{}).Where("id = ?", id).Updates(updateData).Error
+	return s.GetDB().Model(&model.TargetInfo{}).Where("id = ?", id).Updates(updateData).Error
 }
 
 // Modify
 // 修改信息
 func (s *Target) ModifyState(id string, state uint) error {
-	return s.Db.Model(&model.TargetInfo{}).Where("id = ?", id).Update("state", state).Error
+	return s.GetDB().Model(&model.TargetInfo{}).Where("id = ?", id).Update("state", state).Error
 }
 
 // Del
 // 删除
 func (s *Target) Del(id string) error {
-	return s.Db.Model(&model.TargetInfo{}).Delete("id = ?", id).Error
+	return s.GetDB().Model(&model.TargetInfo{}).Delete("id = ?", id).Error
 }
 
 // FindById
 // 通过ID查找信息
 func (s *Target) FindById(id string) (*model.TargetInfo, error) {
 	info := new(model.TargetInfo)
-	err := s.Db.Model(info).Where("id = ?", id).Find(info).Error
+	err := s.GetDB().Model(info).Where("id = ?", id).Find(info).Error
 	return info, err
 }
 
@@ -82,6 +87,6 @@ func (s *Target) FindById(id string) (*model.TargetInfo, error) {
 // 通过ID查找信息
 func (s *Target) FindByName(name string) (*model.TargetInfo, error) {
 	info := new(model.TargetInfo)
-	err := s.Db.Model(info).Where("name = ?", name).Find(info).Error
+	err := s.GetDB().Model(info).Where("name = ?", name).Find(info).Error
 	return info, err
 }

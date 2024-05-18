@@ -5,19 +5,24 @@ import (
 
 	"github.com/issueye/grape/internal/common/model"
 	"github.com/issueye/grape/internal/common/service"
-	"github.com/issueye/grape/internal/global"
 	"github.com/issueye/grape/internal/repository"
 	"gorm.io/gorm"
 )
 
 type Resource struct {
-	*service.BaseService
+	service.BaseService
 }
 
-func NewResource() *Resource {
-	return &Resource{
-		BaseService: service.NewBaseService(global.DB),
-	}
+func (owner *Resource) Self() *Resource {
+	return owner
+}
+
+func (owner *Resource) SetBase(base service.BaseService) {
+	owner.BaseService = base
+}
+
+func NewResource(args ...service.ServiceContext) *Resource {
+	return service.NewServiceSelf(&Resource{}, args...)
 }
 
 // Create
@@ -29,7 +34,7 @@ func (s *Resource) Create(data *repository.CreateResource) error {
 	info.Ext = data.Ext
 	info.Mark = data.Mark
 
-	return s.Db.Model(info).Create(info).Error
+	return s.GetDB().Model(info).Create(info).Error
 }
 
 // Query
@@ -61,26 +66,26 @@ func (s *Resource) Modify(data *repository.ModifyResource) error {
 	updateData["ext"] = data.Ext
 	updateData["file_name"] = data.FileName
 	updateData["mark"] = data.Mark
-	return s.Db.Model(&model.ResourceInfo{}).Where("id = ?", data.ID).Updates(updateData).Error
+	return s.GetDB().Model(&model.ResourceInfo{}).Where("id = ?", data.ID).Updates(updateData).Error
 }
 
 // Modify
 // 修改信息
 func (s *Resource) ModifyByMap(id string, datas map[string]any) error {
-	return s.Db.Model(&model.ResourceInfo{}).Where("id = ?", id).Updates(datas).Error
+	return s.GetDB().Model(&model.ResourceInfo{}).Where("id = ?", id).Updates(datas).Error
 }
 
 // Del
 // 删除
 func (s *Resource) Del(id string) error {
-	return s.Db.Model(&model.ResourceInfo{}).Delete("id = ?", id).Error
+	return s.GetDB().Model(&model.ResourceInfo{}).Delete("id = ?", id).Error
 }
 
 // FindById
 // 通过ID查找信息
 func (s *Resource) FindById(id string) (*model.ResourceInfo, error) {
 	info := new(model.ResourceInfo)
-	err := s.Db.Model(info).Where("id = ?", id).Find(info).Error
+	err := s.GetDB().Model(info).Where("id = ?", id).Find(info).Error
 	return info, err
 }
 
@@ -88,6 +93,6 @@ func (s *Resource) FindById(id string) (*model.ResourceInfo, error) {
 // 通过ID查找信息
 func (s *Resource) FindByName(name string) (*model.ResourceInfo, error) {
 	info := new(model.ResourceInfo)
-	err := s.Db.Model(info).Where("file_name = ?", name).Find(info).Error
+	err := s.GetDB().Model(info).Where("file_name = ?", name).Find(info).Error
 	return info, err
 }

@@ -5,26 +5,24 @@ import (
 
 	"github.com/issueye/grape/internal/common/model"
 	"github.com/issueye/grape/internal/common/service"
-	"github.com/issueye/grape/internal/global"
 	"github.com/issueye/grape/internal/repository"
 	"gorm.io/gorm"
 )
 
 type GroupMenu struct {
-	*service.BaseService
+	service.BaseService
 }
 
-func NewGroupMenu(args ...any) *GroupMenu {
-	gm := &GroupMenu{
-		BaseService: service.NewBaseService(global.DB),
-	}
+func (owner *GroupMenu) Self() *GroupMenu {
+	return owner
+}
 
-	if len(args) > 0 {
-		gm.OpenTx = args[0].(bool)
-	}
+func (owner *GroupMenu) SetBase(base service.BaseService) {
+	owner.BaseService = base
+}
 
-	gm.Tx = gm.Db.Begin()
-	return gm
+func NewGroupMenu(args ...service.ServiceContext) *GroupMenu {
+	return service.NewServiceSelf(&GroupMenu{}, args...)
 }
 
 // Create

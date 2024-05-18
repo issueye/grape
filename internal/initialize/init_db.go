@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 
 	"github.com/issueye/grape/internal/common/model"
+	commonService "github.com/issueye/grape/internal/common/service"
 	"github.com/issueye/grape/internal/global"
 	"github.com/issueye/grape/internal/logic"
 	"github.com/issueye/grape/internal/service"
@@ -14,20 +15,21 @@ import (
 // 初始化其他数据
 func InitData() {
 	path := filepath.Join("runtime", "data", "data.db")
-	global.DB = db.InitSqlite(path, global.Log)
+	commonService.DB = db.InitSqlite(path, global.Log)
 
 	// 初始化表
-	err := global.DB.AutoMigrate(
-		&model.UserInfo{},      // 用户
-		&model.UserGroupInfo{}, // 用户组
-		&model.Menu{},          // 菜单
-		&model.GroupMenu{},     // 用户组菜单权限
-		&model.PortInfo{},      // 端口信息
-		&model.PageInfo{},      // 页面信息
-		&model.RuleInfo{},      // 规则信息
-		&model.CertInfo{},      // 证书信息
-		&model.TargetInfo{},    // 目标服务地址信息
-		&model.ResourceInfo{},  // 资源信息
+	err := commonService.DB.AutoMigrate(
+		&model.UserInfo{},        // 用户
+		&model.UserGroupInfo{},   // 用户组
+		&model.Menu{},            // 菜单
+		&model.GroupMenu{},       // 用户组菜单权限
+		&model.PortInfo{},        // 端口信息
+		&model.PageInfo{},        // 页面信息
+		&model.PageVersionInfo{}, // 页面版本信息
+		&model.RuleInfo{},        // 规则信息
+		&model.CertInfo{},        // 证书信息
+		&model.TargetInfo{},      // 目标服务地址信息
+		&model.ResourceInfo{},    // 资源信息
 	)
 
 	if err != nil {

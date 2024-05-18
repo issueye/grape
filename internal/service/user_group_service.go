@@ -15,19 +15,25 @@ import (
 )
 
 type UserGroup struct {
-	*service.BaseService
+	service.BaseService
 }
 
-func NewUserGroup() *UserGroup {
-	return &UserGroup{
-		BaseService: service.NewBaseService(global.DB),
-	}
+func (owner *UserGroup) Self() *UserGroup {
+	return owner
+}
+
+func (owner *UserGroup) SetBase(base service.BaseService) {
+	owner.BaseService = base
+}
+
+func NewUserGroup(args ...service.ServiceContext) *UserGroup {
+	return service.NewServiceSelf(&UserGroup{}, args...)
 }
 
 // FindUserGroup
 // 查找用户
 func (UserGroup *UserGroup) FindUserGroup(info *repository.Login) (*model.UserGroupInfo, error) {
-	query := UserGroup.Db.Model(&model.UserGroupInfo{}).Order("id")
+	query := UserGroup.GetDB().Model(&model.UserGroupInfo{}).Order("id")
 	query = query.Where("account = ?", info.Account)
 
 	// 判断是否需要验证密码
@@ -46,7 +52,7 @@ func (UserGroup *UserGroup) FindUserGroup(info *repository.Login) (*model.UserGr
 // 创建管理员用户，如果不存在
 func (UserGroup *UserGroup) CreateAdminNonExistent() error {
 	info := new(model.UserGroupInfo)
-	err := UserGroup.Db.Model(&model.UserGroupInfo{}).Where("name = ?", global.AdminGroupName).Where("id = ?", global.AdminGroupId).Find(info).Error
+	err := UserGroup.GetDB().Model(&model.UserGroupInfo{}).Where("name = ?", global.AdminGroupName).Where("id = ?", global.AdminGroupId).Find(info).Error
 	if err != nil {
 		return err
 	}
@@ -60,13 +66,13 @@ func (UserGroup *UserGroup) CreateAdminNonExistent() error {
 	info.Mark = "系统自动生成的管理员数据"
 	info.State = 1
 	info.Sys = 1
-	return UserGroup.Db.Create(info).Error
+	return UserGroup.GetDB().Create(info).Error
 }
 
 // Create
 // 创建用户信息
 func (UserGroup *UserGroup) Create(data *repository.CreateUserGroup) error {
-	tx := UserGroup.Db.Begin()
+	tx := UserGroup.GetDB().Begin()
 	var err error
 	defer func() {
 		if err != nil {
@@ -83,7 +89,7 @@ func (UserGroup *UserGroup) Create(data *repository.CreateUserGroup) error {
 	info.Mark = data.Mark
 	info.State = 1
 	info.Sys = 0
-	err = UserGroup.Db.Create(info).Error
+	err = UserGroup.GetDB().Create(info).Error
 	if err != nil {
 		return err
 	}
@@ -118,7 +124,7 @@ func (UserGroup *UserGroup) Create(data *repository.CreateUserGroup) error {
 // 根据用户ID查找用户信息
 func (UserGroup *UserGroup) GetById(id string) (*model.UserGroupInfo, error) {
 	info := new(model.UserGroupInfo)
-	err := UserGroup.Db.Model(info).Where("id = ?", id).Find(info).Error
+	err := UserGroup.GetDB().Model(info).Where("id = ?", id).Find(info).Error
 	return info, err
 }
 
@@ -129,13 +135,13 @@ func (UserGroup *UserGroup) Modify(info *repository.ModifyUserGroup) error {
 	m["name"] = info.Name
 	m["mark"] = info.Mark
 
-	return UserGroup.Db.Model(&model.UserGroupInfo{}).Where("id = ?", info.ID).Updates(m).Error
+	return UserGroup.GetDB().Model(&model.UserGroupInfo{}).Where("id = ?", info.ID).Updates(m).Error
 }
 
 // Status
 // 修改用户信息
 func (UserGroup *UserGroup) Status(info *repository.StatusUserGroup) error {
-	return UserGroup.Db.
+	return UserGroup.GetDB().
 		Model(&model.UserGroupInfo{}).
 		Where("id = ?", info.ID).
 		Update("state", info.State).
@@ -145,32 +151,7 @@ func (UserGroup *UserGroup) Status(info *repository.StatusUserGroup) error {
 // Delete
 // 删除用户信息
 func (UserGroup *UserGroup) Delete(id string) error {
-	tx := UserGroup.Db.Begin()
-
-	var (
-		err error
-	)
-
-	defer func() {
-		if err != nil {
-			tx.Rollback()
-			return
-		}
-
-		tx.Commit()
-	}()
-
-	err = UserGroup.Db.Where("id = ?", id).Delete(&model.UserGroupInfo{}).Error
-	if err != nil {
-		return err
-	}
-
-	err = NewGroupMenu().DelByGroupId(id)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return UserGroup.GetDB().Where("id = ?", id).Delete(&model.UserGroupInfo{}).Error
 }
 
 // List

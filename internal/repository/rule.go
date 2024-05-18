@@ -4,7 +4,7 @@ import "github.com/issueye/grape/internal/common/model"
 
 type CreateRule struct {
 	Name        string `json:"name" binding:"required" label:"匹配路由名称"`     // 匹配路由名称
-	PortId      string `json:"portId" binding:"required" label:"端口信息编码"`   // 端口信息编码
+	PortId      int    `json:"portId" binding:"required" label:"端口信息编码"`   // 端口信息编码
 	Method      string `json:"method" binding:"required" label:"请求方法"`     // 请求方法
 	MatchType   uint   `json:"matchType" label:"匹配模式"`                     // 匹配模式 0 所有内容匹配 1 正则匹配 2 包含匹配 3 header 匹配
 	TargetId    string `json:"targetId" binding:"required" label:"目标地址编码"` //  目标服务地址
@@ -15,7 +15,7 @@ type CreateRule struct {
 type ModifyRule struct {
 	ID          string `json:"id" binding:"required" label:"编码"`           // 编码
 	Name        string `json:"name" binding:"required" label:"匹配路由名称"`     // 匹配路由名称
-	PortId      string `json:"portId" binding:"required" label:"端口信息编码"`   // 端口信息编码
+	PortId      int    `json:"portId" binding:"required" label:"端口信息编码"`   // 端口信息编码
 	Method      string `json:"method" binding:"required" label:"请求方法"`     // 请求方法
 	MatchType   uint   `json:"matchType" label:"匹配模式"`                     // 匹配模式 0 所有内容匹配 1 正则匹配 2 包含匹配 3 header 匹配
 	TargetId    string `json:"targetId" binding:"required" label:"目标地址编码"` //  目标服务地址

@@ -1,6 +1,7 @@
 package logic
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 
@@ -28,7 +29,7 @@ func (Page) Modify(req *repository.ModifyPage) error {
 
 // Modify
 // 修改信息 不包含状态
-func (Page) CheckData(portId string, args ...any) error {
+func (Page) CheckData(portId int, args ...any) error {
 	PageService := service.NewPage()
 	list, err := PageService.Query(&repository.QueryPage{
 		PortId: portId,
@@ -75,20 +76,50 @@ func (Page) ModifyByMap(id string, datas map[string]any) error {
 // 创建数据
 func (Page) Create(req *repository.CreatePage) error {
 	// 判断端口号在当前系统是否已经被使用
-	PageService := service.NewPage()
-	info, err := PageService.FindByName(req.Name, req.PortId)
+	pageSrv := service.NewPage()
+	info, err := pageSrv.FindByProductCode(req.ProductCode)
 	if err != nil {
-		return fmt.Errorf("检查节点失败 %s", err.Error())
+		return fmt.Errorf("查找页面信息失败 %s", err.Error())
 	}
 
 	if info.ID != "" {
-		return fmt.Errorf("节点[%s]已经添加，请勿重复添加", info.Name)
+		// 从版本中查看是否有相同版本
+		versionInfo, err := pageSrv.FindByVersion(req.ProductCode, req.Version)
+		if err != nil {
+			return fmt.Errorf("查找页面版本信息失败 %s", err.Error())
+		}
+
+		if versionInfo.Version != "" {
+			return fmt.Errorf("版本[%s]已经存在，请勿重复添加", req.Version)
+		}
+
+		err = pageSrv.CreatePageVersion(&model.PageVersionBase{ProductCode: req.ProductCode, Version: req.Version, PagePath: req.PagePath})
+		if err != nil {
+			return fmt.Errorf("创建版本失败 %s", err.Error())
+		}
+
+		return nil
 	}
 
+	pageSrv.OpenTx()
+	defer func() {
+		if err != nil {
+			pageSrv.Rollback()
+			return
+		}
+
+		pageSrv.Commit()
+	}()
+
 	// 创建数据
-	err = PageService.Create(req)
+	err = pageSrv.Create(req)
 	if err != nil {
 		return fmt.Errorf("创建信息失败 %s", err.Error())
+	}
+
+	err = pageSrv.CreatePageVersion(&model.PageVersionBase{Version: req.Version, PagePath: req.PagePath})
+	if err != nil {
+		return fmt.Errorf("创建版本失败 %s", err.Error())
 	}
 
 	return nil
@@ -100,10 +131,38 @@ func (Page) Del(id string) error {
 	PageService := service.NewPage()
 
 	// 检查使用状态，如果是正在使用则不允许删除
-	_, err := PageService.FindById(id)
+	info, err := PageService.FindById(id)
 	if err != nil {
 		return err
 	}
 
-	return PageService.Del(id)
+	if info.ID == "" {
+		return errors.New("未找到需要删除的数据")
+	}
+
+	if info.State == 1 {
+		return errors.New("当前页面使用中，不能删除")
+	}
+
+	PageService.OpenTx()
+	defer func() {
+		if err != nil {
+			PageService.Rollback()
+			return
+		}
+
+		PageService.Commit()
+	}()
+
+	err = PageService.Del(id)
+	if err != nil {
+		return err
+	}
+
+	err = PageService.DelAllVersion(info.ProductCode)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

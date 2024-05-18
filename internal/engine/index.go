@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httputil"
-	"path/filepath"
 	"strings"
 	"sync"
 
@@ -13,7 +12,6 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/issueye/grape/internal/common/controller"
 	"github.com/issueye/grape/internal/global"
-	"github.com/issueye/grape/internal/logic"
 	"github.com/issueye/grape/internal/middleware"
 	"github.com/issueye/grape/internal/repository"
 	"github.com/issueye/grape/internal/service"
@@ -111,19 +109,19 @@ func (grape *GrapeEngine) Init() error {
 // 加载页面
 func (grape *GrapeEngine) GinPages() error {
 	// 处理页面
-	pageList, err := logic.Page{}.Get(&repository.QueryPage{
-		PortId: grape.PortId,
-	})
-	if err != nil {
-		return err
-	}
+	// pageList, err := logic.Page{}.Get(&repository.QueryPage{
+	// 	PortId: grape.PortId,
+	// })
+	// if err != nil {
+	// 	return err
+	// }
 
-	for _, page := range pageList {
-		pageRoute := grape.Engine.Group(page.Name)
-		dir := filepath.Join("runtime", "static", "pages", page.PortId, page.Name, page.FileName)
-		fmt.Println("静态文件路径：", dir)
-		pageRoute.Static("/web", dir)
-	}
+	// for _, page := range pageList {
+	// 	pageRoute := grape.Engine.Group(page.Name)
+	// 	dir := filepath.Join("runtime", "static", "pages", page.PortId, page.Name, page.PagePath)
+	// 	fmt.Println("静态文件路径：", dir)
+	// 	pageRoute.Static("/web", dir)
+	// }
 
 	return nil
 }

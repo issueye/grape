@@ -3,18 +3,23 @@ package service
 import (
 	"github.com/issueye/grape/internal/common/model"
 	"github.com/issueye/grape/internal/common/service"
-	"github.com/issueye/grape/internal/global"
 	"github.com/issueye/grape/internal/repository"
 )
 
 type Plugin struct {
-	*service.BaseService
+	service.BaseService
 }
 
-func NewPlugin() *Plugin {
-	return &Plugin{
-		BaseService: service.NewBaseService(global.DB),
-	}
+func (owner *Plugin) Self() *Plugin {
+	return owner
+}
+
+func (owner *Plugin) SetBase(base service.BaseService) {
+	owner.BaseService = base
+}
+
+func NewPlugin(args ...service.ServiceContext) *Plugin {
+	return service.NewServiceSelf(&Plugin{}, args...)
 }
 
 // Create
@@ -27,5 +32,5 @@ func (s *Plugin) Create(data *repository.CreatePlugin) error {
 	info.Key = data.Key
 	info.Value = data.Value
 
-	return s.Db.Model(info).Create(info).Error
+	return s.GetDB().Model(info).Create(info).Error
 }

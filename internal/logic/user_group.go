@@ -12,19 +12,38 @@ import (
 type UserGroup struct{}
 
 func (UserGroup) Delete(id string) error {
+
+	userGroup := service.NewUserGroup()
+
 	// 查询是否存在
-	info, err := service.NewUserGroup().GetById(id)
+	info, err := userGroup.GetById(id)
 	if err != nil {
 		return fmt.Errorf("查询用户组信息失败 %s", err.Error())
 	}
 
-	if info.Mark == global.SYS_AUTO_CREATE {
+	if info.Sys == 1 {
 		return fmt.Errorf("信息【%s-%s】由系统生成, 不允许删除", info.Name, info.ID)
 	}
 
-	err = service.NewUserGroup().Delete(info.ID)
+	userGroup.OpenTx()
+	defer func() {
+		if err != nil {
+			userGroup.Rollback()
+			return
+		}
+
+		userGroup.Commit()
+	}()
+
+	err = userGroup.Delete(info.ID)
 	if err != nil {
 		return fmt.Errorf("删除用户组信息失败 %s", err.Error())
+	}
+
+	authMenus := service.NewGroupMenu(userGroup.GetContext())
+	err = authMenus.DelByGroupId(info.ID)
+	if err != nil {
+		return err
 	}
 
 	return nil

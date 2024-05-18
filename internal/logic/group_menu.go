@@ -52,7 +52,8 @@ func (GroupMenu) Modify(id string, data *repository.ModifyGroupMenu) error {
 }
 
 func (GroupMenu) ModifyGroupMenuState(id string, data *repository.ModifyGroupMenuState) error {
-	gm := service.NewGroupMenu(true)
+	gm := service.NewGroupMenu()
+	gm.OpenTx()
 
 	var (
 		err error

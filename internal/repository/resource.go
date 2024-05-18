@@ -32,3 +32,11 @@ type UploadData struct {
 	UploadKey *multipart.FileHeader `binding:"required" label:"文件" form:"file"` // 文件
 	Id        string                `json:"id" form:"id"`                       // 编码
 }
+
+type PageConfig struct {
+	Title       string `json:"title" toml:"title"`             // 标题
+	Port        int    `json:"port" toml:"port"`               // 端口号
+	Name        string `json:"name" toml:"name"`               // 名称
+	Version     string `json:"version" toml:"version"`         // 版本
+	ProductCode string `json:"productCode" toml:"productCode"` // 产品代码
+}

@@ -95,13 +95,13 @@ func (s *Page) ModifyByMap(id string, datas map[string]any) error {
 // Del
 // 删除
 func (s *Page) Del(id string) error {
-	return s.GetDB().Model(&model.PageInfo{}).Delete("id = ?", id).Error
+	return s.GetDB().Where("id = ?", id).Delete(&model.PageInfo{}).Error
 }
 
 // Del
 // 删除
 func (s *Page) DelAllVersion(productCode string) error {
-	return s.GetDB().Model(&model.PageVersionInfo{}).Delete("product_code = ?", productCode).Error
+	return s.GetDB().Where("product_code = ?", productCode).Delete(&model.PageVersionInfo{}).Error
 }
 
 // Del

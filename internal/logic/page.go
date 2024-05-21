@@ -29,7 +29,7 @@ func (Page) Modify(req *repository.ModifyPage) error {
 
 // Modify
 // 修改信息 不包含状态
-func (Page) CheckData(portId int, args ...any) error {
+func (Page) CheckData(portId string, args ...any) error {
 	PageService := service.NewPage()
 	list, err := PageService.Query(&repository.QueryPage{
 		PortId: portId,
@@ -82,6 +82,16 @@ func (Page) Create(req *repository.CreatePage) error {
 		return fmt.Errorf("查找页面信息失败 %s", err.Error())
 	}
 
+	pageSrv.OpenTx()
+	defer func() {
+		if err != nil {
+			pageSrv.Rollback()
+			return
+		}
+
+		pageSrv.Commit()
+	}()
+
 	if info.ID != "" {
 		// 从版本中查看是否有相同版本
 		versionInfo, err := pageSrv.FindByVersion(req.ProductCode, req.Version)
@@ -98,18 +108,14 @@ func (Page) Create(req *repository.CreatePage) error {
 			return fmt.Errorf("创建版本失败 %s", err.Error())
 		}
 
-		return nil
-	}
-
-	pageSrv.OpenTx()
-	defer func() {
+		// 将版本更新到当前页面
+		err = pageSrv.ModifyByMap(info.ID, map[string]any{"version": req.Version})
 		if err != nil {
-			pageSrv.Rollback()
-			return
+			return fmt.Errorf("更新页面当前使用版本失败 %s", err.Error())
 		}
 
-		pageSrv.Commit()
-	}()
+		return nil
+	}
 
 	// 创建数据
 	err = pageSrv.Create(req)
@@ -117,7 +123,7 @@ func (Page) Create(req *repository.CreatePage) error {
 		return fmt.Errorf("创建信息失败 %s", err.Error())
 	}
 
-	err = pageSrv.CreatePageVersion(&model.PageVersionBase{Version: req.Version, PagePath: req.PagePath})
+	err = pageSrv.CreatePageVersion(&model.PageVersionBase{ProductCode: req.ProductCode, Version: req.Version, PagePath: req.PagePath})
 	if err != nil {
 		return fmt.Errorf("创建版本失败 %s", err.Error())
 	}

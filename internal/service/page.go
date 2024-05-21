@@ -32,6 +32,7 @@ func (s *Page) Create(data *repository.CreatePage) error {
 	info.Name = data.Name
 	info.Title = data.Title
 	info.PortId = data.PortId
+	info.Version = data.Version
 	info.ProductCode = data.ProductCode
 	info.Mark = data.Mark
 
@@ -65,7 +66,7 @@ func (s *Page) Query(req *repository.QueryPage) ([]*model.PageInfo, error) {
 				Or("mark like ?", fmt.Sprintf("%%%s%%", req.Condition))
 		}
 
-		if req.PortId > -1 {
+		if req.PortId != "" {
 			q = q.Where("port_id = ?", req.PortId)
 		}
 

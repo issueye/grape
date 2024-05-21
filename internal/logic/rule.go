@@ -29,7 +29,7 @@ func (Route) Modify(req *repository.ModifyRule) error {
 // 创建数据
 func (Route) Create(req *repository.CreateRule) error {
 	portService := service.NewPort()
-	port, err := portService.FindByPort(req.PortId)
+	port, err := portService.FindById(req.PortId)
 	if err != nil {
 		return fmt.Errorf("获取端口信息失败 %s", err.Error())
 	}

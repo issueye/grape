@@ -46,11 +46,10 @@ func (s *Rule) Query(req *repository.QueryRule) ([]*repository.QueryRuleRes, err
 	list := make([]*repository.QueryRuleRes, 0)
 
 	sqlStr := `
-	SELECT a.*,
-       t.name target
-  FROM (
+	SELECT *
+  	FROM (
            SELECT a.*,
-                  n.name node
+                  t.name target
              FROM (
                       SELECT r.*,
                              p.port
@@ -60,11 +59,9 @@ func (s *Rule) Query(req *repository.QueryRule) ([]*repository.QueryRuleRes, err
                   )
                   a
                   LEFT JOIN
-                  node_info n ON a.node_id = n.id
+                  target_info t ON a.target_id = t.id
        )
-       a
-       LEFT JOIN
-       target_info t ON a.target_id = t.id
+       tb
 	`
 
 	err := s.DataFilter(fmt.Sprintf("(%s)tb", sqlStr), req, &list, func(db *gorm.DB) (*gorm.DB, error) {
@@ -138,7 +135,7 @@ func (s *Rule) FindLikeName(name string) (bool, error) {
 
 // FindById
 // 通过ID查找信息
-func (s *Rule) FindByName(name string, portId int) (*model.RuleInfo, error) {
+func (s *Rule) FindByName(name string, portId string) (*model.RuleInfo, error) {
 	info := new(model.RuleInfo)
 	err := s.GetDB().Model(info).Where("name = ?", name).Where("port_id = ?", portId).Find(info).Error
 	return info, err

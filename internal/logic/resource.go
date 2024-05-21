@@ -202,12 +202,21 @@ func (Resource) fileParse(data *repository.UploadData, filename string, ext stri
 				return
 			}
 
+			send.Info(80, "查找端口号...")
+			// 获取端口号编码
+			portInfo, err := service.NewPort().FindByPort(pageCfg.Port)
+			if err != nil {
+				global.Log.Errorf("查找端口号信息失败 %s", err.Error())
+				send.Failf(80, "查找端口号信息失败 %s", err.Error())
+				return
+			}
+
 			targetPath := global.GetPagePath(pageCfg.Name, pageCfg.Version)
 			send.Info(90, "创建页面信息...")
 			err = Page{}.Create(&repository.CreatePage{
 				Name:        pageCfg.Name,
 				Title:       pageCfg.Title,
-				PortId:      pageCfg.Port,
+				PortId:      portInfo.ID,
 				ProductCode: pageCfg.ProductCode,
 				Version:     pageCfg.Version,
 				PagePath:    targetPath,

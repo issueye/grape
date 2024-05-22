@@ -1,6 +1,7 @@
 package global
 
 import (
+	"embed"
 	"net/http"
 
 	jwt "github.com/appleboy/gin-jwt/v2"
@@ -18,6 +19,7 @@ var (
 	HttpServer *http.Server
 	Auth       *jwt.GinJWTMiddleware
 	SSE        eventsource.EventSource
+	PageStatic embed.FS
 )
 
 type ActionType int

@@ -168,3 +168,32 @@ func (PageController) Del(ctx *gin.Context) {
 
 	c.Success()
 }
+
+// GetPageVersinList doc
+//
+//	@tags			页面信息
+//	@Summary		获取页面版本列表
+//	@Description	获取页面版本列表
+//	@Produce		json
+//	@Param			id	path		string			true	"id"
+//	@Success		200	{object}	controller.Base	"code: 200 成功"
+//	@Failure		500	{object}	controller.Base	"错误返回内容"
+//	@Router			/api/v1/page/version/{productCode} [get]
+//	@Security		ApiKeyAuth
+func (PageController) GetPageVersinList(ctx *gin.Context) {
+	c := controller.New(ctx)
+
+	productCode := c.Param("productCode")
+	if productCode == "" {
+		c.FailBind(errors.New("[productCode]不能为空"))
+		return
+	}
+
+	list, err := logic.Page{}.GetPageVersinList(productCode)
+	if err != nil {
+		c.FailByMsg(err.Error())
+		return
+	}
+
+	c.SuccessData(list)
+}

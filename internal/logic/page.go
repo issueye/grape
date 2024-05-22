@@ -16,6 +16,12 @@ func (Page) Get(req *repository.QueryPage) ([]*model.PageInfo, error) {
 	return service.NewPage().Query(req)
 }
 
+func (Page) GetPageVersinList(productCode string) ([]*model.PageVersionInfo, error) {
+	return service.NewPage().QueryVersion(&repository.QueryPageVersion{
+		ProductCode: productCode,
+	})
+}
+
 func (Page) GetById(id string) (*model.PageInfo, error) {
 	return service.NewPage().FindById(id)
 }
@@ -75,9 +81,21 @@ func (Page) ModifyByMap(id string, datas map[string]any) error {
 // Create
 // 创建数据
 func (Page) Create(req *repository.CreatePage) error {
-	// 判断端口号在当前系统是否已经被使用
 	pageSrv := service.NewPage()
-	info, err := pageSrv.FindByProductCode(req.ProductCode)
+	// 通过名称查询是否有相同名称的系统
+	info, err := pageSrv.FindByName(req.Name, req.PortId)
+	if err != nil {
+		return fmt.Errorf("通过[%s]查找页面信息失败 %s", req.Name, err.Error())
+	}
+
+	if info.ID != "" {
+		if info.ProductCode != req.ProductCode {
+			return fmt.Errorf("不同产品不能使用相同路由名称 [%s-%s]", info.Title, info.Name)
+		}
+	}
+
+	// 判断端口号在当前系统是否已经被使用
+	info, err = pageSrv.FindByProductCode(req.ProductCode)
 	if err != nil {
 		return fmt.Errorf("查找页面信息失败 %s", err.Error())
 	}

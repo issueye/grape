@@ -76,12 +76,40 @@ func (s *Page) Query(req *repository.QueryPage) ([]*model.PageInfo, error) {
 	return list, err
 }
 
+// Query
+// 查询数据
+func (s *Page) QueryVersion(req *repository.QueryPageVersion) ([]*model.PageVersionInfo, error) {
+	list := make([]*model.PageVersionInfo, 0)
+
+	err := s.DataFilter(model.PageVersionInfo{}.TableName(), req, &list, func(db *gorm.DB) (*gorm.DB, error) {
+		q := db.Order("created_at")
+
+		if req.Condition != "" {
+			q = q.Where("name like ?", fmt.Sprintf("%%%s%%", req.Condition)).
+				Or("mark like ?", fmt.Sprintf("%%%s%%", req.Condition))
+		}
+
+		if req.PortId != "" {
+			q = q.Where("port_id = ?", req.PortId)
+		}
+
+		if req.ProductCode != "" {
+			q = q.Where("product_code = ?", req.ProductCode)
+		}
+
+		return q, nil
+	})
+
+	return list, err
+}
+
 // Modify
 // 修改信息
 func (s *Page) Modify(data *repository.ModifyPage) error {
 	updateData := make(map[string]any)
 	updateData["name"] = data.Name
-	updateData["page_path"] = data.PagePath
+	updateData["thumbnail"] = data.Thumbnail
+	updateData["version"] = data.Version
 	updateData["port_id"] = data.PortId
 	updateData["mark"] = data.Mark
 	return s.GetDB().Model(&model.PageInfo{}).Where("id = ?", data.ID).Updates(updateData).Error
@@ -121,7 +149,7 @@ func (s *Page) FindById(id string) (*model.PageInfo, error) {
 
 // FindById
 // 通过ID查找信息
-func (s *Page) FindByName(name string, portId int) (*model.PageInfo, error) {
+func (s *Page) FindByName(name string, portId string) (*model.PageInfo, error) {
 	info := new(model.PageInfo)
 	err := s.GetDB().Model(info).Where("name = ?", name).Where("port_id = ?", portId).Find(info).Error
 	return info, err

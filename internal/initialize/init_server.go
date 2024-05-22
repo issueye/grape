@@ -2,6 +2,7 @@ package initialize
 
 import (
 	"fmt"
+	"io/fs"
 	"mime"
 	"net/http"
 	"strings"
@@ -9,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/issueye/grape/internal/config"
 	"github.com/issueye/grape/internal/global"
+	internalMid "github.com/issueye/grape/internal/middleware"
 	"github.com/issueye/grape/internal/router"
 	"github.com/issueye/grape/pkg/middleware"
 	orange_validator "github.com/issueye/grape/pkg/validator"
@@ -31,7 +33,14 @@ func InitServer() {
 	// 加载中间件
 	global.Router.Use(middleware.CORSMiddleware([]string{}))       // 处理前端跨域
 	global.Router.Use(middleware.GinLogger(global.Logger))         // 日志记录
+	global.Router.Use(internalMid.Intercept(global.Router))        // 处理问题
 	global.Router.Use(middleware.GinRecovery(global.Logger, true)) // 服务恐慌处理
+
+	staticFs, err := fs.Sub(global.PageStatic, "admin")
+	if err != nil {
+		panic(err)
+	}
+	global.Router.StaticFS("/admin", http.FS(staticFs))
 
 	// 设置一个静态文件服务器
 	global.Router.Static("/www", "./runtime/static")

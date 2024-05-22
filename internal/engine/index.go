@@ -163,16 +163,8 @@ func (grape *GrapeEngine) GinRoutes() error {
 
 		r.Proxy = ReverseProxyHttpHandler(target.Name)
 		r.Handler = func(ctx *gin.Context) {
-
-			referer := ctx.Request.Header.Get("Referer")
-			if referer != "" {
-				if strings.HasSuffix(referer, "/lineAdmin/web/") {
-					fmt.Println("referer", referer)
-				}
-			}
-
 			if route != "" {
-				route := ""
+				// route := ""
 				for _, p := range ctx.Params {
 					route = r.replace(p.Key, p.Value)
 				}
@@ -278,7 +270,10 @@ func (grape *GrapeEngine) CustomRoutes() error {
 func (grape *GrapeEngine) Run() error {
 
 	// 处理未匹配上的接口
-	grape.Engine.NoRoute(gin.WrapH(grape.Mux))
+	grape.Engine.NoRoute(func(ctx *gin.Context) {
+		fmt.Println("GIN未匹配上的路由", "ctx.Request.URL.Path", ctx.Request.URL.Path)
+		ctx.Next()
+	}, gin.WrapH(grape.Mux))
 
 	server := &http.Server{
 		Addr:    fmt.Sprintf(":%d", grape.Port),

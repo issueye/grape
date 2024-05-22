@@ -1,11 +1,14 @@
 package main
 
 import (
+	"embed"
+	_ "embed"
 	"os"
 	"os/signal"
 	"syscall"
 
 	_ "github.com/issueye/grape/docs"
+	"github.com/issueye/grape/internal/global"
 	"github.com/issueye/grape/internal/initialize"
 )
 
@@ -17,7 +20,12 @@ import (
 //	@in							header
 //	@name						Authorization
 
+//go:embed admin/*
+var page embed.FS
+
 func main() {
+
+	global.PageStatic = page
 	initialize.Initialize()
 
 	quit := make(chan os.Signal)

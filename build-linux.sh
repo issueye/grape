@@ -12,7 +12,7 @@ BRANCH=$(git symbolic-ref --short -q HEAD)
 COMMIT=$(git rev-parse --verify HEAD)
 NOW=$(date '+%FT%T%z')
 
-VERSION="v0.1.2-${TAG}"
+VERSION="v0.1.3-${TAG}"
 APPNAME="grape-${VERSION}"
 DESCRIPTION="版本管理服务"
 

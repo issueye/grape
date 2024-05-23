@@ -95,7 +95,7 @@ func (Page) Create(req *repository.CreatePage) error {
 	}
 
 	// 判断端口号在当前系统是否已经被使用
-	info, err = pageSrv.FindByProductCode(req.ProductCode)
+	info, err = pageSrv.FindByProductCode(req.PortId, req.ProductCode)
 	if err != nil {
 		return fmt.Errorf("查找页面信息失败 %s", err.Error())
 	}
@@ -112,7 +112,7 @@ func (Page) Create(req *repository.CreatePage) error {
 
 	if info.ID != "" {
 		// 从版本中查看是否有相同版本
-		versionInfo, err := pageSrv.FindByVersion(req.ProductCode, req.Version)
+		versionInfo, err := pageSrv.FindByVersion(req.PortId, req.ProductCode, req.Version)
 		if err != nil {
 			return fmt.Errorf("查找页面版本信息失败 %s", err.Error())
 		}
@@ -121,7 +121,7 @@ func (Page) Create(req *repository.CreatePage) error {
 			return fmt.Errorf("版本[%s]已经存在，请勿重复添加", req.Version)
 		}
 
-		err = pageSrv.CreatePageVersion(&model.PageVersionBase{ProductCode: req.ProductCode, Version: req.Version, PagePath: req.PagePath})
+		err = pageSrv.CreatePageVersion(&model.PageVersionBase{PortId: req.PortId, ProductCode: req.ProductCode, Version: req.Version, PagePath: req.PagePath})
 		if err != nil {
 			return fmt.Errorf("创建版本失败 %s", err.Error())
 		}
@@ -141,7 +141,7 @@ func (Page) Create(req *repository.CreatePage) error {
 		return fmt.Errorf("创建信息失败 %s", err.Error())
 	}
 
-	err = pageSrv.CreatePageVersion(&model.PageVersionBase{ProductCode: req.ProductCode, Version: req.Version, PagePath: req.PagePath})
+	err = pageSrv.CreatePageVersion(&model.PageVersionBase{PortId: req.PortId, ProductCode: req.ProductCode, Version: req.Version, PagePath: req.PagePath})
 	if err != nil {
 		return fmt.Errorf("创建版本失败 %s", err.Error())
 	}

@@ -3,6 +3,7 @@ package global
 import (
 	"fmt"
 	"path/filepath"
+	"strconv"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -67,8 +68,8 @@ func GetTempPath() string {
 	return path
 }
 
-func GetPagePath(name string, version string) string {
-	path := filepath.Join("runtime", "static", "pages", name, version)
+func GetPagePath(port int, name string, version string) string {
+	path := filepath.Join("runtime", "static", "pages", strconv.Itoa(port), name, version)
 	utils.PathExists(path)
 	return path
 }

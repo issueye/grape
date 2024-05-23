@@ -157,16 +157,16 @@ func (s *Page) FindByName(name string, portId string) (*model.PageInfo, error) {
 
 // FindById
 // 通过ID查找信息
-func (s *Page) FindByProductCode(productCode string) (*model.PageInfo, error) {
+func (s *Page) FindByProductCode(portId, productCode string) (*model.PageInfo, error) {
 	info := new(model.PageInfo)
-	err := s.GetDB().Model(info).Where("product_code = ?", productCode).Find(info).Error
+	err := s.GetDB().Model(info).Where("port_id = ?", portId).Where("product_code = ?", productCode).Find(info).Error
 	return info, err
 }
 
 // FindById
 // 通过ID查找信息
-func (s *Page) FindByVersion(productCode string, version string) (*model.PageVersionInfo, error) {
+func (s *Page) FindByVersion(portId string, productCode string, version string) (*model.PageVersionInfo, error) {
 	info := new(model.PageVersionInfo)
-	err := s.GetDB().Model(info).Where("product_code = ?", productCode).Where("version = ?", version).Find(info).Error
+	err := s.GetDB().Model(info).Where("port_id = ?", portId).Where("product_code = ?", productCode).Where("version = ?", version).Find(info).Error
 	return info, err
 }

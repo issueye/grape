@@ -211,7 +211,13 @@ func (Resource) fileParse(data *repository.UploadData, filename string, ext stri
 				return
 			}
 
-			targetPath := global.GetPagePath(pageCfg.Name, pageCfg.Version)
+			if portInfo.ID == "" {
+				global.Log.Errorf("未找到端口号 [%d]", pageCfg.Port)
+				send.Failf(80, "未找到端口号 [%d]", pageCfg.Port)
+				return
+			}
+
+			targetPath := global.GetPagePath(portInfo.Port, pageCfg.Name, pageCfg.Version)
 			send.Info(90, "创建页面信息...")
 			err = Page{}.Create(&repository.CreatePage{
 				Name:        pageCfg.Name,

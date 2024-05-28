@@ -154,7 +154,6 @@ func (grape *GrapeEngine) GinPages() error {
 	}
 
 	for _, page := range pageList {
-		pageRoute := grape.Engine.Group(page.Name)
 		versionInfo, err := service.NewPage().FindByVersion(page.PortId, page.ProductCode, page.Version)
 		if err != nil {
 			global.Log.Errorf("页面[%s]未找到激活版本[%s] %s", page.Title, page.Version, err.Error())
@@ -162,7 +161,13 @@ func (grape *GrapeEngine) GinPages() error {
 		}
 		// dir := filepath.Join("runtime", "static", "pages", page.Name, page.Version)
 		fmt.Println("静态文件路径：", versionInfo.PagePath)
-		pageRoute.Static(fmt.Sprintf("/%s", page.Version), versionInfo.PagePath)
+		// 在使用版本路由
+		fmt.Println("page.UseVersionRoute", page.UseVersionRoute)
+		if page.UseVersionRoute == 1 {
+			grape.Engine.Static(fmt.Sprintf("/%s/%s", page.Name, page.Version), versionInfo.PagePath)
+		} else {
+			grape.Engine.Static(fmt.Sprintf("/%s", page.Name), versionInfo.PagePath)
+		}
 	}
 
 	return nil
@@ -262,6 +267,7 @@ func (grape *GrapeEngine) CustomRoutes() error {
 		}
 
 		custom.Proxy = ReverseProxyHttpHandler(custom.Target)
+
 		custom.Handler = func(w http.ResponseWriter, r *http.Request) {
 			vars := mux.Vars(r)
 

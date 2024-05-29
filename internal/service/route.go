@@ -45,24 +45,11 @@ func (s *Rule) Create(data *repository.CreateRule) error {
 func (s *Rule) Query(req *repository.QueryRule) ([]*repository.QueryRuleRes, error) {
 	list := make([]*repository.QueryRuleRes, 0)
 
-	sqlStr := `
-	SELECT *
-  	FROM (
-           SELECT a.*,
-                  t.name target
-             FROM (
-                      SELECT r.*,
-                             p.port
-                        FROM rule_info r
-                             LEFT JOIN
-                             port_info p ON r.port_id = p.id
-                  )
-                  a
-                  LEFT JOIN
-                  target_info t ON a.target_id = t.id
-       )
-       tb
-	`
+	sqlStr := `SELECT * FROM (
+		SELECT a.*, t.name target FROM (
+			SELECT r.*, p.port FROM rule_info r LEFT JOIN port_info p ON r.port_id = p.id
+			) a LEFT JOIN target_info t ON a.target_id = t.id
+		) tb`
 
 	err := s.DataFilter(fmt.Sprintf("(%s)tb", sqlStr), req, &list, func(db *gorm.DB) (*gorm.DB, error) {
 		q := db.Order("created_at")

@@ -22,6 +22,7 @@ type PageBase struct {
 	Thumbnail       string `binding:"required" label:"缩略图" gorm:"column:thumbnail;size:200;comment:缩略图;" json:"thumbnail"`                     // 缩略图
 	UseVersionRoute int    `binding:"required" label:"使用版本路由" gorm:"column:use_version_route;type:int;comment:使用版本路由;" json:"useVersionRoute"` // 使用版本路由
 	State           int    `binding:"required" label:"状态" gorm:"column:state;type:int;comment:状态;" json:"state"`                               // 状态
+	UseGzip         int    `binding:"required" label:"使用GZIP" gorm:"column:use_gzip;type:int;comment:使用GZIP;" json:"useGzip"`                  // 使用GZIP
 	Mark            string `label:"备注" gorm:"column:mark;size:2000;comment:备注;" json:"mark"`                                                   // 备注
 }
 

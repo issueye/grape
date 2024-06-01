@@ -8,6 +8,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/mux"
 	"github.com/issueye/grape/internal/common/controller"
@@ -118,6 +119,7 @@ func NewGrapeEngine(portId string, port int) *GrapeEngine {
 	}
 
 	en.Engine.Use(middleware.TrafficMiddleware(global.Log))
+	en.Engine.Use(gzip.Gzip(gzip.DefaultCompression))
 	en.Engine.Use(gin.Recovery())
 	en.Engine.GET("/", func(ctx *gin.Context) {
 		c := controller.New(ctx)
@@ -153,6 +155,7 @@ func (grape *GrapeEngine) GinPages() error {
 		return err
 	}
 
+	// paths := []string{}
 	for _, page := range pageList {
 		versionInfo, err := service.NewPage().FindByVersion(page.PortId, page.ProductCode, page.Version)
 		if err != nil {
@@ -160,14 +163,17 @@ func (grape *GrapeEngine) GinPages() error {
 			continue
 		}
 		// dir := filepath.Join("runtime", "static", "pages", page.Name, page.Version)
-		fmt.Println("静态文件路径：", versionInfo.PagePath)
+		// fmt.Println("静态文件路径：", versionInfo.PagePath)
 		// 在使用版本路由
-		fmt.Println("page.UseVersionRoute", page.UseVersionRoute)
+		path := ""
 		if page.UseVersionRoute == 1 {
-			grape.Engine.Static(fmt.Sprintf("/%s/%s", page.Name, page.Version), versionInfo.PagePath)
+			path = fmt.Sprintf("/%s/%s", page.Name, page.Version)
 		} else {
-			grape.Engine.Static(fmt.Sprintf("/%s", page.Name), versionInfo.PagePath)
+			path = fmt.Sprintf("/%s", page.Name)
 		}
+
+		// paths = append(paths, path)
+		grape.Engine.Static(path, versionInfo.PagePath)
 	}
 
 	return nil

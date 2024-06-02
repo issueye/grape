@@ -54,6 +54,7 @@ func InitServer() {
 	// 告诉服务文件的MIME类型
 	_ = mime.AddExtensionType(".js", "application/javascript")
 	_ = mime.AddExtensionType(".css", "text/css")
+	_ = mime.AddExtensionType(".eot", "text/plain")
 	_ = mime.AddExtensionType(".woff", "application/font-woff")
 	_ = mime.AddExtensionType(".woff2", "application/font-woff2")
 	_ = mime.AddExtensionType(".ttf", "application/font-ttf")

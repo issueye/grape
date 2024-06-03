@@ -271,6 +271,21 @@ definitions:
     - route
     - title
     type: object
+  repository.CreateGzipFilter:
+    properties:
+      mark:
+        description: 备注
+        type: string
+      matchContent:
+        description: 匹配内容
+        type: string
+      matchType:
+        description: 匹配模式
+        type: integer
+      portId:
+        description: 端口号
+        type: string
+    type: object
   repository.CreateMenu:
     properties:
       auth:
@@ -306,29 +321,36 @@ definitions:
     - route
     - title
     type: object
-  repository.CreateNode:
+  repository.CreatePage:
     properties:
       mark:
         description: 备注
         type: string
       name:
-        description: 匹配路由名称
+        description: 名称
         type: string
-      nodeType:
-        description: 节点类型 0 api 1 页面
-        type: integer
       pagePath:
         description: 静态页面存放路径 注：相对路径，由服务对页面进行管理
         type: string
       portId:
         description: 端口信息编码
         type: string
-      target:
-        description: 目标服务地址
+      productCode:
+        description: 产品代码
+        type: string
+      title:
+        description: 标题
+        type: string
+      useVersionRoute:
+        description: 使用版本路由
+        type: integer
+      version:
+        description: 版本
         type: string
     required:
     - name
     - portId
+    - title
     type: object
   repository.CreatePort:
     properties:
@@ -344,8 +366,29 @@ definitions:
       port:
         description: 端口号
         type: integer
+      useGzip:
+        description: 使用GZIP 0 停用 1 启用
+        type: boolean
     required:
     - port
+    type: object
+  repository.CreateResource:
+    properties:
+      ext:
+        description: 文件类型
+        type: string
+      fileName:
+        description: 文件名称
+        type: string
+      mark:
+        description: 备注
+        type: string
+      title:
+        description: 标题
+        type: string
+    required:
+    - ext
+    - title
     type: object
   repository.CreateRule:
     properties:
@@ -360,9 +403,6 @@ definitions:
         type: string
       name:
         description: 匹配路由名称
-        type: string
-      nodeId:
-        description: 节点信息编码
         type: string
       portId:
         description: 端口信息编码
@@ -501,6 +541,26 @@ definitions:
           type: string
         type: array
     type: object
+  repository.ModifyGzipFilter:
+    properties:
+      id:
+        description: 编码
+        type: string
+      mark:
+        description: 备注
+        type: string
+      matchContent:
+        description: 匹配内容
+        type: string
+      matchType:
+        description: 匹配模式
+        type: integer
+      portId:
+        description: 端口号
+        type: string
+    required:
+    - id
+    type: object
   repository.ModifyMenu:
     properties:
       auth:
@@ -539,7 +599,7 @@ definitions:
     - route
     - title
     type: object
-  repository.ModifyNode:
+  repository.ModifyPage:
     properties:
       id:
         description: 编码
@@ -548,19 +608,25 @@ definitions:
         description: 备注
         type: string
       name:
-        description: 匹配路由名称
+        description: 名称
         type: string
-      nodeType:
-        description: 节点类型 0 api 1 页面
-        type: integer
       pagePath:
         description: 静态页面存放路径 注：相对路径，由服务对页面进行管理
         type: string
       portId:
         description: 端口信息编码
         type: string
-      target:
-        description: 目标服务地址
+      thumbnail:
+        description: 缩略图
+        type: string
+      useGzip:
+        description: 使用Gzip
+        type: integer
+      useVersionRoute:
+        description: 使用版本路由
+        type: integer
+      version:
+        description: 版本
         type: string
     required:
     - id
@@ -584,9 +650,34 @@ definitions:
       port:
         description: 端口号
         type: integer
+      useGzip:
+        description: 使用GZIP 0 停用 1 启用
+        type: boolean
     required:
     - id
     - port
+    type: object
+  repository.ModifyResource:
+    properties:
+      ext:
+        description: 文件类型
+        type: string
+      fileName:
+        description: 文件名称
+        type: string
+      id:
+        description: 编码
+        type: string
+      mark:
+        description: 备注
+        type: string
+      title:
+        description: 标题
+        type: string
+    required:
+    - ext
+    - id
+    - title
     type: object
   repository.ModifyRule:
     properties:
@@ -604,9 +695,6 @@ definitions:
         type: string
       name:
         description: 匹配路由名称
-        type: string
-      nodeId:
-        description: 节点信息编码
         type: string
       portId:
         description: 端口信息编码
@@ -1079,6 +1167,145 @@ paths:
       summary: 修改菜单组状态
       tags:
       - 菜单组管理
+  /api/v1/gzipFilter:
+    get:
+      description: 查询gzip过滤信息
+      parameters:
+      - description: 条件
+        in: query
+        name: condition
+        type: string
+      - description: 页数
+        in: query
+        name: pageNum
+        type: integer
+      - description: 页码
+        in: query
+        name: pageSize
+        type: integer
+      - description: 端口号
+        in: query
+        name: portId
+        type: string
+      - description: 总数  由服务器返回回去
+        in: query
+        name: total
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'code: 200 成功'
+          schema:
+            $ref: '#/definitions/controller.Base'
+        "500":
+          description: 错误返回内容
+          schema:
+            $ref: '#/definitions/controller.Base'
+      security:
+      - ApiKeyAuth: []
+      summary: 查询gzip过滤信息
+      tags:
+      - gzip过滤信息
+    post:
+      description: 创建gzip过滤信息
+      parameters:
+      - description: 创建gzip过滤信息
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/repository.CreateGzipFilter'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'code: 200 成功'
+          schema:
+            $ref: '#/definitions/controller.Base'
+        "500":
+          description: 错误返回内容
+          schema:
+            $ref: '#/definitions/controller.Base'
+      security:
+      - ApiKeyAuth: []
+      summary: 创建gzip过滤信息
+      tags:
+      - gzip过滤信息
+  /api/v1/gzipFilter/{id}:
+    delete:
+      description: 删除gzip过滤信息
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'code: 200 成功'
+          schema:
+            $ref: '#/definitions/controller.Base'
+        "500":
+          description: 错误返回内容
+          schema:
+            $ref: '#/definitions/controller.Base'
+      security:
+      - ApiKeyAuth: []
+      summary: 删除gzip过滤信息
+      tags:
+      - gzip过滤信息
+    get:
+      description: 通过编码查询gzip过滤信息
+      parameters:
+      - description: gzip过滤信息编码
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'code: 200 成功'
+          schema:
+            $ref: '#/definitions/controller.Base'
+        "500":
+          description: 错误返回内容
+          schema:
+            $ref: '#/definitions/controller.Base'
+      security:
+      - ApiKeyAuth: []
+      summary: 通过编码查询gzip过滤信息
+      tags:
+      - gzip过滤信息
+    put:
+      description: 修改gzip过滤信息
+      parameters:
+      - description: 修改gzip过滤信息
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/repository.ModifyGzipFilter'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'code: 200 成功'
+          schema:
+            $ref: '#/definitions/controller.Base'
+        "500":
+          description: 错误返回内容
+          schema:
+            $ref: '#/definitions/controller.Base'
+      security:
+      - ApiKeyAuth: []
+      summary: 修改gzip过滤信息
+      tags:
+      - gzip过滤信息
   /api/v1/login:
     post:
       description: |-
@@ -1339,9 +1566,9 @@ paths:
       summary: 获取菜单列表-树形结构
       tags:
       - 菜单管理
-  /api/v1/node:
+  /api/v1/page:
     delete:
-      description: 删除节点信息
+      description: 删除页面信息
       parameters:
       - description: id
         in: path
@@ -1361,11 +1588,11 @@ paths:
             $ref: '#/definitions/controller.Base'
       security:
       - ApiKeyAuth: []
-      summary: 删除节点信息
+      summary: 删除页面信息
       tags:
-      - 节点信息
+      - 页面信息
     get:
-      description: 查询节点信息
+      description: 查询页面信息
       parameters:
       - description: 条件
         in: query
@@ -1400,11 +1627,87 @@ paths:
             $ref: '#/definitions/controller.Base'
       security:
       - ApiKeyAuth: []
-      summary: 查询节点信息
+      summary: 查询页面信息
       tags:
-      - 节点信息
+      - 页面信息
     post:
-      description: 上传静态页面
+      description: 创建页面信息
+      parameters:
+      - description: 创建页面信息
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/repository.CreatePage'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'code: 200 成功'
+          schema:
+            $ref: '#/definitions/controller.Base'
+        "500":
+          description: 错误返回内容
+          schema:
+            $ref: '#/definitions/controller.Base'
+      security:
+      - ApiKeyAuth: []
+      summary: 创建页面信息
+      tags:
+      - 页面信息
+    put:
+      description: 修改页面信息
+      parameters:
+      - description: 修改页面信息
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/repository.ModifyPage'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'code: 200 成功'
+          schema:
+            $ref: '#/definitions/controller.Base'
+        "500":
+          description: 错误返回内容
+          schema:
+            $ref: '#/definitions/controller.Base'
+      security:
+      - ApiKeyAuth: []
+      summary: 修改页面信息
+      tags:
+      - 页面信息
+  /api/v1/page/{id}:
+    get:
+      description: 通过编码查询页面信息
+      parameters:
+      - description: 页面信息编码
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'code: 200 成功'
+          schema:
+            $ref: '#/definitions/controller.Base'
+        "500":
+          description: 错误返回内容
+          schema:
+            $ref: '#/definitions/controller.Base'
+      security:
+      - ApiKeyAuth: []
+      summary: 通过编码查询页面信息
+      tags:
+      - 页面信息
+  /api/v1/page/version/{productCode}:
+    get:
+      description: 获取页面版本列表
       parameters:
       - description: id
         in: path
@@ -1424,18 +1727,19 @@ paths:
             $ref: '#/definitions/controller.Base'
       security:
       - ApiKeyAuth: []
-      summary: 上传静态页面
+      summary: 获取页面版本列表
       tags:
-      - 节点信息
-    put:
-      description: 修改节点信息
+      - 页面信息
+  /api/v1/plugin:
+    post:
+      description: 创建插件信息
       parameters:
-      - description: 修改节点信息
+      - description: 插件信息
         in: body
         name: data
         required: true
         schema:
-          $ref: '#/definitions/repository.ModifyNode'
+          $ref: '#/definitions/repository.CreateRule'
       produces:
       - application/json
       responses:
@@ -1449,34 +1753,9 @@ paths:
             $ref: '#/definitions/controller.Base'
       security:
       - ApiKeyAuth: []
-      summary: 修改节点信息
+      summary: 创建插件信息
       tags:
-      - 节点信息
-  /api/v1/node/{id}:
-    get:
-      description: 通过编码查询节点信息
-      parameters:
-      - description: 节点信息编码
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 'code: 200 成功'
-          schema:
-            $ref: '#/definitions/controller.Base'
-        "500":
-          description: 错误返回内容
-          schema:
-            $ref: '#/definitions/controller.Base'
-      security:
-      - ApiKeyAuth: []
-      summary: 通过编码查询节点信息
-      tags:
-      - 节点信息
+      - 插件管理
   /api/v1/port:
     get:
       description: 查询端口信息
@@ -1736,6 +2015,216 @@ paths:
       summary: 刷新token
       tags:
       - 基本接口
+  /api/v1/resource:
+    delete:
+      description: 删除资源
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'code: 200 成功'
+          schema:
+            $ref: '#/definitions/controller.Base'
+        "500":
+          description: 错误返回内容
+          schema:
+            $ref: '#/definitions/controller.Base'
+      security:
+      - ApiKeyAuth: []
+      summary: 删除资源
+      tags:
+      - 资源
+    get:
+      description: 查询资源
+      parameters:
+      - description: 条件
+        in: query
+        name: condition
+        type: string
+      - description: 页数
+        in: query
+        name: pageNum
+        type: integer
+      - description: 页码
+        in: query
+        name: pageSize
+        type: integer
+      - description: 总数  由服务器返回回去
+        in: query
+        name: total
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'code: 200 成功'
+          schema:
+            $ref: '#/definitions/controller.Base'
+        "500":
+          description: 错误返回内容
+          schema:
+            $ref: '#/definitions/controller.Base'
+      security:
+      - ApiKeyAuth: []
+      summary: 查询资源
+      tags:
+      - 资源
+    post:
+      description: 创建资源
+      parameters:
+      - description: 创建资源
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/repository.CreateResource'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'code: 200 成功'
+          schema:
+            $ref: '#/definitions/controller.Base'
+        "500":
+          description: 错误返回内容
+          schema:
+            $ref: '#/definitions/controller.Base'
+      security:
+      - ApiKeyAuth: []
+      summary: 创建资源
+      tags:
+      - 资源
+    put:
+      description: 修改资源
+      parameters:
+      - description: 修改资源
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/repository.ModifyResource'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'code: 200 成功'
+          schema:
+            $ref: '#/definitions/controller.Base'
+        "500":
+          description: 错误返回内容
+          schema:
+            $ref: '#/definitions/controller.Base'
+      security:
+      - ApiKeyAuth: []
+      summary: 修改资源
+      tags:
+      - 资源
+  /api/v1/resource/{id}:
+    get:
+      description: 通过编码查询资源
+      parameters:
+      - description: 资源编码
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'code: 200 成功'
+          schema:
+            $ref: '#/definitions/controller.Base'
+        "500":
+          description: 错误返回内容
+          schema:
+            $ref: '#/definitions/controller.Base'
+      security:
+      - ApiKeyAuth: []
+      summary: 通过编码查询资源
+      tags:
+      - 资源
+  /api/v1/resource/upload:
+    post:
+      description: 上传资源
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'code: 200 成功'
+          schema:
+            $ref: '#/definitions/controller.Base'
+        "500":
+          description: 错误返回内容
+          schema:
+            $ref: '#/definitions/controller.Base'
+      security:
+      - ApiKeyAuth: []
+      summary: 上传资源
+      tags:
+      - 资源
+  /api/v1/resource/upload/{name}:
+    delete:
+      description: 移除资源
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'code: 200 成功'
+          schema:
+            $ref: '#/definitions/controller.Base'
+        "500":
+          description: 错误返回内容
+          schema:
+            $ref: '#/definitions/controller.Base'
+      security:
+      - ApiKeyAuth: []
+      summary: 移除资源
+      tags:
+      - 资源
+  /api/v1/resource/upload/sse:
+    get:
+      description: 上传资源并且等待服务端返回
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'code: 200 成功'
+          schema:
+            $ref: '#/definitions/controller.Base'
+        "500":
+          description: 错误返回内容
+          schema:
+            $ref: '#/definitions/controller.Base'
+      security:
+      - ApiKeyAuth: []
+      summary: 上传资源并且等待服务端返回
+      tags:
+      - 资源
   /api/v1/rule:
     delete:
       description: 删除匹配规则信息
@@ -1772,10 +2261,6 @@ paths:
         in: query
         name: matchType
         type: integer
-      - description: 节点编码
-        in: query
-        name: nodeId
-        type: string
       - description: 页数
         in: query
         name: pageNum
@@ -2016,6 +2501,32 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: 修改目标地址信息
+      tags:
+      - 目标地址信息
+  /api/v1/target/state/{id}:
+    put:
+      description: 修改目标地址可用状态
+      parameters:
+      - description: 修改目标地址信息
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/repository.ModifyTarget'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'code: 200 成功'
+          schema:
+            $ref: '#/definitions/controller.Base'
+        "500":
+          description: 错误返回内容
+          schema:
+            $ref: '#/definitions/controller.Base'
+      security:
+      - ApiKeyAuth: []
+      summary: 修改目标地址可用状态
       tags:
       - 目标地址信息
   /api/v1/user:

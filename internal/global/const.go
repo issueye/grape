@@ -13,13 +13,14 @@ const AdminAccount string = "admin"
 type RouterGroupName string
 
 const (
-	RGN_user      RouterGroupName = "user"
-	RGN_userGroup RouterGroupName = "userGroup"
-	RGN_menu      RouterGroupName = "menu"
-	RGN_menuGroup RouterGroupName = "groupMenu"
-	RGN_target    RouterGroupName = "target"
-	RGN_rule      RouterGroupName = "rule"
-	RGN_port      RouterGroupName = "port"
-	RGN_page      RouterGroupName = "page"
-	RGN_resource  RouterGroupName = "resource"
+	RGN_user       RouterGroupName = "user"
+	RGN_userGroup  RouterGroupName = "userGroup"
+	RGN_menu       RouterGroupName = "menu"
+	RGN_menuGroup  RouterGroupName = "groupMenu"
+	RGN_target     RouterGroupName = "target"
+	RGN_rule       RouterGroupName = "rule"
+	RGN_port       RouterGroupName = "port"
+	RGN_page       RouterGroupName = "page"
+	RGN_resource   RouterGroupName = "resource"
+	RGN_gzipFilter RouterGroupName = "gzipFilter"
 )

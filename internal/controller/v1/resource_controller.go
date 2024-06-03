@@ -21,8 +21,8 @@ type ResourceController struct{}
 //	@Description	创建资源
 //	@Produce		json
 //	@Param			data	body		repository.CreateResource	true	"创建资源"
-//	@Success		200		{object}	controller.Base			"code: 200 成功"
-//	@Failure		500		{object}	controller.Base			"错误返回内容"
+//	@Success		200		{object}	controller.Base				"code: 200 成功"
+//	@Failure		500		{object}	controller.Base				"错误返回内容"
 //	@Router			/api/v1/resource [post]
 //	@Security		ApiKeyAuth
 func (ResourceController) Create(ctx *gin.Context) {
@@ -53,8 +53,8 @@ func (ResourceController) Create(ctx *gin.Context) {
 //	@Description	修改资源
 //	@Produce		json
 //	@Param			data	body		repository.ModifyResource	true	"修改资源"
-//	@Success		200		{object}	controller.Base			"code: 200 成功"
-//	@Failure		500		{object}	controller.Base			"错误返回内容"
+//	@Success		200		{object}	controller.Base				"code: 200 成功"
+//	@Failure		500		{object}	controller.Base				"错误返回内容"
 //	@Router			/api/v1/resource [put]
 //	@Security		ApiKeyAuth
 func (ResourceController) Modify(ctx *gin.Context) {
@@ -84,8 +84,8 @@ func (ResourceController) Modify(ctx *gin.Context) {
 //	@Description	查询资源
 //	@Produce		json
 //	@Param			params	query		repository.QueryResource	true	"查询条件"
-//	@Success		200		{object}	controller.Base			"code: 200 成功"
-//	@Failure		500		{object}	controller.Base			"错误返回内容"
+//	@Success		200		{object}	controller.Base				"code: 200 成功"
+//	@Failure		500		{object}	controller.Base				"错误返回内容"
 //	@Router			/api/v1/resource [get]
 //	@Security		ApiKeyAuth
 func (ResourceController) Query(ctx *gin.Context) {

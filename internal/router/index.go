@@ -29,16 +29,17 @@ func InitRouter(r *gin.Engine) {
 	// 鉴权
 	// version.Use(global.Auth.MiddlewareFunc())
 	registerVersionRouter(version, global.Auth.MiddlewareFunc(),
-		NewUserRouter(),      // 用户
-		NewUserGroupRouter(), // 用户组
-		NewMenuRouter(),      // 菜单
-		NewMenuGroupRouter(), // 用户组菜单
-		NewPortRouter(),      // 端口号
-		NewPageRouter(),      // 页面
-		NewRouteRouter(),     // 路由
-		NewTargetRouter(),    // 服务地址
-		NewCertRouter(),      // 证书
-		NewResourceRouter(),  // 资源
+		NewUserRouter(),       // 用户
+		NewUserGroupRouter(),  // 用户组
+		NewMenuRouter(),       // 菜单
+		NewMenuGroupRouter(),  // 用户组菜单
+		NewPortRouter(),       // 端口号
+		NewGzipFilterRouter(), // GZIP过滤
+		NewPageRouter(),       // 页面
+		NewRouteRouter(),      // 路由
+		NewTargetRouter(),     // 服务地址
+		NewCertRouter(),       // 证书
+		NewResourceRouter(),   // 资源
 	)
 }
 

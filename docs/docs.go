@@ -653,6 +653,227 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/gzipFilter": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "查询gzip过滤信息",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "gzip过滤信息"
+                ],
+                "summary": "查询gzip过滤信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "条件",
+                        "name": "condition",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页数",
+                        "name": "pageNum",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页码",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "端口号",
+                        "name": "portId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "总数  由服务器返回回去",
+                        "name": "total",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code: 200 成功",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    },
+                    "500": {
+                        "description": "错误返回内容",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "创建gzip过滤信息",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "gzip过滤信息"
+                ],
+                "summary": "创建gzip过滤信息",
+                "parameters": [
+                    {
+                        "description": "创建gzip过滤信息",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/repository.CreateGzipFilter"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code: 200 成功",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    },
+                    "500": {
+                        "description": "错误返回内容",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/gzipFilter/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "通过编码查询gzip过滤信息",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "gzip过滤信息"
+                ],
+                "summary": "通过编码查询gzip过滤信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "gzip过滤信息编码",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code: 200 成功",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    },
+                    "500": {
+                        "description": "错误返回内容",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "修改gzip过滤信息",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "gzip过滤信息"
+                ],
+                "summary": "修改gzip过滤信息",
+                "parameters": [
+                    {
+                        "description": "修改gzip过滤信息",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/repository.ModifyGzipFilter"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code: 200 成功",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    },
+                    "500": {
+                        "description": "错误返回内容",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "删除gzip过滤信息",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "gzip过滤信息"
+                ],
+                "summary": "删除gzip过滤信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code: 200 成功",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    },
+                    "500": {
+                        "description": "错误返回内容",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/login": {
             "post": {
                 "description": "` + "`" + `` + "`" + `` + "`" + `\n用户登录\n` + "`" + `` + "`" + `` + "`" + `",
@@ -1064,21 +1285,21 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/node": {
+        "/api/v1/page": {
             "get": {
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "查询节点信息",
+                "description": "查询页面信息",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "节点信息"
+                    "页面信息"
                 ],
-                "summary": "查询节点信息",
+                "summary": "查询页面信息",
                 "parameters": [
                     {
                         "type": "string",
@@ -1132,22 +1353,22 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "修改节点信息",
+                "description": "修改页面信息",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "节点信息"
+                    "页面信息"
                 ],
-                "summary": "修改节点信息",
+                "summary": "修改页面信息",
                 "parameters": [
                     {
-                        "description": "修改节点信息",
+                        "description": "修改页面信息",
                         "name": "data",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/repository.ModifyNode"
+                            "$ref": "#/definitions/repository.ModifyPage"
                         }
                     }
                 ],
@@ -1172,21 +1393,23 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "上传静态页面",
+                "description": "创建页面信息",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "节点信息"
+                    "页面信息"
                 ],
-                "summary": "上传静态页面",
+                "summary": "创建页面信息",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
+                        "description": "创建页面信息",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/repository.CreatePage"
+                        }
                     }
                 ],
                 "responses": {
@@ -1210,14 +1433,14 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "删除节点信息",
+                "description": "删除页面信息",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "节点信息"
+                    "页面信息"
                 ],
-                "summary": "删除节点信息",
+                "summary": "删除页面信息",
                 "parameters": [
                     {
                         "type": "string",
@@ -1243,28 +1466,110 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/node/{id}": {
+        "/api/v1/page/version/{productCode}": {
             "get": {
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "通过编码查询节点信息",
+                "description": "获取页面版本列表",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "节点信息"
+                    "页面信息"
                 ],
-                "summary": "通过编码查询节点信息",
+                "summary": "获取页面版本列表",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "节点信息编码",
+                        "description": "id",
                         "name": "id",
                         "in": "path",
                         "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code: 200 成功",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    },
+                    "500": {
+                        "description": "错误返回内容",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/page/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "通过编码查询页面信息",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "页面信息"
+                ],
+                "summary": "通过编码查询页面信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "页面信息编码",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code: 200 成功",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    },
+                    "500": {
+                        "description": "错误返回内容",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/plugin": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "创建插件信息",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "插件管理"
+                ],
+                "summary": "创建插件信息",
+                "parameters": [
+                    {
+                        "description": "插件信息",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/repository.CreateRule"
+                        }
                     }
                 ],
                 "responses": {
@@ -1701,6 +2006,341 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/resource": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "查询资源",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "资源"
+                ],
+                "summary": "查询资源",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "条件",
+                        "name": "condition",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页数",
+                        "name": "pageNum",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页码",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "总数  由服务器返回回去",
+                        "name": "total",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code: 200 成功",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    },
+                    "500": {
+                        "description": "错误返回内容",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "修改资源",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "资源"
+                ],
+                "summary": "修改资源",
+                "parameters": [
+                    {
+                        "description": "修改资源",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/repository.ModifyResource"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code: 200 成功",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    },
+                    "500": {
+                        "description": "错误返回内容",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "创建资源",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "资源"
+                ],
+                "summary": "创建资源",
+                "parameters": [
+                    {
+                        "description": "创建资源",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/repository.CreateResource"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code: 200 成功",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    },
+                    "500": {
+                        "description": "错误返回内容",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "删除资源",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "资源"
+                ],
+                "summary": "删除资源",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code: 200 成功",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    },
+                    "500": {
+                        "description": "错误返回内容",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/resource/upload": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "上传资源",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "资源"
+                ],
+                "summary": "上传资源",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code: 200 成功",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    },
+                    "500": {
+                        "description": "错误返回内容",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/resource/upload/sse": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "上传资源并且等待服务端返回",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "资源"
+                ],
+                "summary": "上传资源并且等待服务端返回",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code: 200 成功",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    },
+                    "500": {
+                        "description": "错误返回内容",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/resource/upload/{name}": {
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "移除资源",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "资源"
+                ],
+                "summary": "移除资源",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code: 200 成功",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    },
+                    "500": {
+                        "description": "错误返回内容",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/resource/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "通过编码查询资源",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "资源"
+                ],
+                "summary": "通过编码查询资源",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "资源编码",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code: 200 成功",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    },
+                    "500": {
+                        "description": "错误返回内容",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/rule": {
             "get": {
                 "security": [
@@ -1727,12 +2367,6 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "匹配类型 0 所有 1 gin 2 mux",
                         "name": "matchType",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "节点编码",
-                        "name": "nodeId",
                         "in": "query"
                     },
                     {
@@ -2012,6 +2646,48 @@ const docTemplate = `{
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/repository.CreateTarget"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code: 200 成功",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    },
+                    "500": {
+                        "description": "错误返回内容",
+                        "schema": {
+                            "$ref": "#/definitions/controller.Base"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/target/state/{id}": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "修改目标地址可用状态",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "目标地址信息"
+                ],
+                "summary": "修改目标地址可用状态",
+                "parameters": [
+                    {
+                        "description": "修改目标地址信息",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/repository.ModifyTarget"
                         }
                     }
                 ],
@@ -3092,6 +3768,27 @@ const docTemplate = `{
                 }
             }
         },
+        "repository.CreateGzipFilter": {
+            "type": "object",
+            "properties": {
+                "mark": {
+                    "description": "备注",
+                    "type": "string"
+                },
+                "matchContent": {
+                    "description": "匹配内容",
+                    "type": "string"
+                },
+                "matchType": {
+                    "description": "匹配模式",
+                    "type": "integer"
+                },
+                "portId": {
+                    "description": "端口号",
+                    "type": "string"
+                }
+            }
+        },
         "repository.CreateMenu": {
             "type": "object",
             "required": [
@@ -3139,11 +3836,12 @@ const docTemplate = `{
                 }
             }
         },
-        "repository.CreateNode": {
+        "repository.CreatePage": {
             "type": "object",
             "required": [
                 "name",
-                "portId"
+                "portId",
+                "title"
             ],
             "properties": {
                 "mark": {
@@ -3151,12 +3849,8 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "name": {
-                    "description": "匹配路由名称",
+                    "description": "名称",
                     "type": "string"
-                },
-                "nodeType": {
-                    "description": "节点类型 0 api 1 页面",
-                    "type": "integer"
                 },
                 "pagePath": {
                     "description": "静态页面存放路径 注：相对路径，由服务对页面进行管理",
@@ -3166,8 +3860,20 @@ const docTemplate = `{
                     "description": "端口信息编码",
                     "type": "string"
                 },
-                "target": {
-                    "description": "目标服务地址",
+                "productCode": {
+                    "description": "产品代码",
+                    "type": "string"
+                },
+                "title": {
+                    "description": "标题",
+                    "type": "string"
+                },
+                "useVersionRoute": {
+                    "description": "使用版本路由",
+                    "type": "integer"
+                },
+                "version": {
+                    "description": "版本",
                     "type": "string"
                 }
             }
@@ -3193,6 +3899,35 @@ const docTemplate = `{
                 "port": {
                     "description": "端口号",
                     "type": "integer"
+                },
+                "useGzip": {
+                    "description": "使用GZIP 0 停用 1 启用",
+                    "type": "boolean"
+                }
+            }
+        },
+        "repository.CreateResource": {
+            "type": "object",
+            "required": [
+                "ext",
+                "title"
+            ],
+            "properties": {
+                "ext": {
+                    "description": "文件类型",
+                    "type": "string"
+                },
+                "fileName": {
+                    "description": "文件名称",
+                    "type": "string"
+                },
+                "mark": {
+                    "description": "备注",
+                    "type": "string"
+                },
+                "title": {
+                    "description": "标题",
+                    "type": "string"
                 }
             }
         },
@@ -3219,10 +3954,6 @@ const docTemplate = `{
                 },
                 "name": {
                     "description": "匹配路由名称",
-                    "type": "string"
-                },
-                "nodeId": {
-                    "description": "节点信息编码",
                     "type": "string"
                 },
                 "portId": {
@@ -3408,6 +4139,34 @@ const docTemplate = `{
                 }
             }
         },
+        "repository.ModifyGzipFilter": {
+            "type": "object",
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "id": {
+                    "description": "编码",
+                    "type": "string"
+                },
+                "mark": {
+                    "description": "备注",
+                    "type": "string"
+                },
+                "matchContent": {
+                    "description": "匹配内容",
+                    "type": "string"
+                },
+                "matchType": {
+                    "description": "匹配模式",
+                    "type": "integer"
+                },
+                "portId": {
+                    "description": "端口号",
+                    "type": "string"
+                }
+            }
+        },
         "repository.ModifyMenu": {
             "type": "object",
             "required": [
@@ -3459,7 +4218,7 @@ const docTemplate = `{
                 }
             }
         },
-        "repository.ModifyNode": {
+        "repository.ModifyPage": {
             "type": "object",
             "required": [
                 "id",
@@ -3476,12 +4235,8 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "name": {
-                    "description": "匹配路由名称",
+                    "description": "名称",
                     "type": "string"
-                },
-                "nodeType": {
-                    "description": "节点类型 0 api 1 页面",
-                    "type": "integer"
                 },
                 "pagePath": {
                     "description": "静态页面存放路径 注：相对路径，由服务对页面进行管理",
@@ -3491,8 +4246,20 @@ const docTemplate = `{
                     "description": "端口信息编码",
                     "type": "string"
                 },
-                "target": {
-                    "description": "目标服务地址",
+                "thumbnail": {
+                    "description": "缩略图",
+                    "type": "string"
+                },
+                "useGzip": {
+                    "description": "使用Gzip",
+                    "type": "integer"
+                },
+                "useVersionRoute": {
+                    "description": "使用版本路由",
+                    "type": "integer"
+                },
+                "version": {
+                    "description": "版本",
                     "type": "string"
                 }
             }
@@ -3523,6 +4290,40 @@ const docTemplate = `{
                 "port": {
                     "description": "端口号",
                     "type": "integer"
+                },
+                "useGzip": {
+                    "description": "使用GZIP 0 停用 1 启用",
+                    "type": "boolean"
+                }
+            }
+        },
+        "repository.ModifyResource": {
+            "type": "object",
+            "required": [
+                "ext",
+                "id",
+                "title"
+            ],
+            "properties": {
+                "ext": {
+                    "description": "文件类型",
+                    "type": "string"
+                },
+                "fileName": {
+                    "description": "文件名称",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "编码",
+                    "type": "string"
+                },
+                "mark": {
+                    "description": "备注",
+                    "type": "string"
+                },
+                "title": {
+                    "description": "标题",
+                    "type": "string"
                 }
             }
         },
@@ -3554,10 +4355,6 @@ const docTemplate = `{
                 },
                 "name": {
                     "description": "匹配路由名称",
-                    "type": "string"
-                },
-                "nodeId": {
-                    "description": "节点信息编码",
                     "type": "string"
                 },
                 "portId": {

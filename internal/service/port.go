@@ -65,6 +65,7 @@ func (s *Port) Modify(id string, data *repository.ModifyPort) error {
 	updateData["is_tls"] = data.IsTLS
 	updateData["cert_id"] = data.CertId
 	updateData["mark"] = data.Mark
+	updateData["use_gzip"] = data.UseGzip
 	return s.GetDB().Model(&model.PortInfo{}).Where("id = ?", id).Updates(updateData).Error
 }
 

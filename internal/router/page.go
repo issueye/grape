@@ -26,5 +26,5 @@ func (router PageRouter) Register(group *gin.RouterGroup, auth gin.HandlerFunc) 
 	f.PUT("", router.control.Modify)
 	f.DELETE(":id", router.control.Del)
 
-	f.GET("version/:productCode", router.control.GetPageVersinList)
+	f.GET("version/:productCode", router.control.GetPageVersionList)
 }

@@ -99,6 +99,12 @@ func (s *Rule) DelByPortId(id string) error {
 	return s.GetDB().Model(&model.RuleInfo{}).Delete("port_id = ?", id).Error
 }
 
+func (s *Rule) PortCount(id string) (int64, error) {
+	count := int64(0)
+	err := s.GetDB().Model(&model.RuleInfo{}).Where("port_id = ?", id).Count(&count).Error
+	return count, err
+}
+
 // FindById
 // 通过ID查找信息
 func (s *Rule) FindById(id string) (*model.RuleInfo, error) {

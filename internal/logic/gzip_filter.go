@@ -18,6 +18,10 @@ func (GzipFilter) GetById(id string) (*model.GzipFilterInfo, error) {
 	return service.NewGzipFilter().FindById(id)
 }
 
+func (GzipFilter) PortCount(id string) (int64, error) {
+	return service.NewGzipFilter().PortCount(id)
+}
+
 // Modify
 // 修改信息 不包含状态
 func (GzipFilter) Modify(id string, req *repository.ModifyGzipFilter) error {
@@ -43,6 +47,12 @@ func (GzipFilter) Create(req *repository.CreateGzipFilter) error {
 	err = gfService.Create(req)
 	if err != nil {
 		return fmt.Errorf("创建信息失败 %s", err.Error())
+	}
+
+	portSrv := service.NewPort(gfService.GetContext())
+	err = portSrv.StepCount(req.PortId, service.ST_GZIP_FILTER, service.STT_PLUS)
+	if err != nil {
+		return fmt.Errorf("更新页面统计失败 %s", err.Error())
 	}
 
 	return nil
@@ -80,5 +90,6 @@ func (GzipFilter) Del(id string) error {
 		return fmt.Errorf("删除过滤信息[%s]失败 %s", pi.MatchContent, err.Error())
 	}
 
-	return nil
+	err = portService.StepCount(pi.PortId, service.ST_RULE, service.STT_REDUCE)
+	return err
 }

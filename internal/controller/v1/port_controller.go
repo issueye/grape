@@ -82,6 +82,28 @@ func (PortController) Modify(ctx *gin.Context) {
 	c.Success()
 }
 
+// RefreshStatistics doc
+//
+//	@tags			端口信息
+//	@Summary		刷新统计信息
+//	@Description	刷新统计信息
+//	@Produce		json
+//	@Success		200		{object}	controller.Base			"code: 200 成功"
+//	@Failure		500		{object}	controller.Base			"错误返回内容"
+//	@Router			/api/v1/port/refreshStatistics [get]
+//	@Security		ApiKeyAuth
+func (PortController) RefreshStatistics(ctx *gin.Context) {
+	c := controller.New(ctx)
+
+	err := logic.Port{}.RefreshStatistics()
+	if err != nil {
+		c.FailByMsgf("刷新统计信息失败 %s", err.Error())
+		return
+	}
+
+	c.Success()
+}
+
 // Stop doc
 //
 //	@tags			端口信息

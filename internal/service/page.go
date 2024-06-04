@@ -53,6 +53,12 @@ func (s *Page) CreatePageVersion(data *model.PageVersionBase) error {
 	return s.GetDB().Create(version).Error
 }
 
+func (s *Page) PortCount(id string) (int64, error) {
+	count := int64(0)
+	err := s.GetDB().Model(&model.PageInfo{}).Where("port_id = ?", id).Count(&count).Error
+	return count, err
+}
+
 // Query
 // 查询数据
 func (s *Page) Query(req *repository.QueryPage) ([]*model.PageInfo, error) {

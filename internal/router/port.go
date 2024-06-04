@@ -30,4 +30,5 @@ func (router PortRouter) Register(group *gin.RouterGroup, auth gin.HandlerFunc) 
 	f.PUT("state/:id", router.control.ModifyState)
 	f.PUT("reload/:id", router.control.Reload)
 	f.DELETE(":id", router.control.Del)
+	f.GET("refreshStatistics", router.control.RefreshStatistics)
 }

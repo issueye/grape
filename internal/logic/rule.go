@@ -18,6 +18,10 @@ func (Route) GetById(id string) (*model.RuleInfo, error) {
 	return service.NewRule().FindById(id)
 }
 
+func (Route) PortCount(id string) (int64, error) {
+	return service.NewRule().PortCount(id)
+}
+
 // Modify
 // 修改信息 不包含状态
 func (Route) Modify(req *repository.ModifyRule) error {
@@ -51,6 +55,11 @@ func (Route) Create(req *repository.CreateRule) error {
 		return fmt.Errorf("创建信息失败 %s", err.Error())
 	}
 
+	err = portService.StepCount(req.PortId, service.ST_RULE, service.STT_PLUS)
+	if err != nil {
+		return fmt.Errorf("更新页面统计失败 %s", err.Error())
+	}
+
 	return nil
 }
 
@@ -60,10 +69,17 @@ func (Route) Del(id string) error {
 	RouteService := service.NewRule()
 
 	// 检查使用状态，如果是正在使用则不允许删除
-	_, err := RouteService.FindById(id)
+	info, err := RouteService.FindById(id)
 	if err != nil {
 		return err
 	}
 
-	return RouteService.Del(id)
+	err = RouteService.Del(id)
+	if err != nil {
+		return err
+	}
+
+	portService := service.NewPort()
+	err = portService.StepCount(info.PortId, service.ST_RULE, service.STT_REDUCE)
+	return err
 }

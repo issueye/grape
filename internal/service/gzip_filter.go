@@ -82,6 +82,12 @@ func (s *GzipFilter) FindByPort(port int) (*model.GzipFilterInfo, error) {
 	return info, err
 }
 
+func (s *GzipFilter) PortCount(id string) (int64, error) {
+	count := int64(0)
+	err := s.GetDB().Model(&model.GzipFilterInfo{}).Where("port_id = ?", id).Count(&count).Error
+	return count, err
+}
+
 // FindById
 // 通过ID查找信息
 func (s *GzipFilter) FindById(id string) (*model.GzipFilterInfo, error) {

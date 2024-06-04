@@ -26,6 +26,13 @@ func (Port) Modify(id string, req *repository.ModifyPort) error {
 	return portService.Modify(id, req)
 }
 
+// Modify
+// 修改信息 不包含状态
+func (Port) ModifyByMap(id string, data map[string]any) error {
+	portService := service.NewPort()
+	return portService.ModifyByMap(id, data)
+}
+
 // ModifyState
 // 修改使用状态 返回修改之后的状态
 func (Port) ModifyState(id string) (bool, error) {
@@ -42,6 +49,49 @@ func (Port) ModifyState(id string) (bool, error) {
 	}
 
 	return !info.State, nil
+}
+
+// 刷新端口统计
+func (Port) RefreshStatistics() error {
+	list, err := Port{}.Get(&repository.QueryPort{})
+	if err != nil {
+		return err
+	}
+
+	for _, portInfo := range list {
+		// 更新页面
+		count, err := Page{}.PortCount(portInfo.ID)
+		if err != nil {
+			continue
+		}
+		portInfo.PageCount = int(count)
+
+		count, err = Route{}.PortCount(portInfo.ID)
+		if err != nil {
+			continue
+		}
+		portInfo.RuleCount = int(count)
+
+		count, err = GzipFilter{}.PortCount(portInfo.ID)
+		if err != nil {
+			continue
+		}
+		portInfo.GzipFilterCount = int(count)
+
+		// 更新数据
+		err = Port{}.ModifyByMap(portInfo.ID, map[string]any{
+			"page_count":        portInfo.PageCount,
+			"rule_count":        portInfo.RuleCount,
+			"gzip_filter_count": portInfo.GzipFilterCount,
+		})
+
+		if err != nil {
+			global.Log.Errorf("端口号[%d]更新统计信息失败 %s", portInfo.Port, err.Error())
+			continue
+		}
+	}
+
+	return nil
 }
 
 func (Port) Notice(id string) error {

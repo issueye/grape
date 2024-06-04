@@ -169,7 +169,7 @@ func (PageController) Del(ctx *gin.Context) {
 	c.Success()
 }
 
-// GetPageVersinList doc
+// GetPageVersionList doc
 //
 //	@tags			页面信息
 //	@Summary		获取页面版本列表
@@ -180,7 +180,7 @@ func (PageController) Del(ctx *gin.Context) {
 //	@Failure		500	{object}	controller.Base	"错误返回内容"
 //	@Router			/api/v1/page/version/{productCode} [get]
 //	@Security		ApiKeyAuth
-func (PageController) GetPageVersinList(ctx *gin.Context) {
+func (PageController) GetPageVersionList(ctx *gin.Context) {
 	c := controller.New(ctx)
 
 	productCode := c.Param("productCode")
@@ -189,7 +189,7 @@ func (PageController) GetPageVersinList(ctx *gin.Context) {
 		return
 	}
 
-	list, err := logic.Page{}.GetPageVersinList(productCode)
+	list, err := logic.Page{}.GetPageVersionList(productCode)
 	if err != nil {
 		c.FailByMsg(err.Error())
 		return

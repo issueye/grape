@@ -16,7 +16,7 @@ func (Page) Get(req *repository.QueryPage) ([]*model.PageInfo, error) {
 	return service.NewPage().Query(req)
 }
 
-func (Page) GetPageVersinList(productCode string) ([]*model.PageVersionInfo, error) {
+func (Page) GetPageVersionList(productCode string) ([]*model.PageVersionInfo, error) {
 	return service.NewPage().QueryVersion(&repository.QueryPageVersion{
 		ProductCode: productCode,
 	})
@@ -24,6 +24,10 @@ func (Page) GetPageVersinList(productCode string) ([]*model.PageVersionInfo, err
 
 func (Page) GetById(id string) (*model.PageInfo, error) {
 	return service.NewPage().FindById(id)
+}
+
+func (Page) PortCount(id string) (int64, error) {
+	return service.NewPage().PortCount(id)
 }
 
 // Modify
@@ -82,6 +86,7 @@ func (Page) ModifyByMap(id string, datas map[string]any) error {
 // 创建数据
 func (Page) Create(req *repository.CreatePage) error {
 	pageSrv := service.NewPage()
+
 	// 通过名称查询是否有相同名称的系统
 	info, err := pageSrv.FindByName(req.Name, req.PortId)
 	if err != nil {
@@ -146,6 +151,12 @@ func (Page) Create(req *repository.CreatePage) error {
 		return fmt.Errorf("创建版本失败 %s", err.Error())
 	}
 
+	portSrv := service.NewPort(pageSrv.GetContext())
+	err = portSrv.StepCount(req.PortId, service.ST_PAGE, service.STT_PLUS)
+	if err != nil {
+		return fmt.Errorf("更新页面统计失败 %s", err.Error())
+	}
+
 	return nil
 }
 
@@ -188,5 +199,7 @@ func (Page) Del(id string) error {
 		return err
 	}
 
-	return nil
+	portService := service.NewPort(PageService.GetContext())
+	err = portService.StepCount(info.PortId, service.ST_RULE, service.STT_REDUCE)
+	return err
 }

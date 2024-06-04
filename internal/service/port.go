@@ -68,6 +68,48 @@ func (s *Port) Modify(id string, data *repository.ModifyPort) error {
 	return s.GetDB().Model(&model.PortInfo{}).Where("id = ?", id).Updates(updateData).Error
 }
 
+type StatisticsType int
+
+const (
+	ST_PAGE StatisticsType = iota
+	ST_RULE
+	ST_GZIP_FILTER
+)
+
+type StepType int
+
+const (
+	STT_PLUS StepType = iota
+	STT_REDUCE
+)
+
+// Modify
+// 修改信息
+func (s *Port) StepCount(id string, t StatisticsType, st StepType) error {
+
+	stepStr := " + 1"
+	if st == STT_REDUCE {
+		stepStr = " - 1"
+	}
+
+	switch t {
+	case ST_PAGE:
+		return s.GetDB().Raw(fmt.Sprintf("update ? set page_count = page_count %s where id = ?", stepStr), model.PageInfo{}.TableName(), id).Error
+	case ST_RULE:
+		return s.GetDB().Raw(fmt.Sprintf("update ? set rule_count = rule_count %s where id = ?", stepStr), model.PageInfo{}.TableName(), id).Error
+	case ST_GZIP_FILTER:
+		return s.GetDB().Raw(fmt.Sprintf("update ? set gzip_filter_count = gzip_filter_count %s where id = ?", stepStr), model.PageInfo{}.TableName(), id).Error
+	}
+
+	return nil
+}
+
+// Modify
+// 修改信息
+func (s *Port) ModifyByMap(id string, data map[string]any) error {
+	return s.GetDB().Model(&model.PortInfo{}).Where("id = ?", id).Updates(data).Error
+}
+
 // Modify
 // 修改信息
 func (s *Port) ModifyState(id string, state bool) error {

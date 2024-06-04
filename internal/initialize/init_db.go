@@ -15,7 +15,7 @@ import (
 // 初始化其他数据
 func InitData() {
 	path := filepath.Join("runtime", "data", "data.db")
-	commonService.DB = db.InitSqlite(path, global.Log)
+	commonService.DB = db.InitSqlite(path, global.Logger)
 
 	// 初始化表
 	err := commonService.DB.AutoMigrate(

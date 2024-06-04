@@ -47,7 +47,7 @@ func InitLogger(cfg *Config) (*zap.SugaredLogger, *zap.Logger) {
 		TimeKey:       "time",
 		NameKey:       "name",
 		CallerKey:     "file",
-		FunctionKey:   "func",
+		FunctionKey:   "",
 		StacktraceKey: "stacktrace",
 		LineEnding:    zapcore.DefaultLineEnding,
 		// 时间格式

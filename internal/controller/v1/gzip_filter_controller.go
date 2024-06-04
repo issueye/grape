@@ -104,6 +104,7 @@ func (GzipFilterController) Query(ctx *gin.Context) {
 
 	if req.PortId == "" {
 		c.Success()
+		return
 	}
 
 	list, err := logic.GzipFilter{}.Get(req)

@@ -19,7 +19,7 @@ type StatusUserGroup struct {
 }
 
 type QueryUserGroup struct {
-	Name string `json:"name"` // 组名称
-	Mark string `json:"mark"` // 备注
+	Name string `json:"name" form:"name"` // 组名称
+	Mark string `json:"mark" form:"mark"` // 备注
 	model.Page
 }

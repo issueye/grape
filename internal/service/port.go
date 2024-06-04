@@ -47,9 +47,8 @@ func (s *Port) Query(req *repository.QueryPort) ([]*model.PortInfo, error) {
 		q := db.Order("created_at")
 
 		if req.Condition != "" {
-			q = q.Where("convert(varchar, port) like ?", fmt.Sprintf("%%%s%%", req.Condition))
-			q = q.Where("cert_code like ?", fmt.Sprintf("%%%s%%", req.Condition))
-			q = q.Where("mark like ?", fmt.Sprintf("%%%s%%", req.Condition))
+			q = q.Where("CAST(port AS TEXT) like ?", fmt.Sprintf("%%%s%%", req.Condition))
+			q = q.Or("mark like ?", fmt.Sprintf("%%%s%%", req.Condition))
 		}
 
 		return q, nil
@@ -73,6 +72,12 @@ func (s *Port) Modify(id string, data *repository.ModifyPort) error {
 // 修改信息
 func (s *Port) ModifyState(id string, state bool) error {
 	return s.GetDB().Model(&model.PortInfo{}).Where("id = ?", id).Update("state", state).Error
+}
+
+// Modify
+// 修改信息
+func (s *Port) ModifyGzip(id string, use bool) error {
+	return s.GetDB().Model(&model.PortInfo{}).Where("id = ?", id).Update("use_gzip", use).Error
 }
 
 // Del

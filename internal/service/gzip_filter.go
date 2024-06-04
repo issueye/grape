@@ -29,6 +29,7 @@ func NewGzipFilter(args ...service.ServiceContext) *GzipFilter {
 // 创建信息
 func (s *GzipFilter) Create(data *repository.CreateGzipFilter) error {
 	info := model.GzipFilterInfo{}.New()
+	info.PortId = data.PortId
 	info.MatchContent = data.MatchContent
 	info.MatchType = data.MatchType
 	info.Mark = data.Mark
@@ -43,7 +44,7 @@ func (s *GzipFilter) Query(req *repository.QueryGzipFilter) ([]*model.GzipFilter
 
 	err := s.DataFilter(model.GzipFilterInfo{}.TableName(), req, &list, func(db *gorm.DB) (*gorm.DB, error) {
 		qry := db.Order("created_at")
-		qry = qry.Where("portId = ?", req.PortId)
+		qry = qry.Where("port_id = ?", req.PortId)
 
 		if req.Condition != "" {
 			qry = qry.Where("convert(varchar, port) like ?", fmt.Sprintf("%%%s%%", req.Condition)).

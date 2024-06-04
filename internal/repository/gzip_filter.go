@@ -21,7 +21,7 @@ type ModifyGzipFilter struct {
 
 // 查询信息
 type QueryGzipFilter struct {
-	Condition string `json:"condition"` // 条件
-	PortId    string `json:"portId"`    // 端口号
+	Condition string `json:"condition" form:"condition"` // 条件
+	PortId    string `json:"portId" form:"portId"`       // 端口号
 	model.Page
 }

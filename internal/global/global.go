@@ -6,6 +6,7 @@ import (
 
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
+	"github.com/issueye/grape/internal/common/model"
 	"go.uber.org/zap"
 	"gopkg.in/antage/eventsource.v1"
 	"gorm.io/gorm"
@@ -31,8 +32,7 @@ const (
 )
 
 type Port struct {
-	Id     string
-	Port   int
+	model.PortInfo
 	Action ActionType
 }
 

@@ -51,8 +51,8 @@ func (Port) Notice(id string) error {
 	}
 
 	// 处理状态
-	fmt.Println("当前端口状态", info.State)
-	ch := &global.Port{Id: info.ID, Port: info.Port}
+	// fmt.Println("当前端口状态", info.State)
+	ch := &global.Port{PortInfo: *info}
 
 	if info.State {
 		ch.Action = global.AT_START
@@ -75,6 +75,18 @@ func (Port) Stop(id string) error {
 // 修改使用状态 返回修改之后的状态
 func (Port) Start(id string) error {
 	return service.NewPort().ModifyState(id, true)
+}
+
+// ModifyState
+// 修改使用状态 返回修改之后的状态
+func (Port) ModifyGzip(id string) error {
+	info, err := Port{}.GetById(id)
+	if err != nil {
+		return fmt.Errorf("查询端口信息失败 %s", err.Error())
+	}
+
+	use := !info.UseGzip
+	return service.NewPort().ModifyGzip(id, use)
 }
 
 // Create

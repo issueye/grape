@@ -12,6 +12,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/mux"
 	"github.com/issueye/grape/internal/common/controller"
+	"github.com/issueye/grape/internal/common/model"
 	"github.com/issueye/grape/internal/global"
 	"github.com/issueye/grape/internal/logic"
 	"github.com/issueye/grape/internal/middleware"
@@ -30,11 +31,11 @@ func Start() {
 				{
 					switch p.Action {
 					case global.AT_START:
-						RunServer(p.Id, p.Port)
+						RunServer(p.PortInfo)
 					case global.AT_STOP:
-						StopServer(p.Id, p.Port)
+						StopServer(p.PortInfo)
 					case global.AT_RELOAD:
-						ReloadServer(p.Id, p.Port)
+						ReloadServer(p.PortInfo)
 					}
 				}
 			}
@@ -46,6 +47,7 @@ type muxHandler = func(http.ResponseWriter, *http.Request)
 
 type GrapeEngine struct {
 	PortId  string             // 端口号编码
+	UseGzip bool               // 使用GZIP
 	Port    int                // 端口号
 	Engine  *gin.Engine        // gin
 	Mux     *mux.Router        // mux 对象
@@ -109,27 +111,36 @@ type CustomRouteRule struct {
 	Handler muxHandler             // 方法
 }
 
-func NewGrapeEngine(portId string, port int) *GrapeEngine {
+func NewGrapeEngine(port model.PortInfo) *GrapeEngine {
 	en := &GrapeEngine{
-		PortId:  portId,
-		Port:    port,
+		PortId:  port.ID,
+		Port:    port.Port,
+		UseGzip: port.UseGzip,
 		Engine:  gin.Default(),
 		Rules:   make([]*Rule, 0),
 		Customs: make([]*CustomRouteRule, 0),
 	}
 
 	en.Engine.Use(middleware.TrafficMiddleware(global.Log))
-	en.Engine.Use(gzip.Gzip(gzip.DefaultCompression))
+	// en.Engine.Use(gzip.Gzip(gzip.DefaultCompression))
 	en.Engine.Use(gin.Recovery())
 	en.Engine.GET("/", func(ctx *gin.Context) {
 		c := controller.New(ctx)
-		c.SuccessByMsgf("端口号[%d]返回消息", port)
+		c.SuccessByMsgf("端口号[%d]返回消息", port.Port)
 	})
 	en.Mux = mux.NewRouter()
 	return en
 }
 
 func (grape *GrapeEngine) Init() error {
+
+	if grape.UseGzip {
+		err := grape.GinGzipFilter()
+		if err != nil {
+			return err
+		}
+	}
+
 	err := grape.GinPages()
 	if err != nil {
 		return err
@@ -147,6 +158,51 @@ func (grape *GrapeEngine) Init() error {
 type Page struct {
 	RoutePath  string // 路径
 	StaticPath string // 静态资源路径
+}
+
+func (grape *GrapeEngine) GinGzipFilter() error {
+	list, err := logic.GzipFilter{}.Get(&repository.QueryGzipFilter{
+		PortId: grape.PortId,
+	})
+	if err != nil {
+		return err
+	}
+
+	extensions := []string{}
+	paths := []string{}
+	regexs := []string{}
+	for _, filter := range list {
+		switch filter.MatchType {
+		case 1:
+			paths = append(paths, filter.MatchContent)
+		case 2:
+			extensions = append(extensions, filter.MatchContent)
+		case 3:
+			regexs = append(regexs, filter.MatchContent)
+		}
+	}
+
+	options := make([]gzip.Option, 0)
+
+	if len(extensions) > 0 {
+		options = append(options, gzip.WithExcludedExtensions(extensions))
+	}
+
+	if len(paths) > 0 {
+		options = append(options, gzip.WithExcludedPaths(paths))
+	}
+
+	if len(regexs) > 0 {
+		options = append(options, gzip.WithExcludedPathsRegexs(regexs))
+	}
+
+	if len(options) > 0 {
+		grape.Engine.Use(gzip.Gzip(gzip.DefaultCompression, options...))
+	} else {
+		grape.Engine.Use(gzip.Gzip(gzip.DefaultCompression))
+	}
+
+	return nil
 }
 
 // GinPages
@@ -353,28 +409,28 @@ func (rule *Rule) replace(key, value string) string {
 	return strings.ReplaceAll(rule.Route, key, v)
 }
 
-func ReloadServer(portId string, port int) {
-	global.Log.Infof("[%d]端口号开始重启...", port)
+func ReloadServer(port model.PortInfo) {
+	global.Log.Infof("[%d]端口号开始重启...", port.Port)
 
-	StopServer(portId, port)
-	RunServer(portId, port)
+	StopServer(port)
+	RunServer(port)
 }
 
-func StopServer(portId string, port int) {
+func StopServer(port model.PortInfo) {
 	global.Log.Infof("[%d]端口号停用服务...", port)
 
-	value, ok := Servers.Load(portId)
+	value, ok := Servers.Load(port.ID)
 	if ok {
 		server := value.(*http.Server)
 		server.Shutdown(context.Background())
 
 		// 删除对象
-		Servers.Delete(portId)
+		Servers.Delete(port.ID)
 	}
 }
 
-func runServer(portId string, port int) {
-	grape := NewGrapeEngine(portId, port)
+func runServer(port model.PortInfo) {
+	grape := NewGrapeEngine(port)
 	err := grape.Init()
 	if err != nil {
 		global.Log.Errorf("初始化失败 %s", err.Error())
@@ -388,7 +444,7 @@ func runServer(portId string, port int) {
 	}
 }
 
-func RunServer(portId string, port int) {
-	global.Log.Infof("[%d]端口号启用服务...", port)
-	go runServer(portId, port)
+func RunServer(port model.PortInfo) {
+	global.Log.Infof("[%d]端口号启用服务...", port.Port)
+	go runServer(port)
 }

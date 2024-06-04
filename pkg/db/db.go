@@ -7,8 +7,6 @@ import (
 	"go.uber.org/zap"
 )
 
-const LINE_DB_PWD_KEY = "0_1_2_3_4_5_6_7_8_9_))))))))))!!"
-
 type Config struct {
 	Username string `json:"user"`     // 用户名称
 	Password string `json:"password"` // 密码
@@ -20,7 +18,7 @@ type Config struct {
 
 // Writer 封装的SQL打印
 type Writer struct {
-	log    *zap.SugaredLogger
+	log    *zap.Logger
 	BPrint bool
 }
 
@@ -36,17 +34,12 @@ func (w Writer) Printf(format string, args ...interface{}) {
 		{
 			funcPath := args[0].(string)
 			data := strings.Split(funcPath, "/")
-			if args[2] == "-" {
-				w.log.Debugf("\nSQL语句  %s\n"+
-					"执行用时  %0.2fms\n"+
-					"影响行数  %s\n"+
-					"代码路径  %s\n", args[3], args[1], args[2], data[len(data)-1])
-			} else {
-				w.log.Debugf("\nSQL语句  %s\n"+
-					"执行用时 %0.2fms\n"+
-					"影响行数 %d\n"+
-					"代码路径 %s\n", args[3], args[1], args[2], data[len(data)-1])
-			}
+			w.log.Debug("[sql]",
+				zap.Any("sql", args[3]),
+				zap.Any("time", args[1]),
+				zap.Any("rows", args[2]),
+				zap.Any("path", data[len(data)-1]),
+			)
 		}
 	case 5: // 错误SQL语句
 		{
@@ -70,17 +63,18 @@ func (w Writer) Printf(format string, args ...interface{}) {
 			}
 
 			if isSlow {
-				w.log.Warnf("\nSQL语句  %s\n"+
-					"执行情况 SLOW SQL\n"+
-					"执行用时 %0.2fms\n"+
-					"影响行数 %d\n"+
-					"代码路径 %s\n", args[4], args[2], args[3], data[len(data)-1])
+				w.log.Warn("[sql]",
+					zap.Any("sql", args[4]),
+					zap.Any("time", args[2]),
+					zap.Any("rows", args[3]),
+					zap.Any("path", data[len(data)-1]),
+				)
 			} else {
-				w.log.Errorf("\nSQL语句  %s\n"+
-					"错误信息  %s\n"+
-					"执行用时  %0.2fms\n"+
-					"影响行数  %d\n"+
-					"代码路径  %s\n", args[4], args[1], args[2], args[3], data[len(data)-1])
+				w.log.Error("[sql]",
+					zap.Any("sql", args[4]),
+					zap.Any("message", args[1]),
+					zap.Any("path", data[len(data)-1]),
+				)
 			}
 		}
 	}

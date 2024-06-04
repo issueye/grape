@@ -162,7 +162,7 @@ func initConfig() {
 		panic(fmt.Errorf("创建日志对象失败，失败原因：%s", err))
 	}
 
-	d := db.InitSqlite(path, log.Sugar())
+	d := db.InitSqlite(path, log)
 	if err != nil {
 		panic(fmt.Errorf("初始化配置数据库失败，失败原因：%s", err.Error()))
 	}

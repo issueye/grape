@@ -129,6 +129,35 @@ func (PortController) Stop(ctx *gin.Context) {
 	c.Success()
 }
 
+// ModifyGzip doc
+//
+//	@tags			端口信息
+//	@Summary		开启\关闭 GZIP
+//	@Description	开启\关闭 GZIP
+//	@Produce		json
+//	@Param			id	path		string			true	"id"
+//	@Success		200	{object}	controller.Base	"code: 200 成功"
+//	@Failure		500	{object}	controller.Base	"错误返回内容"
+//	@Router			/api/v1/port/gzip/{id} [put]
+//	@Security		ApiKeyAuth
+func (PortController) ModifyGzip(ctx *gin.Context) {
+	c := controller.New(ctx)
+
+	id := c.Param("id")
+	if id == "" {
+		c.FailBind(errors.New("[id]不能为空"))
+		return
+	}
+
+	err := logic.Port{}.ModifyGzip(id)
+	if err != nil {
+		c.FailByMsgf("更新信息失败 %s", err.Error())
+		return
+	}
+
+	c.Success()
+}
+
 // Start doc
 //
 //	@tags			端口信息
@@ -210,7 +239,7 @@ func (PortController) ModifyState(ctx *gin.Context) {
 
 	// 处理状态
 	fmt.Println("当前端口状态", info.State)
-	ch := &global.Port{Id: info.ID, Port: info.Port}
+	ch := &global.Port{PortInfo: *info}
 
 	if info.State {
 		ch.Action = global.AT_START
@@ -256,7 +285,7 @@ func (PortController) Reload(ctx *gin.Context) {
 		return
 	}
 
-	ch := &global.Port{Id: info.ID, Port: info.Port, Action: global.AT_RELOAD}
+	ch := &global.Port{PortInfo: *info, Action: global.AT_RELOAD}
 	global.PortChan <- ch
 
 	c.Success()

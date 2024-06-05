@@ -15,7 +15,6 @@ import (
 	"github.com/issueye/grape/internal/common/model"
 	"github.com/issueye/grape/internal/global"
 	"github.com/issueye/grape/internal/logic"
-	"github.com/issueye/grape/internal/middleware"
 	"github.com/issueye/grape/internal/repository"
 	"github.com/issueye/grape/internal/service"
 )
@@ -55,42 +54,6 @@ type GrapeEngine struct {
 	Customs []*CustomRouteRule // 节点规则列表
 }
 
-// type Transmit struct {
-// 	TargetUrl string                 `json:"url"`     // 地址
-// 	Count     uint64                 `json:"count"`   // 转发次数
-// 	InFlow    uint64                 `json:"inFlow"`  // 入流量
-// 	OutFlow   uint64                 `json:"outFlow"` // 出流量
-// 	Proxy     *httputil.ReverseProxy `json:"proxy"`   // 代理转发
-// 	lock      *sync.Mutex
-// }
-
-// func (tran *Transmit) calculateHTTPTraffic(req *http.Request, resp *http.Response) (int64, int64) {
-// 	tran.lock.Lock()
-// 	defer tran.lock.Unlock()
-
-// 	var inBytes, outBytes int64
-// 	inBytes += int64(len(req.Method)) + int64(len(req.URL.String()))
-// 	for k, v := range req.Header {
-// 		inBytes += int64(len(k)) + int64(len(v[0]))
-// 	}
-// 	inBytes += int64(req.ContentLength)
-
-// 	for k, v := range resp.Header {
-// 		outBytes += int64(len(k)) + int64(len(v[0]))
-// 	}
-// 	outBytes += int64(resp.ContentLength)
-
-// 	func() {
-// 		tran.lock.Lock()
-// 		defer tran.lock.Unlock()
-
-// 		tran.InFlow += uint64(inBytes)
-// 		tran.OutFlow += uint64(outBytes)
-// 	}()
-
-// 	return inBytes, outBytes
-// }
-
 type Rule struct {
 	Name    string                 `json:"name"`   // 匹配规则
 	Target  string                 `json:"target"` // 目标地址
@@ -121,8 +84,7 @@ func NewGrapeEngine(port model.PortInfo) *GrapeEngine {
 		Customs: make([]*CustomRouteRule, 0),
 	}
 
-	en.Engine.Use(middleware.TrafficMiddleware(global.Log))
-	// en.Engine.Use(gzip.Gzip(gzip.DefaultCompression))
+	// en.Engine.Use(middleware.TrafficMiddleware(global.Log))
 	en.Engine.Use(gin.Recovery())
 	en.Engine.GET("/", func(ctx *gin.Context) {
 		c := controller.New(ctx)
@@ -230,13 +192,7 @@ func (grape *GrapeEngine) GinPages() error {
 			path = fmt.Sprintf("/%s", page.Name)
 		}
 
-		grape.Engine.Static(path, versionInfo.PagePath)
-
-		// if page.UseGzip == 1 {
-		// 	p.Use(gzip.Gzip(gzip.DefaultCompression))
-		// }
-
-		// grape.Engine.Static(path, versionInfo.PagePath).Use(gzip.Gzip(gzip.DefaultCompression))
+		grape.Engine.StaticFS(path, http.Dir(versionInfo.PagePath))
 	}
 
 	return nil

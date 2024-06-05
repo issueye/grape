@@ -1,6 +1,8 @@
 package logic
 
 import (
+	"bytes"
+	"compress/gzip"
 	"fmt"
 	"io"
 	"os"
@@ -237,8 +239,62 @@ func (Resource) fileParse(data *repository.UploadData, filename string, ext stri
 
 			send.Info(95, "创建静态资源...")
 			utils.Unzip(path, targetPath)
+
+			Resource{}.runGzip(targetPath, targetPath)
 		}
 	}
 
 	send.Info(100, "上传成功")
+}
+
+func (Resource) runGzip(sourceDir string, destDir string) error {
+	// 遍历源文件夹并压缩文件
+	err := filepath.Walk(sourceDir, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if !info.IsDir() {
+			// 获取文件的相对路径
+			relPath, err := filepath.Rel(sourceDir, path)
+			if err != nil {
+				return err
+			}
+
+			// 创建目标文件路径
+			destPath := filepath.Join(destDir, relPath+".gz")
+
+			// 创建目标文件夹
+			destDir := filepath.Dir(destPath)
+			err = os.MkdirAll(destDir, 0755)
+			if err != nil {
+				return err
+			}
+
+			// 读取文件内容
+			data, err := os.ReadFile(path)
+			if err != nil {
+				return err
+			}
+
+			// 创建 Gzip writer
+			var b bytes.Buffer
+			w := gzip.NewWriter(&b)
+			_, err = w.Write(data)
+			if err != nil {
+				return err
+			}
+			err = w.Close()
+			if err != nil {
+				return err
+			}
+
+			// 保存压缩后的文件
+			err = os.WriteFile(destPath, b.Bytes(), 0644)
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+	return err
 }

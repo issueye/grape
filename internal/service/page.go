@@ -118,7 +118,6 @@ func (s *Page) Modify(data *repository.ModifyPage) error {
 	updateData["version"] = data.Version
 	updateData["port_id"] = data.PortId
 	updateData["use_version_route"] = data.UseVersionRoute
-	updateData["use_gzip"] = data.UseGzip
 	updateData["mark"] = data.Mark
 	return s.GetDB().Model(&model.PageInfo{}).Where("id = ?", data.ID).Updates(updateData).Error
 }

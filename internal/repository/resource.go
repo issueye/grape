@@ -29,6 +29,7 @@ type QueryResource struct {
 
 type UploadData struct {
 	Type      string                `json:"type" form:"type"`                   // 类型  page 页面文件
+	Port      int                   `json:"port" form:"port"`                   // 端口号
 	UploadKey *multipart.FileHeader `binding:"required" label:"文件" form:"file"` // 文件
 	Id        string                `json:"id" form:"id"`                       // 编码
 }

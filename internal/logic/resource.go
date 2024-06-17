@@ -206,7 +206,7 @@ func (Resource) fileParse(data *repository.UploadData, filename string, ext stri
 
 			send.Info(80, "查找端口号...")
 			// 获取端口号编码
-			portInfo, err := service.NewPort().FindByPort(pageCfg.Port)
+			portInfo, err := service.NewPort().FindByPort(data.Port)
 			if err != nil {
 				global.Log.Errorf("查找端口号信息失败 %s", err.Error())
 				send.Failf(80, "查找端口号信息失败 %s", err.Error())

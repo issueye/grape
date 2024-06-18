@@ -9,7 +9,7 @@ BRANCH=$(git symbolic-ref --short -q HEAD)
 COMMIT=$(git rev-parse --verify HEAD)
 NOW=$(date '+%FT%T%z')
 
-VERSION="v0.1.4-${TAG}"
+VERSION="v0.1.7-${TAG}"
 APPNAME="grape-${VERSION}.exe"
 DESCRIPTION="go转发管理服务"
 

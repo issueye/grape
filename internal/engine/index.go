@@ -294,18 +294,24 @@ func (grape *GrapeEngine) CustomRoutes() error {
 		custom.Proxy = ReverseProxyHttpHandler(custom.Target)
 
 		custom.Handler = func(w http.ResponseWriter, r *http.Request) {
-			vars := mux.Vars(r)
-
-			route := ""
-			if len(vars) == 0 {
-				route = custom.Route
+			if strings.HasSuffix(custom.Route, "/*path") {
+				targetName := strings.TrimSuffix(custom.Route, "/*path")
+				r.URL.Path = targetName + r.URL.Path
 			} else {
-				for key, val := range vars {
-					route = custom.replace(key, val)
+				vars := mux.Vars(r)
+
+				route := ""
+				if len(vars) == 0 {
+					route = custom.Route
+				} else {
+					for key, val := range vars {
+						route = custom.replace(key, val)
+					}
 				}
+
+				r.URL.Path = route
 			}
 
-			r.URL.Path = route
 			custom.Proxy.ServeHTTP(w, r)
 		}
 
@@ -313,21 +319,27 @@ func (grape *GrapeEngine) CustomRoutes() error {
 	}
 
 	for _, custom := range grape.Customs {
+		var r *mux.Route
+
+		// 如果最后是 * 则表示未前缀匹配
+		if strings.HasSuffix(custom.Name, "/*path") {
+			name := strings.TrimSuffix(custom.Name, "/*path")
+			r = grape.Mux.PathPrefix(name).Handler(http.StripPrefix(name, http.HandlerFunc(custom.Handler)))
+		} else {
+			r = grape.Mux.HandleFunc(custom.Name, custom.Handler)
+		}
+
 		switch strings.ToUpper(custom.Method) {
 		case "POST":
-			grape.Mux.HandleFunc(custom.Name, custom.Handler).Methods("POST")
+			r.Methods("POST")
 		case "GET":
-			grape.Mux.HandleFunc(custom.Name, custom.Handler).Methods("GET")
+			r.Methods("GET")
 		case "PUT":
-			grape.Mux.HandleFunc(custom.Name, custom.Handler).Methods("PUT")
+			r.Methods("PUT")
 		case "PATCH":
-			grape.Mux.HandleFunc(custom.Name, custom.Handler).Methods("PATCH")
+			r.Methods("PATCH")
 		case "DELETE":
-			grape.Mux.HandleFunc(custom.Name, custom.Handler).Methods("DELETE")
-		case "ANY":
-			grape.Mux.HandleFunc(custom.Name, custom.Handler)
-		default:
-			grape.Mux.HandleFunc(custom.Name, custom.Handler)
+			r.Methods("DELETE")
 		}
 	}
 

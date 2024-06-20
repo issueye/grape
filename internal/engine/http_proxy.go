@@ -28,6 +28,12 @@ func (m *myRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
 
 	headerSize := int64(0)
 	traffic.InHttpMessages = append(traffic.InHttpMessages, "\n================请求报文==================\n")
+	url := req.URL.Path
+	if req.URL.RawQuery != "" {
+		url += fmt.Sprintf("?%s", req.URL.RawQuery)
+	}
+	traffic.InHttpMessages = append(traffic.InHttpMessages, fmt.Sprintf("%s\n", url))
+	traffic.InHttpMessages = append(traffic.InHttpMessages, fmt.Sprintf("%s\n", req.Method))
 	for key, value := range req.Header {
 		headerSize += int64(len(fmt.Sprintf("%s: %s\r\n", key, value)))
 		traffic.InHttpMessages = append(traffic.InHttpMessages, fmt.Sprintf("%s: %s\n", key, value))

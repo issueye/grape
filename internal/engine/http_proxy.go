@@ -113,23 +113,50 @@ func director(target *url.URL) func(*http.Request) {
 
 func modifyResponse(resp *http.Response) error {
 	var (
-		totalInBytes  int64
-		totalOutBytes int64
+		// totalInBytes  int64
+		// totalOutBytes int64
+		traffic *TrafficStatistics
+		ok      bool
 	)
 
 	if resp != nil {
+		// 读取请求主体和头部的大小
+		ctx := resp.Request.Context()
+		data := ctx.Value("traffic")
+		if data != nil {
+			traffic, ok = data.(*TrafficStatistics)
+			if ok {
+				// totalInBytes = traffic.InBodyBytes + traffic.InHeaderBytes
+				fmt.Println(strings.Join(traffic.InHttpMessages, ""))
+
+			} else {
+				traffic = &TrafficStatistics{
+					InBodyBytes:   0,
+					InHeaderBytes: 0,
+				}
+			}
+		}
+
 		str := make([]string, 0)
 		str = append(str, "\n================响应报文==================\n")
-		headerSize := int64(len([]byte(resp.Proto + "\r\n")))
+		// headerSize := int64(len([]byte(resp.Proto + "\r\n")))
 		for key, value := range resp.Header {
 			str = append(str, fmt.Sprintf("%s: %s\n", key, value))
-			headerSize += int64(len(fmt.Sprintf("%s: %s\r\n", key, value)))
+			// headerSize += int64(len(fmt.Sprintf("%s: %s\r\n", key, value)))
 		}
+
+		// 读取响应头部的大小
+		respDump, err := httputil.DumpResponse(resp, false)
+		if err != nil {
+			return err
+		}
+		// totalOutBytes += int64(len(respDump))
 
 		str = append(str, "\r\n")
 
-		headerSize += int64(len("\r\n"))
-		totalOutBytes += headerSize
+		// headerSize += int64(len("\r\n"))
+		traffic.OutHeaderBytes = int64(len(respDump))
+		// totalOutBytes += headerSize
 
 		if resp.Body != nil {
 			body, err := io.ReadAll(resp.Body)
@@ -139,34 +166,21 @@ func modifyResponse(resp *http.Response) error {
 			}
 			bodyBuf := bytes.NewBuffer(body)
 			str = append(str, bodyBuf.String())
-			totalOutBytes += int64(bodyBuf.Len())
+			// totalOutBytes += int64(bodyBuf.Len())
+			traffic.OutBodyBytes = int64(bodyBuf.Len())
 
 			resp.Body = io.NopCloser(bytes.NewBuffer(body))
 		}
 
 		fmt.Println(strings.Join(str, ""))
+
+		fmt.Printf("in header %d bytes\n", traffic.InHeaderBytes)
+		fmt.Printf("in body %d bytes\n", traffic.InBodyBytes)
+		fmt.Printf("out header %d bytes\n", traffic.OutHeaderBytes)
+		fmt.Printf("out body %d bytes\n", traffic.OutBodyBytes)
 	}
 
-	// 读取请求主体和头部的大小
-	ctx := resp.Request.Context()
-	data := ctx.Value("traffic")
-	if data != nil {
-		traffic, ok := data.(*TrafficStatistics)
-		if ok {
-			totalInBytes = traffic.InBodyBytes + traffic.InHeaderBytes
-			fmt.Println(strings.Join(traffic.InHttpMessages, ""))
-		}
-	}
-
-	// 读取响应头部的大小
-	respDump, err := httputil.DumpResponse(resp, false)
-	if err != nil {
-		return err
-	}
-	totalOutBytes += int64(len(respDump))
-
-	fmt.Printf("Total in: %d bytes\n", totalInBytes)
-	fmt.Printf("Total out: %d bytes\n", totalOutBytes)
-
+	fmt.Printf("Total in: %d bytes\n", traffic.InBodyBytes+traffic.InHeaderBytes)
+	fmt.Printf("Total out: %d bytes\n", traffic.OutBodyBytes+traffic.OutHeaderBytes)
 	return nil
 }

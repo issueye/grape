@@ -21,6 +21,7 @@ var (
 	Auth       *jwt.GinJWTMiddleware
 	SSE        eventsource.EventSource
 	PageStatic embed.FS
+	IndexDB    = make(chan *model.TrafficStatistics, 50)
 )
 
 type ActionType int

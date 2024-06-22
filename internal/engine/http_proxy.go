@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
-	"strings"
 
+	"github.com/issueye/grape/internal/common/model"
 	"github.com/issueye/grape/internal/global"
 )
 
@@ -24,24 +24,23 @@ type myRoundTripper struct {
 }
 
 func (m *myRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
-	traffic := TrafficStatistics{}
+	traffic := model.NewTrafficStatistics()
 
 	headerSize := int64(0)
-	traffic.InHttpMessages = append(traffic.InHttpMessages, "\n================请求报文==================\n")
 	url := req.URL.Path
 	if req.URL.RawQuery != "" {
 		url += fmt.Sprintf("?%s", req.URL.RawQuery)
 	}
-	traffic.InHttpMessages = append(traffic.InHttpMessages, fmt.Sprintf("%s\n", url))
-	traffic.InHttpMessages = append(traffic.InHttpMessages, fmt.Sprintf("%s\n", req.Method))
+
+	traffic.Request.Path = url
+	traffic.Request.Method = req.Method
+
 	for key, value := range req.Header {
 		headerSize += int64(len(fmt.Sprintf("%s: %s\r\n", key, value)))
-		traffic.InHttpMessages = append(traffic.InHttpMessages, fmt.Sprintf("%s: %s\n", key, value))
+		traffic.Request.Header[key] = value
 	}
 
-	traffic.InHttpMessages = append(traffic.InHttpMessages, "\r\n")
-
-	traffic.InHeaderBytes = headerSize
+	traffic.Request.InHeaderBytes = headerSize
 
 	if req.Body != nil {
 		body, err := io.ReadAll(req.Body)
@@ -52,8 +51,8 @@ func (m *myRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
 
 		bodyBuf := bytes.NewBuffer(body)
 
-		traffic.InBodyBytes = int64(bodyBuf.Len())
-		traffic.InHttpMessages = append(traffic.InHttpMessages, bodyBuf.String())
+		traffic.Request.InBodyBytes = int64(bodyBuf.Len())
+		traffic.Request.Body = bodyBuf.String()
 
 		req.Body = io.NopCloser(bytes.NewBuffer(body))
 	}
@@ -92,18 +91,6 @@ func ReverseProxyHttpHandler(targetURL string) *httputil.ReverseProxy {
 	return proxy
 }
 
-type TrafficStatistics struct {
-	// 请求信息
-	InHeaderBytes  int64
-	InBodyBytes    int64
-	InHttpMessages []string
-
-	// 返回信息
-	OutHeaderBytes  int64
-	OutBodyBytes    int64
-	OutHttpMessages []string
-}
-
 func director(target *url.URL) func(*http.Request) {
 	return func(req *http.Request) {
 		req.URL.Scheme = target.Scheme
@@ -113,9 +100,7 @@ func director(target *url.URL) func(*http.Request) {
 
 func modifyResponse(resp *http.Response) error {
 	var (
-		// totalInBytes  int64
-		// totalOutBytes int64
-		traffic *TrafficStatistics
+		traffic *model.TrafficStatistics
 		ok      bool
 	)
 
@@ -124,25 +109,14 @@ func modifyResponse(resp *http.Response) error {
 		ctx := resp.Request.Context()
 		data := ctx.Value("traffic")
 		if data != nil {
-			traffic, ok = data.(*TrafficStatistics)
-			if ok {
-				// totalInBytes = traffic.InBodyBytes + traffic.InHeaderBytes
-				fmt.Println(strings.Join(traffic.InHttpMessages, ""))
-
-			} else {
-				traffic = &TrafficStatistics{
-					InBodyBytes:   0,
-					InHeaderBytes: 0,
-				}
+			traffic, ok = data.(*model.TrafficStatistics)
+			if !ok {
+				traffic = model.NewTrafficStatistics()
 			}
 		}
 
-		str := make([]string, 0)
-		str = append(str, "\n================响应报文==================\n")
-		// headerSize := int64(len([]byte(resp.Proto + "\r\n")))
 		for key, value := range resp.Header {
-			str = append(str, fmt.Sprintf("%s: %s\n", key, value))
-			// headerSize += int64(len(fmt.Sprintf("%s: %s\r\n", key, value)))
+			traffic.Response.Header[key] = value
 		}
 
 		// 读取响应头部的大小
@@ -150,13 +124,7 @@ func modifyResponse(resp *http.Response) error {
 		if err != nil {
 			return err
 		}
-		// totalOutBytes += int64(len(respDump))
-
-		str = append(str, "\r\n")
-
-		// headerSize += int64(len("\r\n"))
-		traffic.OutHeaderBytes = int64(len(respDump))
-		// totalOutBytes += headerSize
+		traffic.Response.OutHeaderBytes = int64(len(respDump))
 
 		if resp.Body != nil {
 			body, err := io.ReadAll(resp.Body)
@@ -165,22 +133,16 @@ func modifyResponse(resp *http.Response) error {
 				return err
 			}
 			bodyBuf := bytes.NewBuffer(body)
-			str = append(str, bodyBuf.String())
-			// totalOutBytes += int64(bodyBuf.Len())
-			traffic.OutBodyBytes = int64(bodyBuf.Len())
+			traffic.Response.Body = bodyBuf.String()
+			traffic.Response.OutBodyBytes = int64(bodyBuf.Len())
 
 			resp.Body = io.NopCloser(bytes.NewBuffer(body))
 		}
 
-		fmt.Println(strings.Join(str, ""))
-
-		fmt.Printf("in header %d bytes\n", traffic.InHeaderBytes)
-		fmt.Printf("in body %d bytes\n", traffic.InBodyBytes)
-		fmt.Printf("out header %d bytes\n", traffic.OutHeaderBytes)
-		fmt.Printf("out body %d bytes\n", traffic.OutBodyBytes)
+		// 将数据通过管道的方式传入 global.Index
+		global.IndexDB <- traffic
+		return nil
 	}
 
-	fmt.Printf("Total in: %d bytes\n", traffic.InBodyBytes+traffic.InHeaderBytes)
-	fmt.Printf("Total out: %d bytes\n", traffic.OutBodyBytes+traffic.OutHeaderBytes)
 	return nil
 }

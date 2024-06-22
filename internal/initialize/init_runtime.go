@@ -12,7 +12,11 @@ func InitRuntime() {
 	// 获取当前程序的路径
 	path := utils.GetWorkDir()
 	rtPath := isExistsCreatePath(path, "runtime")
-	isExistsCreatePath(rtPath, "data")
+	dataPath := isExistsCreatePath(rtPath, "data")
+
+	// 存放 http 报文数据
+	isExistsCreatePath(dataPath, "http")
+
 	isExistsCreatePath(rtPath, "logs")
 	staticPath := isExistsCreatePath(rtPath, "static")
 	isExistsCreatePath(staticPath, "admin")

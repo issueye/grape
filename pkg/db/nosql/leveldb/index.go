@@ -147,11 +147,11 @@ func (idx *Index[T]) FindByPrefix(prefix string, page, pageSize int) ([]*T, erro
 // 带有过滤条件的查询
 func (idx *Index[T]) FindByFilter(filter func(key string, value *T) bool, page, pageSize int) ([]*T, error) {
 	// 构建查询范围
-	start := []byte{}
-	limit := []byte{}
+	// start := []byte{}
+	// limit := []byte{}
 
 	// 获取一个带有前缀的迭代器 带有布隆过滤器
-	iter := idx.db.NewIterator(&util.Range{Start: start, Limit: limit}, nil)
+	iter := idx.db.NewIterator(nil, nil)
 	defer iter.Release()
 
 	// 初始化结果集
@@ -186,5 +186,5 @@ func (idx *Index[T]) FindByFilter(filter func(key string, value *T) bool, page, 
 		return results, nil
 	}
 
-	return results[:pageSize], nil
+	return results, nil
 }

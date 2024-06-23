@@ -3,6 +3,7 @@ package router
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/issueye/grape/internal/config"
+	v1 "github.com/issueye/grape/internal/controller/v1"
 	"github.com/issueye/grape/internal/global"
 	"github.com/issueye/grape/internal/middleware"
 )
@@ -41,6 +42,9 @@ func InitRouter(r *gin.Engine) {
 		NewCertRouter(),       // 证书
 		NewResourceRouter(),   // 资源
 	)
+
+	// 查询 http 报文
+	version.GET("query/httpMessages", v1.QueryHttpMessages)
 }
 
 // registerRouter 注册路由

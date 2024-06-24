@@ -71,7 +71,7 @@ func Listen(ctx context.Context) {
 					// 例如：messages-1678756000000-123456789
 
 					byteID := fmt.Sprintf("messages-%d-%d", time.Now().UnixNano(), id)
-
+					data.ID = byteID
 					// 写入数据库
 					if err := GetIndexDB().Put(byteID, data); err != nil {
 						// 处理写入数据库的错误

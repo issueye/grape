@@ -1,46 +1,39 @@
 package model
 
+import "time"
+
 type TrafficStatistics struct {
-	// 请求信息
-	// InHeaderBytes  int64
-	// InBodyBytes    int64
-	// InHttpMessages []string
-
-	// 响应信息
-	Request  HttpRequest
-	Response HttpResponse
-
-	// 返回信息
-	// OutHeaderBytes  int64
-	// OutBodyBytes    int64
-	// OutHttpMessages []string
+	ID       string        `json:"id"`       // 数据编码
+	Request  *HttpRequest  `json:"request"`  // 响应信息
+	Response *HttpResponse `json:"response"` // 响应信息
 }
 
 func NewTrafficStatistics() *TrafficStatistics {
 	return &TrafficStatistics{
-		Request: HttpRequest{
+		Request: &HttpRequest{
 			Header: make(map[string][]string),
 		},
-		Response: HttpResponse{
+		Response: &HttpResponse{
 			Header: make(map[string][]string),
 		},
 	}
 }
 
 type HttpRequest struct {
-	Method        string
-	Path          string
-	Query         string
-	Header        map[string][]string
-	Body          string
-	InHeaderBytes int64
-	InBodyBytes   int64
+	Time          time.Time           `json:"time"`            // 请求时间
+	Method        string              `json:"method"`          // 方法
+	Path          string              `json:"path"`            // 路由
+	Query         string              `json:"query"`           // 请求参数
+	Header        map[string][]string `json:"header"`          // 请求头
+	Body          string              `json:"body"`            // 请求体
+	InHeaderBytes int64               `json:"in_header_bytes"` // 请求头字节数
+	InBodyBytes   int64               `json:"in_body_bytes"`   // 请求体字节数
 }
 
 type HttpResponse struct {
-	Header         map[string][]string
-	Body           string
-	StatusCode     int
-	OutHeaderBytes int64
-	OutBodyBytes   int64
+	Header         map[string][]string `json:"header"`           // 响应头
+	Body           string              `json:"body"`             // 响应体
+	StatusCode     int                 `json:"status_code"`      // 状态码
+	OutHeaderBytes int64               `json:"out_header_bytes"` // 响应头字节数
+	OutBodyBytes   int64               `json:"out_body_bytes"`   // 响应体字节数
 }

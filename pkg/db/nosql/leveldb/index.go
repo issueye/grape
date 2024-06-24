@@ -176,15 +176,22 @@ func (idx *Index[T]) FindByFilter(filter func(key string, value *T) bool, page, 
 		}
 
 		// 判断是否需要继续遍历
-		if len(results) >= pageSize {
-			break
-		}
+		// if len(results) >= pageSize {
+		// 	break
+		// }
 	}
 
 	// 判断是否需要继续遍历
-	if len(results) < pageSize {
-		return results, nil
+	// if len(results) < pageSize {
+	// 	return results, nil
+	// }
+
+	resData := make([]*T, len(results))
+	// 将数据倒序
+	for i := len(results) - 1; i >= 0; i-- {
+		resData[len(results)-1-i] = results[i]
 	}
 
-	return results, nil
+	return resData, nil
+	// return results, nil
 }

@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"time"
 
 	"github.com/issueye/grape/internal/common/model"
 	"github.com/issueye/grape/internal/global"
@@ -25,11 +26,12 @@ type myRoundTripper struct {
 
 func (m *myRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
 	traffic := model.NewTrafficStatistics()
+	traffic.Request.Time = time.Now()
 
 	headerSize := int64(0)
 	url := req.URL.Path
 	if req.URL.RawQuery != "" {
-		url += fmt.Sprintf("?%s", req.URL.RawQuery)
+		traffic.Request.Query = req.URL.RawQuery
 	}
 
 	traffic.Request.Path = url
@@ -58,7 +60,7 @@ func (m *myRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
 	}
 
 	ctx := req.Context()
-	ctx = context.WithValue(ctx, "traffic", &traffic)
+	ctx = context.WithValue(ctx, "traffic", traffic)
 	req = req.WithContext(ctx)
 
 	resp, err := m.RoundTripper.RoundTrip(req)
@@ -135,6 +137,7 @@ func modifyResponse(resp *http.Response) error {
 			bodyBuf := bytes.NewBuffer(body)
 			traffic.Response.Body = bodyBuf.String()
 			traffic.Response.OutBodyBytes = int64(bodyBuf.Len())
+			traffic.Response.StatusCode = resp.StatusCode
 
 			resp.Body = io.NopCloser(bytes.NewBuffer(body))
 		}
